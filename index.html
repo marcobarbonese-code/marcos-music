@@ -50,7 +50,6 @@ main{padding:16px;}
 .login-sub{font-size:11px;color:var(--text-muted);line-height:1.8;margin-bottom:24px;}
 .login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;letter-spacing:0.1em;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
 .login-btn:hover{opacity:0.85;}
-.login-btn svg{width:18px;height:18px;flex-shrink:0;}
 .login-note{font-size:10px;color:var(--text-muted);margin-top:14px;line-height:1.7;}
 
 #loadingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;gap:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.1em;}
@@ -60,27 +59,6 @@ main{padding:16px;}
 
 #appScreen{display:none;}
 #appScreen.show{display:block;}
-
-#dbBanner{display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--text-muted);align-items:center;justify-content:space-between;gap:8px;}
-#dbBanner.show{display:flex;}
-.db-name{color:var(--gold);}
-.ghost-btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
-.ghost-btn:hover{border-color:var(--gold);color:var(--gold);}
-
-#tableSelector{display:none;background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:14px;}
-#tableSelector.show{display:block;}
-.sec-title{font-size:11px;color:var(--gold);letter-spacing:0.1em;margin-bottom:10px;}
-.btn-list{display:flex;flex-wrap:wrap;gap:6px;}
-.tbl-btn{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
-.tbl-btn:hover{border-color:var(--gold);color:var(--gold);}
-
-#columnMapper{display:none;background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:14px;}
-#columnMapper.show{display:block;}
-.map-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.map-lbl{font-size:11px;color:var(--text-muted);width:80px;flex-shrink:0;}
-.map-sel{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:6px 8px;border-radius:6px;outline:none;}
-.map-sel:focus{border-color:var(--gold);}
-.map-confirm{width:100%;margin-top:10px;padding:10px;border-radius:6px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:0.05em;}
 
 #statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.05em;}
 #statsBar.show{display:flex;justify-content:space-between;align-items:center;}
@@ -111,13 +89,6 @@ main{padding:16px;}
 .drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 20px;}
 .drawer-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px;}
 .drawer-sub{font-size:11px;color:var(--text-muted);margin-bottom:20px;}
-.drawer-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
-.drawer-files{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;margin-bottom:20px;}
-.drawer-file{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;}
-.drawer-file:hover{border-color:var(--gold);}
-.df-name{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.df-size{font-size:10px;color:var(--text-muted);flex-shrink:0;}
-.drawer-empty{font-size:11px;color:var(--text-muted);text-align:center;padding:20px;line-height:1.6;}
 .drawer-row{display:flex;gap:8px;}
 .d-btn{flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
 .d-btn:hover{border-color:var(--text-muted);color:var(--text);}
@@ -128,7 +99,7 @@ main{padding:16px;}
 #modal.open{display:flex;}
 .modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
-.modal-cover{width:100%;max-height:260px;object-fit:cover;display:block;}
+.modal-cover{width:100%;max-height:280px;object-fit:cover;display:block;}
 .modal-ph{width:100%;height:180px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
 .modal-body{padding:20px;}
 .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
@@ -168,7 +139,6 @@ main{padding:16px;}
 </header>
 
 <main>
-  <!-- LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-icon">
@@ -179,41 +149,19 @@ main{padding:16px;}
       <div class="login-title">Marco's Music</div>
       <div class="login-sub">Collega il tuo Dropbox per accedere alla collezione.</div>
       <button class="login-btn" id="loginBtn">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2L0 6l6 4-6 4 6 4 6-4-6-4 6-4zm12 0l6 4-6 4 6 4-6 4-6-4 6-4-6-4zm-6 13l-6-4 6-4 6 4z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px"><path d="M6 2L0 6l6 4-6 4 6 4 6-4-6-4 6-4zm12 0l6 4-6 4 6 4-6 4-6-4 6-4-6-4zm-6 13l-6-4 6-4 6 4z"/></svg>
         ACCEDI CON DROPBOX
       </button>
       <div class="login-note">Accesso sicuro tramite OAuth 2.</div>
     </div>
   </div>
 
-  <!-- LOADING -->
   <div id="loadingScreen">
     <div class="spinner"></div>
     <span id="loadMsg">Caricamento...</span>
   </div>
 
-  <!-- APP -->
   <div id="appScreen">
-    <div id="dbBanner">
-      <span style="display:flex;align-items:center;gap:6px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
-        <span class="db-name" id="dbName"></span>
-      </span>
-      <button class="ghost-btn" id="changeDb">Cambia DB</button>
-    </div>
-    <div id="tableSelector">
-      <div class="sec-title">SELEZIONA LA TABELLA</div>
-      <div class="btn-list" id="tableList"></div>
-    </div>
-    <div id="columnMapper">
-      <div class="sec-title">COLLEGA LE COLONNE</div>
-      <div class="map-row"><span class="map-lbl">Titolo</span><select class="map-sel" id="mapTitle"></select></div>
-      <div class="map-row"><span class="map-lbl">Artista</span><select class="map-sel" id="mapArtist"></select></div>
-      <div class="map-row"><span class="map-lbl">Seriale</span><select class="map-sel" id="mapSerial"></select></div>
-      <div class="map-row"><span class="map-lbl">Raccolta</span><select class="map-sel" id="mapCategory"></select></div>
-      <div class="map-row"><span class="map-lbl">Copertina</span><select class="map-sel" id="mapCover"></select></div>
-      <button class="map-confirm" id="mapConfirm">CONFERMA E CARICA</button>
-    </div>
     <div id="statsBar">
       <span><span class="stats-n" id="countLbl">0</span> album</span>
       <span id="catLbl"></span>
@@ -221,24 +169,17 @@ main{padding:16px;}
     <div id="coversProgress"></div>
     <div id="albumGrid"></div>
     <div id="emptyState">
-      <div>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <p>Nessun album trovato</p>
     </div>
   </div>
 </main>
 
-<!-- DRAWER -->
 <div id="drawer">
   <div class="drawer-sheet">
     <div class="drawer-handle"></div>
-    <div class="drawer-title">Dropbox</div>
+    <div class="drawer-title">Marco's Music</div>
     <div class="drawer-sub">Connesso come <strong id="drawerUser" style="color:var(--gold)"></strong></div>
-    <div class="drawer-lbl">File database</div>
-    <div class="drawer-files" id="drawerFiles">
-      <div class="drawer-empty"><span class="mini-spin"></span> Caricamento...</div>
-    </div>
     <div class="drawer-row">
       <button class="d-btn" id="drawerClose">Chiudi</button>
       <button class="d-btn danger" id="drawerLogout">Disconnetti</button>
@@ -246,7 +187,6 @@ main{padding:16px;}
   </div>
 </div>
 
-<!-- MODAL -->
 <div id="modal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -256,7 +196,7 @@ main{padding:16px;}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────
+// ── CONFIG ───────────────────────────────────────────────
 const APP_KEY    = 'js14z2382chcui3';
 const APP_SECRET = '0dmnr5p5jloljcb';
 const REDIRECT   = 'https://marcobarbonese-code.github.io/marcos-music/';
@@ -265,33 +205,49 @@ const DB_FILE    = 'data.db';
 const COVERS_DIR = '/MarcosMusic/files';
 const API        = 'https://api.dropboxapi.com/2';
 const CONTENT    = 'https://content.dropboxapi.com/2';
-const CAT_CLASS  = {'Colonne Sonore':'cat-cs','Italiana':'cat-it','Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'};
 
-// ── STATE ───────────────────────────────────────────────────────
-let SQL = null;
-let sqlDb = null;
-let accessToken = '';
-let refreshToken = '';
-let tokenExpiry = 0;
-let allAlbums = [];
-let covers = {};
-let currentFilter = 'all';
-let currentSearch = '';
-let colMap = {title:'',artist:'',serial:'',category:'',cover:''};
-let currentTable = '';
+// Symphytum collection name → CSS class
+const CAT_CLASS = {
+  'Colonne Sonore':'cat-cs','Italiana':'cat-it',
+  'Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'
+};
 
-// ── SQL.JS ──────────────────────────────────────────────────────
-initSqlJs({locateFile: f => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f})
-  .then(s => { SQL = s; })
-  .catch(e => console.error('SQL.js error:', e));
+// ── STATE ────────────────────────────────────────────────
+var SQL = null;
+var sqlDb = null;
+var accessToken = '';
+var refreshToken = '';
+var tokenExpiry = 0;
+var allAlbums = [];   // [{title, artist, serial, category, coverHash}]
+var covers = {};      // hash_name.toLowerCase() -> objectURL
+var currentFilter = 'all';
+var currentSearch = '';
 
-// ── SCREENS ─────────────────────────────────────────────────────
-function showLogin()   { document.getElementById('loginScreen').style.display='flex'; document.getElementById('loadingScreen').classList.remove('show'); document.getElementById('appScreen').classList.remove('show'); }
-function showLoading(msg) { document.getElementById('loginScreen').style.display='none'; document.getElementById('loadingScreen').classList.add('show'); document.getElementById('appScreen').classList.remove('show'); document.getElementById('loadMsg').textContent = msg || 'Caricamento...'; }
-function showApp()     { document.getElementById('loginScreen').style.display='none'; document.getElementById('loadingScreen').classList.remove('show'); document.getElementById('appScreen').classList.add('show'); }
+// ── SQL.JS ───────────────────────────────────────────────
+initSqlJs({locateFile: function(f){ return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f; }})
+  .then(function(s){ SQL = s; })
+  .catch(function(e){ console.error('SQL.js', e); });
 
-// ── BOOT ────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', function() {
+// ── SCREENS ──────────────────────────────────────────────
+function showLogin(){
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loadingScreen').classList.remove('show');
+  document.getElementById('appScreen').classList.remove('show');
+}
+function showLoading(msg){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('loadingScreen').classList.add('show');
+  document.getElementById('appScreen').classList.remove('show');
+  document.getElementById('loadMsg').textContent = msg || 'Caricamento...';
+}
+function showApp(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('loadingScreen').classList.remove('show');
+  document.getElementById('appScreen').classList.add('show');
+}
+
+// ── BOOT ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function(){
   var params = new URLSearchParams(window.location.search);
   var code  = params.get('code');
   var state = params.get('state');
@@ -302,54 +258,46 @@ window.addEventListener('DOMContentLoaded', function() {
     var codeVerifier = localStorage.getItem('code_verifier');
     localStorage.removeItem('oauth_state');
     localStorage.removeItem('code_verifier');
-    if (!codeVerifier || state !== savedState) {
-      showLogin();
-      return;
-    }
+    if (!codeVerifier || state !== savedState) { showLogin(); return; }
     showLoading('Connessione a Dropbox...');
     exchangeCode(code, codeVerifier);
     return;
   }
 
-  // Try saved tokens
   accessToken  = localStorage.getItem('dbx_access')  || '';
   refreshToken = localStorage.getItem('dbx_refresh') || '';
   tokenExpiry  = parseInt(localStorage.getItem('dbx_expiry') || '0');
 
   if (refreshToken) {
     showLoading('Connessione...');
-    ensureValidToken().then(function(ok) {
-      if (ok) { onConnected(); }
-      else    { showLogin(); }
+    ensureValidToken().then(function(ok){
+      if (ok) onConnected(); else showLogin();
     });
     return;
   }
-
   showLogin();
 });
 
-// ── PKCE ────────────────────────────────────────────────────────
-function randomBase64(len) {
+// ── PKCE ─────────────────────────────────────────────────
+function randomBase64(len){
   var arr = new Uint8Array(len);
   crypto.getRandomValues(arr);
   return btoa(String.fromCharCode.apply(null, arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
 }
-
-function sha256Base64(str) {
-  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf) {
+function sha256Base64(str){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
     return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
   });
 }
 
-// ── LOGIN BUTTON ────────────────────────────────────────────────
-document.getElementById('loginBtn').addEventListener('click', function() {
+// ── LOGIN ────────────────────────────────────────────────
+document.getElementById('loginBtn').addEventListener('click', function(){
   var verifier = randomBase64(64);
   var state    = randomBase64(16);
   localStorage.setItem('code_verifier', verifier);
   localStorage.setItem('oauth_state', state);
-
-  sha256Base64(verifier).then(function(challenge) {
-    var url = 'https://www.dropbox.com/oauth2/authorize'
+  sha256Base64(verifier).then(function(challenge){
+    window.location.href = 'https://www.dropbox.com/oauth2/authorize'
       + '?client_id='             + encodeURIComponent(APP_KEY)
       + '&response_type=code'
       + '&redirect_uri='          + encodeURIComponent(REDIRECT)
@@ -357,359 +305,318 @@ document.getElementById('loginBtn').addEventListener('click', function() {
       + '&code_challenge_method=S256'
       + '&state='                 + encodeURIComponent(state)
       + '&token_access_type=offline';
-    window.location.href = url;
   });
 });
 
-// ── EXCHANGE CODE ───────────────────────────────────────────────
-function exchangeCode(code, verifier) {
+// ── EXCHANGE CODE ────────────────────────────────────────
+function exchangeCode(code, verifier){
   fetch('https://api.dropbox.com/oauth2/token', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: 'code='             + encodeURIComponent(code)
-        + '&grant_type=authorization_code'
-        + '&client_id='       + encodeURIComponent(APP_KEY)
-        + '&client_secret='   + encodeURIComponent(APP_SECRET)
-        + '&redirect_uri='    + encodeURIComponent(REDIRECT)
-        + '&code_verifier='   + encodeURIComponent(verifier)
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:'code='           + encodeURIComponent(code)
+       + '&grant_type=authorization_code'
+       + '&client_id='     + encodeURIComponent(APP_KEY)
+       + '&client_secret=' + encodeURIComponent(APP_SECRET)
+       + '&redirect_uri='  + encodeURIComponent(REDIRECT)
+       + '&code_verifier=' + encodeURIComponent(verifier)
   })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
+  .then(function(r){ return r.json(); })
+  .then(function(d){
     if (!d.access_token) { showLogin(); alert('Errore login. Riprova.'); return; }
     saveTokens(d);
     onConnected();
   })
-  .catch(function() { showLogin(); alert('Errore di rete. Riprova.'); });
+  .catch(function(){ showLogin(); alert('Errore di rete. Riprova.'); });
 }
 
-// ── TOKEN MANAGEMENT ────────────────────────────────────────────
-function saveTokens(d) {
-  accessToken  = d.access_token;
+// ── TOKENS ───────────────────────────────────────────────
+function saveTokens(d){
+  accessToken = d.access_token;
   if (d.refresh_token) refreshToken = d.refresh_token;
-  tokenExpiry  = Date.now() + ((d.expires_in || 14400) * 1000) - 60000;
+  tokenExpiry = Date.now() + ((d.expires_in || 14400) * 1000) - 60000;
   localStorage.setItem('dbx_access',  accessToken);
   localStorage.setItem('dbx_refresh', refreshToken);
   localStorage.setItem('dbx_expiry',  String(tokenExpiry));
 }
-
-function ensureValidToken() {
+function ensureValidToken(){
   if (accessToken && Date.now() < tokenExpiry) return Promise.resolve(true);
   if (!refreshToken) return Promise.resolve(false);
   return fetch('https://api.dropbox.com/oauth2/token', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: 'grant_type=refresh_token'
-        + '&refresh_token=' + encodeURIComponent(refreshToken)
-        + '&client_id='     + encodeURIComponent(APP_KEY)
-        + '&client_secret=' + encodeURIComponent(APP_SECRET)
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:'grant_type=refresh_token'
+       + '&refresh_token=' + encodeURIComponent(refreshToken)
+       + '&client_id='     + encodeURIComponent(APP_KEY)
+       + '&client_secret=' + encodeURIComponent(APP_SECRET)
   })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (!d.access_token) return false;
-    saveTokens(d);
-    return true;
-  })
-  .catch(function() { return false; });
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if (!d.access_token) return false; saveTokens(d); return true; })
+  .catch(function(){ return false; });
 }
 
-// ── DROPBOX API ─────────────────────────────────────────────────
-function dbxPost(url, body) {
-  return ensureValidToken().then(function() {
+// ── DROPBOX API ───────────────────────────────────────────
+function dbxPost(url, body){
+  return ensureValidToken().then(function(){
     return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + accessToken,
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer ' + accessToken,
         'Content-Type': body ? 'application/json' : 'application/x-www-form-urlencoded',
       },
       body: body ? JSON.stringify(body) : null,
     });
   });
 }
-
-function dbxDownload(path) {
-  return ensureValidToken().then(function() {
+function dbxDownload(path){
+  return ensureValidToken().then(function(){
     return fetch(CONTENT + '/files/download', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + accessToken,
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer ' + accessToken,
         'Dropbox-API-Arg': JSON.stringify({path: path}),
       },
     });
   });
 }
 
-// ── ON CONNECTED ────────────────────────────────────────────────
-function onConnected() {
+// ── ON CONNECTED ──────────────────────────────────────────
+function onConnected(){
   dbxPost(API + '/users/get_current_account', null)
-  .then(function(r) { return r.json(); })
-  .then(function(u) {
+  .then(function(r){ return r.json(); })
+  .then(function(u){
     document.getElementById('dbxDot').className = 'dot ok';
     var name = (u.name && u.name.display_name) ? u.name.display_name.split(' ')[0] : 'Marco';
     document.getElementById('dbxLabel').textContent = name;
     document.getElementById('drawerUser').textContent = (u.name && u.name.display_name) || '';
-    showApp();
-    autoLoadDb();
+    loadDatabase();
   })
-  .catch(function() { showLogin(); });
+  .catch(function(){ showLogin(); });
 }
 
-// ── AUTO LOAD DB ────────────────────────────────────────────────
-function autoLoadDb() {
-  showLoading('Caricamento ' + DB_FILE + '...');
-  // Try direct path access
-  var directPath = DB_FOLDER + '/' + DB_FILE;
-  dbxDownload(directPath)
-  .then(function(r) {
-    if (r.ok) return r;
-    // Fallback: list folder and find the file
-    return dbxPost(API + '/files/list_folder', {path: DB_FOLDER, recursive: false})
-    .then(function(lr) { return lr.json(); })
-    .then(function(ld) {
-      var found = (ld.entries||[]).find(function(e){return e['.tag']==='file' && e.name.toLowerCase()===DB_FILE.toLowerCase();});
-      if (!found) {
-        // Last fallback: list root
-        return dbxPost(API + '/files/list_folder', {path: '', recursive: false})
-        .then(function(rr) { return rr.json(); })
-        .then(function(rd) {
-          var f = (rd.entries||[]).find(function(e){return e['.tag']==='file' && e.name.toLowerCase()===DB_FILE.toLowerCase();});
-          if (!f) throw new Error('Non trovato. Root Dropbox contiene: ' + (rd.entries||[]).map(function(e){return e['.tag']+':'+e.name;}).join(', '));
-          return dbxDownload(f.path_lower);
-        });
-      }
-      return dbxDownload(found.path_lower);
-    });
-  })
-  .then(function(r) {
-    if (!r.ok) throw new Error('Download fallito: ' + r.status);
+// ── LOAD DATABASE ─────────────────────────────────────────
+function loadDatabase(){
+  showLoading('Caricamento database...');
+  dbxDownload(DB_FOLDER + '/' + DB_FILE)
+  .then(function(r){
+    if (!r.ok) throw new Error('File ' + DB_FILE + ' non trovato in ' + DB_FOLDER);
     return r.arrayBuffer();
   })
-  .then(function(buf) {
+  .then(function(buf){
     if (!SQL) throw new Error('SQL.js non pronto');
     sqlDb = new SQL.Database(new Uint8Array(buf));
-    document.getElementById('dbName').textContent = DB_FILE;
-    document.getElementById('dbBanner').classList.add('show');
-    showApp();
-    showTables();
-    loadCovers();
+    loadSymphytumData();
   })
-  .catch(function(e) {
+  .catch(function(e){
     showApp();
-    document.getElementById('drawerFiles').innerHTML = '<div class="drawer-empty">' + e.message + '<br><br>Verifica che il file sia in /MarcosMusic/</div>';
-    document.getElementById('drawer').classList.add('open');
-    listDbFiles();
+    alert('Errore: ' + e.message);
   });
 }
 
-// ── LIST DB FILES ───────────────────────────────────────────────
-function listDbFiles() {
-  var df = document.getElementById('drawerFiles');
-  df.innerHTML = '<div class="drawer-empty"><span class="mini-spin"></span> Ricerca...</div>';
-  // List the MarcosMusic folder directly
-  dbxPost(API + '/files/list_folder', {path: DB_FOLDER, recursive: false})
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    var files = (d.entries||[]).filter(function(f){return f['.tag']==='file'&&/\.(db|sqlite|sqlite3)$/i.test(f.name);});
-    // Show ALL contents for debug
-    var allNames = (d.entries||[]).map(function(e){return e['.tag']+': '+e.name;}).join('<br>');
-    if (!files.length) { df.innerHTML='<div class="drawer-empty">Cartella /MarcosMusic/ contiene:<br><br>'+(allNames||'(vuota o non trovata)')+'</div>'; return; }
-    df.innerHTML = '';
-    files.forEach(function(f) {
-      var row = document.createElement('div');
-      row.className = 'drawer-file';
-      row.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="df-name">' + f.name + '</span><span class="df-size">' + fmtSize(f.size) + '</span>';
-      row.addEventListener('click', function() { document.getElementById('drawer').classList.remove('open'); loadDb(f.path_lower, f.name); });
-      df.appendChild(row);
-    });
-  })
-  .catch(function(e) { df.innerHTML='<div class="drawer-empty">Errore: '+e.message+'</div>'; });
+// ── LOAD SYMPHYTUM DATA ───────────────────────────────────
+// Reads Collections table to get collection names + table names,
+// then reads each table to get albums,
+// then reads files table to map _id -> hash_name (cover filename)
+function loadSymphytumData(){
+  showLoading('Lettura collezioni...');
+
+  // 1. Read collections map
+  var collections = {};
+  try {
+    var cr = sqlDb.exec("SELECT name, table_name FROM collections");
+    if (cr.length) {
+      cr[0].values.forEach(function(row){
+        collections[row[0]] = row[1]; // name -> table_name
+      });
+    }
+  } catch(e){ console.error('collections', e); }
+
+  // 2. Read files table: _id -> hash_name
+  var fileMap = {}; // record _id -> hash_name
+  try {
+    var fr = sqlDb.exec("SELECT _id, hash_name FROM files");
+    if (fr.length) {
+      fr[0].values.forEach(function(row){
+        if (row[1]) fileMap[row[0]] = row[1];
+      });
+    }
+  } catch(e){ console.error('files', e); }
+
+  // 3. Read each collection table
+  allAlbums = [];
+  var collectionNames = Object.keys(collections);
+
+  collectionNames.forEach(function(collName){
+    var tableName = collections[collName];
+    try {
+      var tr = sqlDb.exec("SELECT _id, \"1\", \"2\", \"3\" FROM \"" + tableName + "\"");
+      if (tr.length) {
+        tr[0].values.forEach(function(row){
+          var id     = row[0];
+          var title  = row[1] || '';
+          var artist = row[2] || '';
+          var serial = row[3] || '';
+          var hash   = fileMap[id] || '';
+          allAlbums.push({
+            title:    String(title),
+            artist:   String(artist),
+            serial:   String(serial),
+            category: collName,
+            coverHash: hash
+          });
+        });
+      }
+    } catch(e){ console.error('table ' + tableName, e); }
+  });
+
+  showApp();
+  document.getElementById('statsBar').classList.add('show');
+  renderGrid();
+
+  // 4. Load covers in background
+  loadCovers();
 }
 
-function fmtSize(b) { return b>1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(0)+' KB'; }
-
-// ── LOAD DB ─────────────────────────────────────────────────────
-function loadDb(path, name) {
-  showLoading('Download ' + name + '...');
-  dbxDownload(path)
-  .then(function(r) { if(!r.ok) throw new Error('download failed'); return r.arrayBuffer(); })
-  .then(function(buf) {
-    if (!SQL) throw new Error('SQL.js non pronto');
-    sqlDb = new SQL.Database(new Uint8Array(buf));
-    document.getElementById('dbName').textContent = name;
-    document.getElementById('dbBanner').classList.add('show');
-    showApp();
-    showTables();
-    loadCovers();
-  })
-  .catch(function(e) { showApp(); alert('Errore: ' + e.message); });
-}
-
-// ── LOAD COVERS ─────────────────────────────────────────────────
-function loadCovers() {
+// ── LOAD COVERS ───────────────────────────────────────────
+function loadCovers(){
   var prog = document.getElementById('coversProgress');
   prog.innerHTML = '<span class="mini-spin"></span> Caricamento copertine...';
-  dbxPost(API + '/files/list_folder', {path: COVERS_DIR, recursive: false})
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    var imgs = (d.entries||[]).filter(function(e){return e['.tag']==='file'&&/\.(jpg|jpeg|png|gif|webp)$/i.test(e.name);});
-    if (!imgs.length) { prog.textContent=''; return; }
-    var done = 0;
-    prog.textContent = 'Copertine: 0 / ' + imgs.length;
-    function loadNext(i) {
-      if (i >= imgs.length) { prog.textContent = done + ' copertine caricate'; setTimeout(function(){prog.textContent='';}, 3000); return; }
-      dbxDownload(imgs[i].path_lower)
-      .then(function(r) { return r.ok ? r.blob() : null; })
-      .then(function(blob) {
-        if (blob) { covers[imgs[i].name.toLowerCase()] = URL.createObjectURL(blob); done++; }
-        prog.textContent = 'Copertine: ' + done + ' / ' + imgs.length;
-        if (done % 10 === 0) renderGrid();
-        loadNext(i + 1);
-      })
-      .catch(function() { loadNext(i + 1); });
+
+  // Get all unique hash names needed
+  var needed = {};
+  allAlbums.forEach(function(a){ if (a.coverHash) needed[a.coverHash] = true; });
+  var hashes = Object.keys(needed);
+
+  if (!hashes.length) { prog.textContent = ''; return; }
+
+  var done = 0;
+  prog.textContent = 'Copertine: 0 / ' + hashes.length;
+
+  function loadNext(i){
+    if (i >= hashes.length){
+      prog.textContent = done + ' copertine caricate';
+      setTimeout(function(){ prog.textContent = ''; }, 3000);
+      return;
     }
-    loadNext(0);
-  })
-  .catch(function() { prog.textContent = ''; });
+    var hash = hashes[i];
+    var path = COVERS_DIR + '/' + hash;
+    dbxDownload(path)
+    .then(function(r){ return r.ok ? r.blob() : null; })
+    .then(function(blob){
+      if (blob){
+        covers[hash.toLowerCase()] = URL.createObjectURL(blob);
+        done++;
+        if (done % 10 === 0) renderGrid();
+      }
+      prog.textContent = 'Copertine: ' + done + ' / ' + hashes.length;
+      loadNext(i + 1);
+    })
+    .catch(function(){ loadNext(i + 1); });
+  }
+  loadNext(0);
 }
 
-// ── DRAWER ──────────────────────────────────────────────────────
-document.getElementById('dbxPill').addEventListener('click', function() { if(accessToken){document.getElementById('drawer').classList.add('open'); listDbFiles();}});
-document.getElementById('drawerClose').addEventListener('click', function() { document.getElementById('drawer').classList.remove('open'); });
-document.getElementById('changeDb').addEventListener('click', function() { document.getElementById('drawer').classList.add('open'); listDbFiles(); });
-document.getElementById('drawer').addEventListener('click', function(e) { if(e.target===document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open'); });
-document.getElementById('drawerLogout').addEventListener('click', function() {
+// ── DRAWER ────────────────────────────────────────────────
+document.getElementById('dbxPill').addEventListener('click', function(){
+  if (accessToken) document.getElementById('drawer').classList.add('open');
+});
+document.getElementById('drawerClose').addEventListener('click', function(){
+  document.getElementById('drawer').classList.remove('open');
+});
+document.getElementById('drawer').addEventListener('click', function(e){
+  if (e.target === document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open');
+});
+document.getElementById('drawerLogout').addEventListener('click', function(){
   localStorage.clear();
   accessToken=''; refreshToken=''; tokenExpiry=0;
   allAlbums=[]; covers={}; sqlDb=null;
   document.getElementById('drawer').classList.remove('open');
-  document.getElementById('dbxDot').className='dot';
-  document.getElementById('dbxLabel').textContent='Dropbox';
-  document.getElementById('albumGrid').innerHTML='';
-  ['statsBar','dbBanner','columnMapper','tableSelector'].forEach(function(id){document.getElementById(id).classList.remove('show');});
+  document.getElementById('dbxDot').className = 'dot';
+  document.getElementById('dbxLabel').textContent = 'Dropbox';
+  document.getElementById('albumGrid').innerHTML = '';
+  document.getElementById('statsBar').classList.remove('show');
   showLogin();
 });
 
-// ── TABLE SELECTION ─────────────────────────────────────────────
-function showTables() {
-  var res = sqlDb.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
-  if (!res.length || !res[0].values.length) { alert('Nessuna tabella trovata.'); return; }
-  var tables = res[0].values.map(function(r){return r[0];});
-  if (tables.length === 1) { selectTable(tables[0]); return; }
-  var tl = document.getElementById('tableList');
-  tl.innerHTML = '';
-  tables.forEach(function(t) {
-    var b = document.createElement('button'); b.className='tbl-btn'; b.textContent=t;
-    b.addEventListener('click', function(){document.getElementById('tableSelector').classList.remove('show'); selectTable(t);});
-    tl.appendChild(b);
-  });
-  document.getElementById('tableSelector').classList.add('show');
-}
-
-function selectTable(name) { currentTable=name; showMapper(name); }
-
-// ── COLUMN MAPPER ───────────────────────────────────────────────
-function showMapper(table) {
-  var res = sqlDb.exec('PRAGMA table_info(' + table + ')');
-  if (!res.length) return;
-  var cols = res[0].values.map(function(r){return r[1];});
-  var auto = {title:['titolo','title','nome','name','album'],artist:['artista','artist','autore','author','interprete'],serial:['seriale','serial','numero','number','codice','code','nr'],category:['raccolta','categoria','category','genere','genre','tipo','collana'],cover:['copertina','cover','immagine','image','img','foto','photo','filename','file']};
-  ['mapTitle','mapArtist','mapSerial','mapCategory','mapCover'].forEach(function(id,i){
-    var key=['title','artist','serial','category','cover'][i];
-    var sel=document.getElementById(id);
-    sel.innerHTML='<option value="">-- nessuna --</option>';
-    cols.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
-    var m=cols.find(function(c){return auto[key].some(function(k){return c.toLowerCase().indexOf(k)!==-1;});});
-    if(m) sel.value=m;
-  });
-  document.getElementById('columnMapper').classList.add('show');
-}
-
-document.getElementById('mapConfirm').addEventListener('click', function() {
-  colMap.title    = document.getElementById('mapTitle').value;
-  colMap.artist   = document.getElementById('mapArtist').value;
-  colMap.serial   = document.getElementById('mapSerial').value;
-  colMap.category = document.getElementById('mapCategory').value;
-  colMap.cover    = document.getElementById('mapCover').value;
-  if (!colMap.title) { alert('Seleziona almeno la colonna Titolo.'); return; }
-  document.getElementById('columnMapper').classList.remove('show');
-  loadAlbums();
+// ── SEARCH & FILTER ───────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', function(e){
+  currentSearch = e.target.value.toLowerCase(); renderGrid();
 });
-
-// ── LOAD ALBUMS ─────────────────────────────────────────────────
-function loadAlbums() {
-  var fields = [colMap.title,colMap.artist,colMap.serial,colMap.category,colMap.cover].filter(Boolean).join(', ');
-  var res = sqlDb.exec('SELECT ' + fields + ' FROM ' + currentTable);
-  if (!res.length) { allAlbums=[]; renderGrid(); return; }
-  var cols = res[0].columns;
-  allAlbums = res[0].values.map(function(row) {
-    var o={}; cols.forEach(function(c,i){o[c]=row[i];});
-    return {title:o[colMap.title]||'',artist:o[colMap.artist]||'',serial:o[colMap.serial]||'',category:o[colMap.category]||'',coverFile:o[colMap.cover]||''};
-  });
-  renderGrid();
-  document.getElementById('statsBar').classList.add('show');
-}
-
-// ── SEARCH & FILTER ─────────────────────────────────────────────
-document.getElementById('searchInput').addEventListener('input', function(e){currentSearch=e.target.value.toLowerCase();renderGrid();});
 document.querySelectorAll('.filter-btn').forEach(function(b){
-  b.addEventListener('click', function(){document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active');});b.classList.add('active');currentFilter=b.dataset.cat;renderGrid();});
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.filter-btn').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    currentFilter = b.dataset.cat;
+    renderGrid();
+  });
 });
-function filtered() {
+function filtered(){
   return allAlbums.filter(function(a){
-    var mc = currentFilter==='all' || a.category===currentFilter;
+    var mc = currentFilter === 'all' || a.category === currentFilter;
     var q  = currentSearch;
-    return mc && (!q || a.title.toLowerCase().indexOf(q)!==-1 || a.artist.toLowerCase().indexOf(q)!==-1 || a.serial.toLowerCase().indexOf(q)!==-1);
+    return mc && (!q ||
+      a.title.toLowerCase().indexOf(q)  !== -1 ||
+      a.artist.toLowerCase().indexOf(q) !== -1 ||
+      a.serial.toLowerCase().indexOf(q) !== -1);
   });
 }
 
-// ── RENDER ──────────────────────────────────────────────────────
-function renderGrid() {
+// ── RENDER ────────────────────────────────────────────────
+function renderGrid(){
   var list = filtered();
   document.getElementById('countLbl').textContent = list.length;
-  document.getElementById('catLbl').textContent = currentFilter==='all' ? '' : currentFilter;
+  document.getElementById('catLbl').textContent = currentFilter === 'all' ? '' : currentFilter;
   var grid = document.getElementById('albumGrid');
   grid.innerHTML = '';
-  document.getElementById('emptyState').classList.toggle('show', list.length===0 && allAlbums.length>0);
-  list.forEach(function(a, i) {
+  document.getElementById('emptyState').classList.toggle('show', list.length === 0 && allAlbums.length > 0);
+
+  list.forEach(function(a, i){
     var card = document.createElement('div');
     card.className = 'album-card';
-    card.style.animationDelay = (i*0.025) + 's';
-    var url = a.coverFile ? (covers[a.coverFile.toLowerCase()] || null) : null;
+    card.style.animationDelay = (i * 0.02) + 's';
+    var url = a.coverHash ? (covers[a.coverHash.toLowerCase()] || null) : null;
     var cc  = CAT_CLASS[a.category] || '';
     card.innerHTML =
-      (url ? '<img class="album-cover" src="'+url+'" alt="'+a.title+'" loading="lazy">'
-           : '<div class="album-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
+      (url
+        ? '<img class="album-cover" src="' + url + '" alt="' + a.title + '" loading="lazy">'
+        : '<div class="album-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
       '<div class="album-info">' +
-        (a.category ? '<div class="album-cat '+cc+'">'+a.category+'</div>' : '') +
-        '<div class="album-title">'+a.title+'</div>' +
-        (a.artist ? '<div class="album-artist">'+a.artist+'</div>' : '') +
-        (a.serial ? '<div class="album-serial">'+a.serial+'</div>' : '') +
+        (a.category ? '<div class="album-cat ' + cc + '">' + a.category + '</div>' : '') +
+        '<div class="album-title">' + a.title + '</div>' +
+        (a.artist ? '<div class="album-artist">' + a.artist + '</div>' : '') +
+        (a.serial ? '<div class="album-serial">' + a.serial + '</div>' : '') +
       '</div>';
-    card.addEventListener('click', function(){openModal(a);});
+    card.addEventListener('click', function(){ openModal(a); });
     grid.appendChild(card);
   });
 }
 
-// ── MODAL ───────────────────────────────────────────────────────
-function openModal(a) {
-  var url = a.coverFile ? (covers[a.coverFile.toLowerCase()] || null) : null;
+// ── MODAL ─────────────────────────────────────────────────
+function openModal(a){
+  var url = a.coverHash ? (covers[a.coverHash.toLowerCase()] || null) : null;
   var cc  = CAT_CLASS[a.category] || '';
   document.getElementById('modalContent').innerHTML =
-    (url ? '<img class="modal-cover" src="'+url+'" alt="'+a.title+'">'
-         : '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
+    (url
+      ? '<img class="modal-cover" src="' + url + '" alt="' + a.title + '">'
+      : '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
     '<div class="modal-body">' +
-      (a.category ? '<div class="modal-cat '+cc+'">'+a.category+'</div>' : '') +
-      '<div class="modal-title">'+a.title+'</div>' +
-      (a.artist ? '<div class="modal-artist">'+a.artist+'</div>' : '') +
+      (a.category ? '<div class="modal-cat ' + cc + '">' + a.category + '</div>' : '') +
+      '<div class="modal-title">' + a.title + '</div>' +
+      (a.artist ? '<div class="modal-artist">' + a.artist + '</div>' : '') +
       '<div class="modal-divider"></div>' +
-      (a.serial ? '<div class="modal-row"><span class="modal-lbl">Numero di serie</span><span class="modal-val">'+a.serial+'</span></div>' : '') +
+      (a.serial ? '<div class="modal-row"><span class="modal-lbl">Numero di serie</span><span class="modal-val">' + a.serial + '</span></div>' : '') +
       '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
     '</div>';
   document.getElementById('modal').classList.add('open');
   document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
   document.body.style.overflow = 'hidden';
 }
-function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
-document.getElementById('modal').addEventListener('click', function(e){if(e.target===document.getElementById('modal'))closeModal();});
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal').addEventListener('click', function(e){
+  if (e.target === document.getElementById('modal')) closeModal();
+});
 </script>
 </body>
 </html>
