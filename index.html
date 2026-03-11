@@ -266,7 +266,23 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<script>
+// IMMEDIATE TEST - runs before anything else
+console.log("Script started");
+window.addEventListener('DOMContentLoaded', function(){
+  console.log("DOM ready");
+  var btn = document.getElementById('loginBtn');
+  if(btn){
+    console.log("Button found");
+    btn.addEventListener('click', function(){
+      alert("Click OK! Avvio OAuth...");
+    });
+  } else {
+    console.log("Button NOT found");
+  }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js" onerror="alert('SQL.js non caricato!')"></script>
 <script>
 // ════════════════════════════════════════════
 // CONFIG
