@@ -472,7 +472,7 @@ function autoLoadDb() {
         .then(function(rr) { return rr.json(); })
         .then(function(rd) {
           var f = (rd.entries||[]).find(function(e){return e['.tag']==='file' && e.name.toLowerCase()===DB_FILE.toLowerCase();});
-          if (!f) throw new Error('File ' + DB_FILE + ' non trovato. Contenuto di /: ' + (rd.entries||[]).map(function(e){return e.name;}).join(', '));
+          if (!f) throw new Error('Non trovato. Root Dropbox contiene: ' + (rd.entries||[]).map(function(e){return e['.tag']+':'+e.name;}).join(', '));
           return dbxDownload(f.path_lower);
         });
       }
@@ -509,7 +509,9 @@ function listDbFiles() {
   .then(function(r) { return r.json(); })
   .then(function(d) {
     var files = (d.entries||[]).filter(function(f){return f['.tag']==='file'&&/\.(db|sqlite|sqlite3)$/i.test(f.name);});
-    if (!files.length) { df.innerHTML='<div class="drawer-empty">Nessun file .db in /MarcosMusic/<br>Contenuto: '+(d.entries||[]).map(function(e){return e.name;}).join(', ')+'</div>'; return; }
+    // Show ALL contents for debug
+    var allNames = (d.entries||[]).map(function(e){return e['.tag']+': '+e.name;}).join('<br>');
+    if (!files.length) { df.innerHTML='<div class="drawer-empty">Cartella /MarcosMusic/ contiene:<br><br>'+(allNames||'(vuota o non trovata)')+'</div>'; return; }
     df.innerHTML = '';
     files.forEach(function(f) {
       var row = document.createElement('div');
