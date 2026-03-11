@@ -361,7 +361,7 @@ async function sha256Base64(str){
 // ════════════════════════════════════════════
 // OAUTH LOGIN
 // ════════════════════════════════════════════
-document.getElementById('loginBtn').onclick = async ()=>{
+document.getElementById('loginBtn').onclick = async ()=>{ alert('Click registrato! APP_KEY: ' + APP_KEY + ' REDIRECT: ' + REDIRECT);
   const verifier  = randomBase64(64);
   const challenge = await sha256Base64(verifier);
   const state     = randomBase64(16);
