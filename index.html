@@ -402,17 +402,23 @@ function loadDatabase(){
     return r.arrayBuffer();
   })
   .then(function(buf){
-    function tryInit(buf, attempts){
+    // Wait for SQL.js to be ready, retrying every 300ms up to 20 times
+    var arr = new Uint8Array(buf);
+    function tryInit(attempts){
       if (SQL) {
-        sqlDb = new SQL.Database(new Uint8Array(buf));
-        loadSymphytumData();
+        try {
+          sqlDb = new SQL.Database(arr);
+          loadSymphytumData();
+        } catch(e) {
+          showApp(); alert('Errore apertura DB: ' + e.message);
+        }
       } else if (attempts > 0) {
-        setTimeout(function(){ tryInit(buf, attempts-1); }, 300);
+        setTimeout(function(){ tryInit(attempts - 1); }, 300);
       } else {
         showApp(); alert('SQL.js non caricato. Ricarica la pagina.');
       }
     }
-    tryInit(buf, 20);
+    tryInit(20);
   })
   .catch(function(e){
     showApp();
