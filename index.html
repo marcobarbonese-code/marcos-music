@@ -456,16 +456,26 @@ function onConnected() {
 // ── AUTO LOAD DB ────────────────────────────────────────────────
 function autoLoadDb() {
   showLoading('Caricamento ' + DB_FILE + '...');
+  // Try direct path access
   var directPath = DB_FOLDER + '/' + DB_FILE;
   dbxDownload(directPath)
   .then(function(r) {
     if (r.ok) return r;
-    // fallback: search
-    return dbxPost(API + '/files/search_v2', {query: DB_FILE, options:{filename_only:true}})
-    .then(function(sr) { return sr.json(); })
-    .then(function(sd) {
-      var found = (sd.matches||[]).map(function(m){return m.metadata && m.metadata.metadata;}).filter(function(f){return f && f['.tag']==='file' && f.name.toLowerCase()===DB_FILE.toLowerCase();})[0];
-      if (!found) throw new Error('File ' + DB_FILE + ' non trovato in ' + DB_FOLDER);
+    // Fallback: list folder and find the file
+    return dbxPost(API + '/files/list_folder', {path: DB_FOLDER, recursive: false})
+    .then(function(lr) { return lr.json(); })
+    .then(function(ld) {
+      var found = (ld.entries||[]).find(function(e){return e['.tag']==='file' && e.name.toLowerCase()===DB_FILE.toLowerCase();});
+      if (!found) {
+        // Last fallback: list root
+        return dbxPost(API + '/files/list_folder', {path: '', recursive: false})
+        .then(function(rr) { return rr.json(); })
+        .then(function(rd) {
+          var f = (rd.entries||[]).find(function(e){return e['.tag']==='file' && e.name.toLowerCase()===DB_FILE.toLowerCase();});
+          if (!f) throw new Error('File ' + DB_FILE + ' non trovato. Contenuto di /: ' + (rd.entries||[]).map(function(e){return e.name;}).join(', '));
+          return dbxDownload(f.path_lower);
+        });
+      }
       return dbxDownload(found.path_lower);
     });
   })
@@ -494,11 +504,12 @@ function autoLoadDb() {
 function listDbFiles() {
   var df = document.getElementById('drawerFiles');
   df.innerHTML = '<div class="drawer-empty"><span class="mini-spin"></span> Ricerca...</div>';
-  dbxPost(API + '/files/search_v2', {query:'db', options:{filename_only:true, file_extensions:['db','sqlite','sqlite3']}})
+  // List the MarcosMusic folder directly
+  dbxPost(API + '/files/list_folder', {path: DB_FOLDER, recursive: false})
   .then(function(r) { return r.json(); })
   .then(function(d) {
-    var files = (d.matches||[]).map(function(m){return m.metadata&&m.metadata.metadata;}).filter(function(f){return f&&f['.tag']==='file'&&/\.(db|sqlite|sqlite3)$/i.test(f.name);});
-    if (!files.length) { df.innerHTML='<div class="drawer-empty">Nessun file .db trovato.</div>'; return; }
+    var files = (d.entries||[]).filter(function(f){return f['.tag']==='file'&&/\.(db|sqlite|sqlite3)$/i.test(f.name);});
+    if (!files.length) { df.innerHTML='<div class="drawer-empty">Nessun file .db in /MarcosMusic/<br>Contenuto: '+(d.entries||[]).map(function(e){return e.name;}).join(', ')+'</div>'; return; }
     df.innerHTML = '';
     files.forEach(function(f) {
       var row = document.createElement('div');
