@@ -470,312 +470,34 @@ async function onConnected(){
 // AUTO LOAD data.db
 // ════════════════════════════════════════════
 async function autoLoadDb(){
-  // Search for the file instead of using direct path (handles special chars in folder name)
-  showLoading(true, `Caricamento ${DB_FILENAME}...`);
+  showLoading(true, 'Caricamento ' + DB_FILENAME + '...');
   try{
     await ensureValidToken();
-    // First try direct path
-    let filePath = `${DB_FOLDER}/${DB_FILENAME}`;
-    // Try to find via search in case apostrophe causes issues
-    const searchRes = await dbxPost(`${API}/files/search_v2`,{
-      query: DB_FILENAME,
-      options:{filename_only:true}
-    });
-    const searchData = await searchRes.json();
-    const found = (searchData.matches||[])
-      .map(m=>m.metadata?.metadata)
-      .find(f=>f&&f['.tag']==='file'&&f.name.toLowerCase()===DB_FILENAME.toLowerCase());
-    if(found) filePath = found.path_lower;
-    const r = await dbxDownload(filePath);
-    if(!r.ok) throw new Error('not found');
-    const buf = await r.arrayBuffer();
-    sqlDb = new SQL.Database(new Uint8Array(buf));
-    document.getElementById('dbName').textContent = DB_FILENAME;
-    document.getElementById('dbBanner').classList.add('show');
-    showLoading(false);
-    showTables();
-    loadCovers();
-  } catch{
-    showLoading(false);
-    // DB not found — show file list
-    document.getElementById('drawer').classList.add('open');
-    listDbFiles();
-  }
-}
-
-// ════════════════════════════════════════════
-// DROPBOX API
-// ════════════════════════════════════════════
-async function dbxPost(url, body){
-  await ensureValidToken();
-  return fetch(url,{
-    method:'POST',
-    headers:{
-      'Authorization':`Bearer ${accessToken}`,
-      'Content-Type': body ? 'application/json' : 'application/x-www-form-urlencoded',
-    },
-    body: body ? JSON.stringify(body) : null,
-  });
-}
-
-async function dbxDownload(path){
-  await ensureValidToken();
-  return fetch(`${CONT}/files/download`,{
-    method:'POST',
-    headers:{
-      'Authorization':`Bearer ${accessToken}`,
-      'Dropbox-API-Arg': JSON.stringify({path}),
-    },
-  });
-}
-
-// ════════════════════════════════════════════
-// DRAWER
-// ════════════════════════════════════════════
-const drawer = document.getElementById('drawer');
-document.getElementById('dbxPill').onclick = ()=>{ if(accessToken){ drawer.classList.add('open'); listDbFiles(); }};
-document.getElementById('drawerClose').onclick = ()=>drawer.classList.remove('open');
-drawer.addEventListener('click', e=>{ if(e.target===drawer) drawer.classList.remove('open'); });
-document.getElementById('changeDb').onclick = ()=>{ drawer.classList.add('open'); listDbFiles(); };
-
-document.getElementById('drawerLogout').onclick = ()=>{
-  localStorage.clear();
-  accessToken=''; refreshToken='';
-  drawer.classList.remove('open');
-  document.getElementById('dbxDot').className='dot';
-  document.getElementById('dbxLabel').textContent='Dropbox';
-  allAlbums=[]; covers={};
-  document.getElementById('albumGrid').innerHTML='';
-  ['statsBar','dbBanner','columnMapper','tableSelector'].forEach(id=>document.getElementById(id).classList.remove('show'));
-  showLoginScreen();
-};
-
-async function listDbFiles(){
-  const df = document.getElementById('drawerFiles');
-  df.innerHTML='<div class="drawer-empty"><span class="mini-spin"></span>Ricerca file .db...</div>';
-  try{
-    await ensureValidToken();
-    const r = await dbxPost(`${API}/files/search_v2`,{
-      query: 'db',
-      options:{filename_only:true, file_extensions:['db','sqlite','sqlite3']}
-    });
-    const d = await r.json();
-    const files = (d.matches||[])
-      .map(m=>m.metadata?.metadata)
-      .filter(f=>f&&f['.tag']==='file'&&/\.(db|sqlite|sqlite3)$/i.test(f.name));
-    if(!files.length){
-      df.innerHTML='<div class="drawer-empty">Nessun file .db trovato su Dropbox.<br>Verifica che data.db sia stato caricato.</div>';
-      return;
-    }
-    df.innerHTML='';
-    files.forEach(f=>{
-      const row=document.createElement('div');
-      row.className='drawer-file';
-      row.innerHTML='<div class="df-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="df-name">'+f.name+'</div><div class="df-size">'+fmtSize(f.size)+'</div>';
-      row.onclick=()=>{ drawer.classList.remove('open'); loadDb(f.path_lower,f.name); };
-      df.appendChild(row);
-    });
-  } catch(e){
-    df.innerHTML='<div class="drawer-empty">Errore: '+e.message+'</div>';
-  }
-}
-
-function fmtSize(b){ return b>1048576?(b/1048576).toFixed(1)+' MB':(b/1024).toFixed(0)+' KB'; }
-
-// ════════════════════════════════════════════
-// LOAD DB
-// ════════════════════════════════════════════
-async function loadDb(path, name){
-  if(!SQL){ alert('SQL.js non pronto, riprova.'); return; }
-  showLoading(true,`Download ${name}…`);
-  try{
-    const r = await dbxDownload(path);
-    if(!r.ok) throw new Error('download failed');
-    const buf = await r.arrayBuffer();
-    sqlDb = new SQL.Database(new Uint8Array(buf));
-    document.getElementById('dbName').textContent=name;
-    document.getElementById('dbBanner').classList.add('show');
-    showLoading(false);
-    showTables();
-    loadCovers();
-  } catch(e){
-    showLoading(false);
-    alert('Errore download: '+e.message);
-  }
-}
-
-// ════════════════════════════════════════════
-// LOAD COVERS
-// ════════════════════════════════════════════
-async function loadCovers(){
-  const prog = document.getElementById('coversProgress');
-  prog.innerHTML=`<span class="mini-spin"></span>Caricamento copertine…`;
-  try{
-    await ensureValidToken();
-    const r = await dbxPost(`${API}/files/list_folder`,{path:COVERS_PATH, recursive:false});
-    if(!r.ok){ prog.textContent=''; return; }
-    const d = await r.json();
-    const imgs = (d.entries||[]).filter(e=>e['.tag']==='file'&&/\.(jpg|jpeg|png|gif|webp)$/i.test(e.name));
-    if(!imgs.length){ prog.textContent='Nessuna copertina trovata.'; setTimeout(()=>prog.textContent='',3000); return; }
-    let done=0;
-    prog.textContent=`Copertine: 0 / ${imgs.length}`;
-    for(const f of imgs){
-      try{
-        const res = await dbxDownload(f.path_lower);
-        if(res.ok){
-          const blob = await res.blob();
-          covers[f.name.toLowerCase()] = URL.createObjectURL(blob);
-          done++;
-          prog.textContent=`Copertine: ${done} / ${imgs.length}`;
-          if(done%10===0||done===imgs.length) renderGrid();
+    // Try direct path first
+    const directPath = DB_FOLDER + '/' + DB_FILENAME;
+    let r = await dbxDownload(directPath);
+    // If direct path fails, search
+    if(!r.ok){
+      const searchRes = await dbxPost(API + '/files/search_v2',{
+        query: DB_FILENAME, options:{filename_only:true}
+      });
+      const searchData = await searchRes.json();
+      const found = (searchData.matches||[])
+        .map(m=>m.metadata?.metadata)
+        .find(f=>f&&f['.tag']==='file'&&f.name.toLowerCase()===DB_FILENAME.toLowerCase());
+      if(!found){
+        // Last resort: list root
+        const listRes = await dbxPost(API + '/files/list_folder',{path:'', recursive:true});
+        const listData = await listRes.json();
+        const foundInList = (listData.entries||[]).find(e=>e['.tag']==='file'&&e.name.toLowerCase()===DB_FILENAME.toLowerCase());
+        if(foundInList){
+          r = await dbxDownload(foundInList.path_lower);
+        } else {
+          throw new Error('File ' + DB_FILENAME + ' non trovato. Percorsi cercati: ' + directPath);
         }
-      } catch{}
+      } else {
+        r = await dbxDownload(found.path_lower);
+      }
     }
-    prog.textContent=`✓ ${done} copertine caricate`;
-    setTimeout(()=>prog.textContent='',3000);
-  } catch{ prog.textContent=''; }
-}
+    if(!r.ok) throw new Error('Download fallito: ' + r.status);
 
-// ════════════════════════════════════════════
-// TABLE SELECTION
-// ════════════════════════════════════════════
-function showTables(){
-  const res=sqlDb.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
-  if(!res.length||!res[0].values.length){ alert('Nessuna tabella trovata.'); return; }
-  const tables=res[0].values.map(r=>r[0]);
-  if(tables.length===1){ selectTable(tables[0]); return; }
-  const tl=document.getElementById('tableList');
-  tl.innerHTML='';
-  tables.forEach(t=>{
-    const b=document.createElement('button'); b.className='tbl-btn'; b.textContent=t;
-    b.onclick=()=>{ document.getElementById('tableSelector').classList.remove('show'); selectTable(t); };
-    tl.appendChild(b);
-  });
-  document.getElementById('tableSelector').classList.add('show');
-}
-
-function selectTable(name){ currentTable=name; showMapper(name); }
-
-// ════════════════════════════════════════════
-// COLUMN MAPPER
-// ════════════════════════════════════════════
-function showMapper(table){
-  const res=sqlDb.exec(`PRAGMA table_info(${table})`);
-  if(!res.length) return;
-  const cols=res[0].values.map(r=>r[1]);
-  const auto={
-    title:   ['titolo','title','nome','name','album'],
-    artist:  ['artista','artist','autore','author','interprete'],
-    serial:  ['seriale','serial','numero','number','codice','code','nr'],
-    category:['raccolta','categoria','category','genere','genre','tipo','collana'],
-    cover:   ['copertina','cover','immagine','image','img','foto','photo','filename','file'],
-  };
-  ['mapTitle','mapArtist','mapSerial','mapCategory','mapCover'].forEach((id,i)=>{
-    const key=['title','artist','serial','category','cover'][i];
-    const sel=document.getElementById(id);
-    sel.innerHTML='<option value="">— nessuna —</option>';
-    cols.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
-    const m=cols.find(c=>auto[key].some(k=>c.toLowerCase().includes(k)));
-    if(m) sel.value=m;
-  });
-  document.getElementById('columnMapper').classList.add('show');
-}
-
-document.getElementById('mapConfirm').onclick=()=>{
-  colMap.title    = document.getElementById('mapTitle').value;
-  colMap.artist   = document.getElementById('mapArtist').value;
-  colMap.serial   = document.getElementById('mapSerial').value;
-  colMap.category = document.getElementById('mapCategory').value;
-  colMap.cover    = document.getElementById('mapCover').value;
-  if(!colMap.title){ alert('Seleziona almeno la colonna Titolo.'); return; }
-  document.getElementById('columnMapper').classList.remove('show');
-  loadAlbums();
-};
-
-// ════════════════════════════════════════════
-// ALBUMS
-// ════════════════════════════════════════════
-function loadAlbums(){
-  const fields=[colMap.title,colMap.artist,colMap.serial,colMap.category,colMap.cover].filter(Boolean).join(', ');
-  const res=sqlDb.exec(`SELECT ${fields} FROM ${currentTable}`);
-  if(!res.length){ allAlbums=[]; renderGrid(); return; }
-  const cols=res[0].columns;
-  allAlbums=res[0].values.map(row=>{
-    const o={}; cols.forEach((c,i)=>o[c]=row[i]);
-    return {title:o[colMap.title]||'',artist:o[colMap.artist]||'',serial:o[colMap.serial]||'',category:o[colMap.category]||'',coverFile:o[colMap.cover]||''};
-  });
-  renderGrid();
-  document.getElementById('statsBar').classList.add('show');
-}
-
-// ════════════════════════════════════════════
-// SEARCH & FILTER
-// ════════════════════════════════════════════
-document.getElementById('searchInput').addEventListener('input',e=>{ currentSearch=e.target.value.toLowerCase(); renderGrid(); });
-document.querySelectorAll('.filter-btn').forEach(b=>{
-  b.onclick=()=>{ document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); currentFilter=b.dataset.cat; renderGrid(); };
-});
-function filtered(){ return allAlbums.filter(a=>{ const mc=currentFilter==='all'||a.category===currentFilter; const q=currentSearch; return mc&&(!q||a.title.toLowerCase().includes(q)||a.artist.toLowerCase().includes(q)||a.serial.toLowerCase().includes(q)); }); }
-
-// ════════════════════════════════════════════
-// RENDER
-// ════════════════════════════════════════════
-function renderGrid(){
-  const list=filtered();
-  document.getElementById('countLbl').textContent=list.length;
-  document.getElementById('catLbl').textContent=currentFilter==='all'?'':currentFilter;
-  const grid=document.getElementById('albumGrid');
-  grid.innerHTML='';
-  document.getElementById('emptyState').classList.toggle('show',list.length===0&&allAlbums.length>0);
-  list.forEach((a,i)=>{
-    const card=document.createElement('div');
-    card.className='album-card'; card.style.animationDelay=(i*0.025)+'s';
-    const url=covers[a.coverFile?.toLowerCase()]||null;
-    const cc=CAT_CLASS[a.category]||'';
-    card.innerHTML=`
-      ${url?`<img class="album-cover" src="${url}" alt="${a.title}" loading="lazy">`:`<div class="album-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--border)"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`}
-      <div class="album-info">
-        ${a.category?`<div class="album-cat ${cc}">${a.category}</div>`:''}
-        <div class="album-title">${a.title}</div>
-        ${a.artist?`<div class="album-artist">${a.artist}</div>`:''}
-        ${a.serial?`<div class="album-serial">${a.serial}</div>`:''}
-      </div>`;
-    card.onclick=()=>openModal(a);
-    grid.appendChild(card);
-  });
-}
-
-// ════════════════════════════════════════════
-// MODAL
-// ════════════════════════════════════════════
-function openModal(a){
-  const url=covers[a.coverFile?.toLowerCase()]||null;
-  const cc=CAT_CLASS[a.category]||'';
-  document.getElementById('modalContent').innerHTML=`
-    ${url?`<img class="modal-cover" src="${url}" alt="${a.title}">`:`<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px;color:var(--border)"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`}
-    <div class="modal-body">
-      ${a.category?`<div class="modal-cat ${cc}">${a.category}</div>`:''}
-      <div class="modal-title">${a.title}</div>
-      ${a.artist?`<div class="modal-artist">${a.artist}</div>`:''}
-      <div class="modal-divider"></div>
-      ${a.serial?`<div class="modal-row"><span class="modal-lbl">Numero di serie</span><span class="modal-val">${a.serial}</span></div>`:''}
-      ${a.coverFile?`<div class="modal-row"><span class="modal-lbl">File copertina</span><span class="modal-val">${a.coverFile}</span></div>`:''}
-      <button class="modal-close" onclick="closeModal()">CHIUDI</button>
-    </div>`;
-  document.getElementById('modal').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeModal(){ document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
-document.getElementById('modal').onclick=e=>{ if(e.target===document.getElementById('modal')) closeModal(); };
-
-// ════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════
-function showLoading(v,msg){
-  document.getElementById('loadingState').classList.toggle('show',v);
-  if(msg) document.getElementById('loadMsg').textContent=msg;
-  if(v) document.getElementById('loginScreen').style.display='none';
-}
-</script>
-</body>
-</html>
