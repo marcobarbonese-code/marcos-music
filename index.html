@@ -6,158 +6,147 @@
 <title>Marco's Music</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0a0a0a;--surface:#141414;--surface2:#1e1e1e;--border:#2a2a2a;
-    --gold:#c9a84c;--text:#e8e0d0;--text-muted:#7a7060;
-    --accent-cs:#c9a84c;--accent-it:#e05a4e;--accent-st:#4e9de0;--accent-jz:#7cba6e;--accent-cl:#b07cd4;
-    --red:#e05a4e;--green:#7cba6e;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
-  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+:root{
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1e1e1e;--border:#2a2a2a;
+  --gold:#c9a84c;--text:#e8e0d0;--text-muted:#7a7060;
+  --cs:#c9a84c;--it:#e05a4e;--st:#4e9de0;--jz:#7cba6e;--cl:#b07cd4;
+  --red:#e05a4e;--green:#7cba6e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
 
-  /* HEADER */
-  header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,10,0.96);backdrop-filter:blur(12px);z-index:100;}
-  .header-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-  .record-icon{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:conic-gradient(from 0deg,#1a1a1a 0deg,#2a2a2a 30deg,#1a1a1a 60deg,#2a2a2a 90deg,#1a1a1a 120deg,#2a2a2a 150deg,#1a1a1a 180deg,#2a2a2a 210deg,#1a1a1a 240deg,#2a2a2a 270deg,#1a1a1a 300deg,#2a2a2a 330deg,#1a1a1a 360deg);border:2px solid var(--gold);position:relative;animation:spin 8s linear infinite;}
-  .record-icon::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--gold);}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .logo{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);flex:1;}
-  .logo span{font-style:italic;color:var(--text-muted);font-size:11px;font-family:'DM Mono',monospace;}
-  .dbx-pill{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:0.08em;cursor:pointer;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);transition:all 0.2s;white-space:nowrap;}
-  .dbx-pill:hover{border-color:var(--gold);}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all 0.3s;}
-  .dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
-  .dot.err{background:var(--red);}
-  .search-wrap{position:relative;margin-bottom:10px;}
-  .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;}
-  #searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 12px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;letter-spacing:0.02em;}
-  #searchInput:focus{border-color:var(--gold);}
-  #searchInput::placeholder{color:var(--text-muted);}
-  .filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
-  .filters::-webkit-scrollbar{display:none;}
-  .filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap;}
-  .filter-btn.active[data-cat="all"]{background:var(--gold);border-color:var(--gold);color:#000;}
-  .filter-btn.active[data-cat="Colonne Sonore"]{background:var(--accent-cs);border-color:var(--accent-cs);color:#000;}
-  .filter-btn.active[data-cat="Italiana"]{background:var(--accent-it);border-color:var(--accent-it);color:#fff;}
-  .filter-btn.active[data-cat="Straniera"]{background:var(--accent-st);border-color:var(--accent-st);color:#fff;}
-  .filter-btn.active[data-cat="Jazz"]{background:var(--accent-jz);border-color:var(--accent-jz);color:#000;}
-  .filter-btn.active[data-cat="Classica"]{background:var(--accent-cl);border-color:var(--accent-cl);color:#fff;}
+header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,10,0.96);backdrop-filter:blur(12px);z-index:100;}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.record{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:conic-gradient(from 0deg,#1a1a1a 0deg,#2a2a2a 30deg,#1a1a1a 60deg,#2a2a2a 90deg,#1a1a1a 120deg,#2a2a2a 150deg,#1a1a1a 180deg,#2a2a2a 210deg,#1a1a1a 240deg,#2a2a2a 270deg,#1a1a1a 300deg,#2a2a2a 330deg,#1a1a1a 360deg);border:2px solid var(--gold);position:relative;animation:spin 8s linear infinite;}
+.record::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--gold);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.logo{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);flex:1;}
+.dbx-pill{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:0.08em;cursor:pointer;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);transition:all 0.2s;white-space:nowrap;}
+.dbx-pill:hover{border-color:var(--gold);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all 0.3s;}
+.dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.search-wrap{position:relative;margin-bottom:10px;}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;}
+#searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 12px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
+#searchInput:focus{border-color:var(--gold);}
+#searchInput::placeholder{color:var(--text-muted);}
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.filters::-webkit-scrollbar{display:none;}
+.filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap;}
+.filter-btn.active[data-cat="all"]{background:var(--gold);border-color:var(--gold);color:#000;}
+.filter-btn.active[data-cat="Colonne Sonore"]{background:var(--cs);border-color:var(--cs);color:#000;}
+.filter-btn.active[data-cat="Italiana"]{background:var(--it);border-color:var(--it);color:#fff;}
+.filter-btn.active[data-cat="Straniera"]{background:var(--st);border-color:var(--st);color:#fff;}
+.filter-btn.active[data-cat="Jazz"]{background:var(--jz);border-color:var(--jz);color:#000;}
+.filter-btn.active[data-cat="Classica"]{background:var(--cl);border-color:var(--cl);color:#fff;}
 
-  main{padding:16px;}
+main{padding:16px;}
 
-  /* LOGIN SCREEN */
-  #loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;gap:16px;}
-  .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 24px;width:100%;max-width:320px;}
-  .login-icon{font-size:48px;margin-bottom:16px;}
-  .login-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);margin-bottom:8px;}
-  .login-sub{font-size:11px;color:var(--text-muted);line-height:1.8;margin-bottom:24px;}
-  .login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;letter-spacing:0.1em;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
-  .login-btn:hover{opacity:0.85;}
-  .login-btn svg{width:18px;height:18px;flex-shrink:0;}
-  .login-note{font-size:10px;color:var(--text-muted);margin-top:14px;line-height:1.7;}
+#loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 24px;width:100%;max-width:320px;}
+.login-icon{margin-bottom:16px;color:var(--gold);}
+.login-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);margin-bottom:8px;}
+.login-sub{font-size:11px;color:var(--text-muted);line-height:1.8;margin-bottom:24px;}
+.login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;letter-spacing:0.1em;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.login-btn:hover{opacity:0.85;}
+.login-btn svg{width:18px;height:18px;flex-shrink:0;}
+.login-note{font-size:10px;color:var(--text-muted);margin-top:14px;line-height:1.7;}
 
-  /* LOADING */
-  #loadingState{display:none;text-align:center;padding:60px 20px;color:var(--text-muted);font-size:12px;letter-spacing:0.1em;}
-  #loadingState.show{display:block;}
-  .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
-  .mini-spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
+#loadingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;gap:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.1em;}
+#loadingScreen.show{display:flex;}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+.mini-spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
 
-  /* DB BANNER */
-  #dbBanner{display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--text-muted);align-items:center;justify-content:space-between;gap:8px;}
-  #dbBanner.show{display:flex;}
-  .db-name{color:var(--gold);}
-  .ghost-btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
-  .ghost-btn:hover{border-color:var(--gold);color:var(--gold);}
+#appScreen{display:none;}
+#appScreen.show{display:block;}
 
-  /* TABLE SELECTOR */
-  #tableSelector{display:none;background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:14px;}
-  #tableSelector.show{display:block;}
-  .section-title{font-size:11px;color:var(--gold);letter-spacing:0.1em;margin-bottom:10px;}
-  .btn-list{display:flex;flex-wrap:wrap;gap:6px;}
-  .tbl-btn{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
-  .tbl-btn:hover{border-color:var(--gold);color:var(--gold);}
+#dbBanner{display:none;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--text-muted);align-items:center;justify-content:space-between;gap:8px;}
+#dbBanner.show{display:flex;}
+.db-name{color:var(--gold);}
+.ghost-btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.ghost-btn:hover{border-color:var(--gold);color:var(--gold);}
 
-  /* COLUMN MAPPER */
-  #columnMapper{display:none;background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:14px;}
-  #columnMapper.show{display:block;}
-  .map-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-  .map-lbl{font-size:11px;color:var(--text-muted);width:80px;flex-shrink:0;}
-  .map-sel{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:6px 8px;border-radius:6px;outline:none;}
-  .map-sel:focus{border-color:var(--gold);}
-  .map-confirm{width:100%;margin-top:10px;padding:10px;border-radius:6px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:0.05em;}
+#tableSelector{display:none;background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:14px;}
+#tableSelector.show{display:block;}
+.sec-title{font-size:11px;color:var(--gold);letter-spacing:0.1em;margin-bottom:10px;}
+.btn-list{display:flex;flex-wrap:wrap;gap:6px;}
+.tbl-btn{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.tbl-btn:hover{border-color:var(--gold);color:var(--gold);}
 
-  /* STATS */
-  #statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:14px;letter-spacing:0.05em;}
-  #statsBar.show{display:flex;justify-content:space-between;align-items:center;}
-  .stats-n{color:var(--gold);}
-  .covers-progress{font-size:10px;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.05em;min-height:16px;}
+#columnMapper{display:none;background:var(--surface);border:1px solid var(--gold);border-radius:8px;padding:14px;margin-bottom:14px;}
+#columnMapper.show{display:block;}
+.map-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.map-lbl{font-size:11px;color:var(--text-muted);width:80px;flex-shrink:0;}
+.map-sel{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:6px 8px;border-radius:6px;outline:none;}
+.map-sel:focus{border-color:var(--gold);}
+.map-confirm{width:100%;margin-top:10px;padding:10px;border-radius:6px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:0.05em;}
 
-  /* GRID */
-  #albumGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
-  .album-card{background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.25s;animation:fadeIn 0.3s ease both;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-  .album-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
-  .album-cover{width:100%;aspect-ratio:1;object-fit:cover;background:var(--surface2);display:block;}
-  .album-ph{width:100%;aspect-ratio:1;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--border);}
-  .album-info{padding:10px;}
-  .album-cat{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
-  .cat-cs{color:var(--accent-cs)}.cat-it{color:var(--accent-it)}.cat-st{color:var(--accent-st)}.cat-jz{color:var(--accent-jz)}.cat-cl{color:var(--accent-cl)}
-  .album-title{font-family:'Playfair Display',serif;font-size:13px;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .album-artist{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .album-serial{font-size:10px;color:var(--border);margin-top:4px;letter-spacing:0.08em;}
+#statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.05em;}
+#statsBar.show{display:flex;justify-content:space-between;align-items:center;}
+.stats-n{color:var(--gold);}
+#coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
 
-  #emptyState{display:none;text-align:center;padding:60px 20px;color:var(--text-muted);}
-  #emptyState.show{display:block;}
-  #emptyState p{font-size:13px;margin-top:8px;}
+#albumGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.album-card{background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.25s;animation:fadeIn 0.3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.album-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.album-cover{width:100%;aspect-ratio:1;object-fit:cover;background:var(--surface2);display:block;}
+.album-ph{width:100%;aspect-ratio:1;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
+.album-info{padding:10px;}
+.album-cat{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
+.cat-cs{color:var(--cs)}.cat-it{color:var(--it)}.cat-st{color:var(--st)}.cat-jz{color:var(--jz)}.cat-cl{color:var(--cl)}
+.album-title{font-family:'Playfair Display',serif;font-size:13px;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-artist{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-serial{font-size:10px;color:var(--border);margin-top:4px;letter-spacing:0.08em;}
 
-  /* DRAWER */
-  #drawer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
-  #drawer.open{display:flex;}
-  .drawer-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 20px 28px;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;}
-  @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-  .drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 20px;}
-  .drawer-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px;}
-  .drawer-sub{font-size:11px;color:var(--text-muted);margin-bottom:20px;}
-  .drawer-section{margin-bottom:18px;}
-  .drawer-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
-  .drawer-files{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;}
-  .drawer-file{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;}
-  .drawer-file:hover{border-color:var(--gold);}
-  .df-icon{font-size:18px;flex-shrink:0;}
-  .df-name{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .df-size{font-size:10px;color:var(--text-muted);flex-shrink:0;}
-  .drawer-empty{font-size:11px;color:var(--text-muted);text-align:center;padding:20px;line-height:1.6;}
-  .drawer-row{display:flex;gap:8px;margin-top:16px;}
-  .d-btn{flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
-  .d-btn:hover{border-color:var(--text-muted);color:var(--text);}
-  .d-btn.danger{border-color:var(--red);color:var(--red);}
-  .d-btn.danger:hover{background:rgba(224,90,78,0.1);}
+#emptyState{display:none;text-align:center;padding:60px 20px;color:var(--text-muted);}
+#emptyState.show{display:block;}
+#emptyState p{font-size:13px;margin-top:8px;}
 
-  /* MODAL */
-  #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
-  #modal.open{display:flex;}
-  .modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-  .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
-  .modal-cover{width:100%;max-height:260px;object-fit:cover;display:block;}
-  .modal-ph{width:100%;height:180px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:60px;}
-  .modal-body{padding:20px;}
-  .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
-  .modal-title{font-family:'Playfair Display',serif;font-size:24px;line-height:1.2;margin-bottom:6px;}
-  .modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:16px;}
-  .modal-divider{height:1px;background:var(--border);margin:14px 0;}
-  .modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
-  .modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
-  .modal-val{font-size:13px;color:var(--text);}
-  .modal-close{width:100%;margin-top:14px;margin-bottom:8px;padding:14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;}
-  .modal-close:hover{border-color:var(--gold);color:var(--gold);}
+#drawer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#drawer.open{display:flex;}
+.drawer-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 20px 28px;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 20px;}
+.drawer-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px;}
+.drawer-sub{font-size:11px;color:var(--text-muted);margin-bottom:20px;}
+.drawer-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+.drawer-files{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;margin-bottom:20px;}
+.drawer-file{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;}
+.drawer-file:hover{border-color:var(--gold);}
+.df-name{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.df-size{font-size:10px;color:var(--text-muted);flex-shrink:0;}
+.drawer-empty{font-size:11px;color:var(--text-muted);text-align:center;padding:20px;line-height:1.6;}
+.drawer-row{display:flex;gap:8px;}
+.d-btn{flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.d-btn:hover{border-color:var(--text-muted);color:var(--text);}
+.d-btn.danger{border-color:var(--red);color:var(--red);}
+.d-btn.danger:hover{background:rgba(224,90,78,0.1);}
+
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#modal.open{display:flex;}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+.modal-cover{width:100%;max-height:260px;object-fit:cover;display:block;}
+.modal-ph{width:100%;height:180px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
+.modal-body{padding:20px;}
+.modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:24px;line-height:1.2;margin-bottom:6px;}
+.modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:16px;}
+.modal-divider{height:1px;background:var(--border);margin:14px 0;}
+.modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
+.modal-val{font-size:13px;color:var(--text);}
+.modal-close{width:100%;margin-top:14px;margin-bottom:8px;padding:14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;}
+.modal-close:hover{border-color:var(--gold);color:var(--gold);}
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-top">
-    <div class="record-icon"></div>
+    <div class="record"></div>
     <div class="logo">Marco's Music</div>
     <div class="dbx-pill" id="dbxPill">
       <div class="dot" id="dbxDot"></div>
@@ -166,7 +155,7 @@
   </div>
   <div class="search-wrap">
     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="searchInput" placeholder="Cerca titolo, artista, seriale…" autocomplete="off" autocorrect="off" spellcheck="false">
+    <input type="text" id="searchInput" placeholder="Cerca titolo, artista, seriale..." autocomplete="off" spellcheck="false">
   </div>
   <div class="filters">
     <button class="filter-btn active" data-cat="all">Tutti</button>
@@ -179,63 +168,64 @@
 </header>
 
 <main>
-  <!-- LOGIN SCREEN -->
+  <!-- LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
-      <div class="login-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px;color:var(--gold)"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
-      <div class="login-title">La Mia Collezione</div>
-      <div class="login-sub">Collega il tuo Dropbox per accedere<br>al database degli album e alle copertine.</div>
+      <div class="login-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px">
+          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+      </div>
+      <div class="login-title">Marco's Music</div>
+      <div class="login-sub">Collega il tuo Dropbox per accedere alla collezione.</div>
       <button class="login-btn" id="loginBtn">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2L0 6l6 4-6 4 6 4 6-4-6-4 6-4zm12 0l6 4-6 4 6 4-6 4-6-4 6-4-6-4zm-6 13l-6-4 6-4 6 4z"/></svg>
         ACCEDI CON DROPBOX
       </button>
-      <div class="login-note">L'accesso è sicuro tramite OAuth 2.<br>Nessuna password viene salvata.</div>
+      <div class="login-note">Accesso sicuro tramite OAuth 2.</div>
     </div>
   </div>
 
   <!-- LOADING -->
-  <div id="loadingState">
+  <div id="loadingScreen">
     <div class="spinner"></div>
-    <span id="loadMsg">Caricamento…</span>
+    <span id="loadMsg">Caricamento...</span>
   </div>
 
-  <!-- DB BANNER -->
-  <div id="dbBanner">
-    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg> <span class="db-name" id="dbName"></span></span>
-    <button class="ghost-btn" id="changeDb">Cambia DB</button>
-  </div>
-
-  <!-- TABLE SELECTOR -->
-  <div id="tableSelector">
-    <div class="section-title">SELEZIONA LA TABELLA</div>
-    <div class="btn-list" id="tableList"></div>
-  </div>
-
-  <!-- COLUMN MAPPER -->
-  <div id="columnMapper">
-    <div class="section-title">COLLEGA LE COLONNE</div>
-    <div class="map-row"><span class="map-lbl">Titolo</span><select class="map-sel" id="mapTitle"></select></div>
-    <div class="map-row"><span class="map-lbl">Artista</span><select class="map-sel" id="mapArtist"></select></div>
-    <div class="map-row"><span class="map-lbl">Seriale</span><select class="map-sel" id="mapSerial"></select></div>
-    <div class="map-row"><span class="map-lbl">Raccolta</span><select class="map-sel" id="mapCategory"></select></div>
-    <div class="map-row"><span class="map-lbl">Copertina</span><select class="map-sel" id="mapCover"></select></div>
-    <button class="map-confirm" id="mapConfirm">CONFERMA E CARICA</button>
-  </div>
-
-  <!-- STATS -->
-  <div id="statsBar">
-    <span><span class="stats-n" id="countLbl">0</span> album</span>
-    <span id="catLbl"></span>
-  </div>
-  <div class="covers-progress" id="coversProgress"></div>
-
-  <!-- GRID -->
-  <div id="albumGrid"></div>
-
-  <!-- EMPTY -->
-  <div id="emptyState">
-    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
-    <p>Nessun album trovato</p>
+  <!-- APP -->
+  <div id="appScreen">
+    <div id="dbBanner">
+      <span style="display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+        <span class="db-name" id="dbName"></span>
+      </span>
+      <button class="ghost-btn" id="changeDb">Cambia DB</button>
+    </div>
+    <div id="tableSelector">
+      <div class="sec-title">SELEZIONA LA TABELLA</div>
+      <div class="btn-list" id="tableList"></div>
+    </div>
+    <div id="columnMapper">
+      <div class="sec-title">COLLEGA LE COLONNE</div>
+      <div class="map-row"><span class="map-lbl">Titolo</span><select class="map-sel" id="mapTitle"></select></div>
+      <div class="map-row"><span class="map-lbl">Artista</span><select class="map-sel" id="mapArtist"></select></div>
+      <div class="map-row"><span class="map-lbl">Seriale</span><select class="map-sel" id="mapSerial"></select></div>
+      <div class="map-row"><span class="map-lbl">Raccolta</span><select class="map-sel" id="mapCategory"></select></div>
+      <div class="map-row"><span class="map-lbl">Copertina</span><select class="map-sel" id="mapCover"></select></div>
+      <button class="map-confirm" id="mapConfirm">CONFERMA E CARICA</button>
+    </div>
+    <div id="statsBar">
+      <span><span class="stats-n" id="countLbl">0</span> album</span>
+      <span id="catLbl"></span>
+    </div>
+    <div id="coversProgress"></div>
+    <div id="albumGrid"></div>
+    <div id="emptyState">
+      <div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <p>Nessun album trovato</p>
+    </div>
   </div>
 </main>
 
@@ -245,11 +235,9 @@
     <div class="drawer-handle"></div>
     <div class="drawer-title">Dropbox</div>
     <div class="drawer-sub">Connesso come <strong id="drawerUser" style="color:var(--gold)"></strong></div>
-    <div class="drawer-section">
-      <div class="drawer-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:11px;height:11px;vertical-align:middle;margin-right:4px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg> File database in /MarcosMusic/</div>
-      <div class="drawer-files" id="drawerFiles">
-        <div class="drawer-empty"><span class="mini-spin"></span>Caricamento…</div>
-      </div>
+    <div class="drawer-lbl">File database</div>
+    <div class="drawer-files" id="drawerFiles">
+      <div class="drawer-empty"><span class="mini-spin"></span> Caricamento...</div>
     </div>
     <div class="drawer-row">
       <button class="d-btn" id="drawerClose">Chiudi</button>
@@ -266,254 +254,449 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 <script>
-// IMMEDIATE TEST - runs before anything else
-console.log("Script started");
-window.addEventListener('DOMContentLoaded', function(){
-  console.log("DOM ready");
-  var btn = document.getElementById('loginBtn');
-  if(btn){
-    console.log("Button found");
-    btn.addEventListener('click', function(){
-      alert("Click OK! Avvio OAuth...");
-    });
-  } else {
-    console.log("Button NOT found");
-  }
-});
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js" onerror="alert('SQL.js non caricato!')"></script>
-<script>
-// ════════════════════════════════════════════
-// CONFIG
-// ════════════════════════════════════════════
-const APP_KEY     = 'oubwvxo6i8vh7y6';
-const APP_SECRET  = '4561uu15f0gmtp7';
-const REDIRECT    = 'https://marcobarbonese-code.github.io/marcos-music/';
-const DB_FOLDER   = "/MarcosMusic";
-const COVERS_PATH = "/MarcosMusic/files";
-const DB_FILENAME = 'data.db';
-const API  = 'https://api.dropboxapi.com/2';
-const CONT = 'https://content.dropboxapi.com/2';
+// ── CONFIG ──────────────────────────────────────────────────────
+const APP_KEY    = 'oubwvxo6i8vh7y6';
+const APP_SECRET = '4561uu15f0gmtp7';
+const REDIRECT   = 'https://marcobarbonese-code.github.io/marcos-music/';
+const DB_FOLDER  = '/MarcosMusic';
+const DB_FILE    = 'data.db';
+const COVERS_DIR = '/MarcosMusic/files';
+const API        = 'https://api.dropboxapi.com/2';
+const CONTENT    = 'https://content.dropboxapi.com/2';
+const CAT_CLASS  = {'Colonne Sonore':'cat-cs','Italiana':'cat-it','Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'};
 
-// ════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════
-let sqlDb;
-let accessToken  = '';
+// ── STATE ───────────────────────────────────────────────────────
+let SQL = null;
+let sqlDb = null;
+let accessToken = '';
 let refreshToken = '';
-let tokenExpiry  = 0;
-let allAlbums = [], covers = {};
-let currentFilter = 'all', currentSearch = '';
+let tokenExpiry = 0;
+let allAlbums = [];
+let covers = {};
+let currentFilter = 'all';
+let currentSearch = '';
 let colMap = {title:'',artist:'',serial:'',category:'',cover:''};
 let currentTable = '';
-const CAT_CLASS = {'Colonne Sonore':'cat-cs','Italiana':'cat-it','Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'};
 
-// ════════════════════════════════════════════
-// BOOT
-// ════════════════════════════════════════════
-// OAuth check runs immediately before SQL.js
-let SQL;
-initSqlJs({locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`})
-  .then(s=>{ SQL=s; });
+// ── SQL.JS ──────────────────────────────────────────────────────
+initSqlJs({locateFile: f => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f})
+  .then(s => { SQL = s; })
+  .catch(e => console.error('SQL.js error:', e));
 
-(async function boot(){
-  const params = new URLSearchParams(window.location.search);
-  const code  = params.get('code');
-  const state = params.get('state');
-  const err   = params.get('error');
+// ── SCREENS ─────────────────────────────────────────────────────
+function showLogin()   { document.getElementById('loginScreen').style.display='flex'; document.getElementById('loadingScreen').classList.remove('show'); document.getElementById('appScreen').classList.remove('show'); }
+function showLoading(msg) { document.getElementById('loginScreen').style.display='none'; document.getElementById('loadingScreen').classList.add('show'); document.getElementById('appScreen').classList.remove('show'); document.getElementById('loadMsg').textContent = msg || 'Caricamento...'; }
+function showApp()     { document.getElementById('loginScreen').style.display='none'; document.getElementById('loadingScreen').classList.remove('show'); document.getElementById('appScreen').classList.add('show'); }
 
-  if(err){
+// ── BOOT ────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  var params = new URLSearchParams(window.location.search);
+  var code  = params.get('code');
+  var state = params.get('state');
+
+  if (code && state) {
     window.history.replaceState({}, '', REDIRECT);
-    showLoginScreen();
-    return;
-  }
-
-  if(code && state){
-    window.history.replaceState({}, '', REDIRECT);
-    const savedState   = localStorage.getItem('oauth_state');
-    const codeVerifier = localStorage.getItem('code_verifier');
+    var savedState   = localStorage.getItem('oauth_state');
+    var codeVerifier = localStorage.getItem('code_verifier');
     localStorage.removeItem('oauth_state');
     localStorage.removeItem('code_verifier');
-    showLoading(true, 'Connessione a Dropbox...');
-    if(!codeVerifier || state !== savedState){
-      showLoginScreen();
-      alert('Errore OAuth: riprova il login.');
+    if (!codeVerifier || state !== savedState) {
+      showLogin();
       return;
     }
-    await exchangeCode(code, codeVerifier);
+    showLoading('Connessione a Dropbox...');
+    exchangeCode(code, codeVerifier);
     return;
   }
 
-  const saved = loadSavedTokens();
-  if(saved){
-    showLoading(true, 'Connessione...');
-    const ok = await ensureValidToken();
-    if(ok){ await onConnected(); return; }
-  }
-
-  showLoginScreen();
-})();
-
-function showLoginScreen(){
-  document.getElementById('loginScreen').style.display = 'flex';
-  showLoading(false);
-}
-
-// ════════════════════════════════════════════
-// PKCE HELPERS
-// ════════════════════════════════════════════
-function randomBase64(len){
-  const arr = new Uint8Array(len);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-
-async function sha256Base64(str){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-
-// ════════════════════════════════════════════
-// OAUTH LOGIN
-// ════════════════════════════════════════════
-document.getElementById('loginBtn').onclick = async ()=>{ alert('Click registrato! APP_KEY: ' + APP_KEY + ' REDIRECT: ' + REDIRECT);
-  const verifier  = randomBase64(64);
-  const challenge = await sha256Base64(verifier);
-  const state     = randomBase64(16);
-
-  localStorage.setItem('code_verifier', verifier);
-  localStorage.setItem('oauth_state', state);
-
-  const url = new URL('https://www.dropbox.com/oauth2/authorize');
-  url.searchParams.set('client_id', APP_KEY);
-  url.searchParams.set('response_type', 'code');
-  url.searchParams.set('redirect_uri', REDIRECT);
-  url.searchParams.set('code_challenge', challenge);
-  url.searchParams.set('code_challenge_method', 'S256');
-  url.searchParams.set('state', state);
-  url.searchParams.set('token_access_type', 'offline'); // → refresh token!
-
-  window.location.href = url.toString();
-};
-
-async function exchangeCode(code, verifier){
-  try{
-    const r = await fetch('https://api.dropbox.com/oauth2/token', {
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body: new URLSearchParams({
-        code,
-        grant_type: 'authorization_code',
-        client_id: APP_KEY,
-        client_secret: APP_SECRET,
-        redirect_uri: REDIRECT,
-        code_verifier: verifier,
-      })
-    });
-    const d = await r.json();
-    if(!d.access_token) throw new Error('no token');
-    saveTokens(d);
-    await onConnected();
-  } catch(e){
-    showLoading(false);
-    showLoginScreen();
-    alert('Errore di autenticazione. Riprova.');
-  }
-}
-
-// ════════════════════════════════════════════
-// TOKEN MANAGEMENT
-// ════════════════════════════════════════════
-function saveTokens(d){
-  accessToken  = d.access_token;
-  refreshToken = d.refresh_token || refreshToken;
-  tokenExpiry  = Date.now() + (d.expires_in || 14400) * 1000 - 60000;
-  localStorage.setItem('dbx_access',  accessToken);
-  localStorage.setItem('dbx_refresh', refreshToken);
-  localStorage.setItem('dbx_expiry',  tokenExpiry);
-}
-
-function loadSavedTokens(){
+  // Try saved tokens
   accessToken  = localStorage.getItem('dbx_access')  || '';
   refreshToken = localStorage.getItem('dbx_refresh') || '';
   tokenExpiry  = parseInt(localStorage.getItem('dbx_expiry') || '0');
-  return !!refreshToken;
+
+  if (refreshToken) {
+    showLoading('Connessione...');
+    ensureValidToken().then(function(ok) {
+      if (ok) { onConnected(); }
+      else    { showLogin(); }
+    });
+    return;
+  }
+
+  showLogin();
+});
+
+// ── PKCE ────────────────────────────────────────────────────────
+function randomBase64(len) {
+  var arr = new Uint8Array(len);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode.apply(null, arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
 }
 
-async function ensureValidToken(){
-  if(accessToken && Date.now() < tokenExpiry) return true;
-  if(!refreshToken) return false;
-  try{
-    const r = await fetch('https://api.dropbox.com/oauth2/token',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-        client_id: APP_KEY,
-        client_secret: APP_SECRET,
-      })
-    });
-    const d = await r.json();
-    if(!d.access_token) return false;
+function sha256Base64(str) {
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf) {
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  });
+}
+
+// ── LOGIN BUTTON ────────────────────────────────────────────────
+document.getElementById('loginBtn').addEventListener('click', function() {
+  var verifier = randomBase64(64);
+  var state    = randomBase64(16);
+  localStorage.setItem('code_verifier', verifier);
+  localStorage.setItem('oauth_state', state);
+
+  sha256Base64(verifier).then(function(challenge) {
+    var url = 'https://www.dropbox.com/oauth2/authorize'
+      + '?client_id='             + encodeURIComponent(APP_KEY)
+      + '&response_type=code'
+      + '&redirect_uri='          + encodeURIComponent(REDIRECT)
+      + '&code_challenge='        + encodeURIComponent(challenge)
+      + '&code_challenge_method=S256'
+      + '&state='                 + encodeURIComponent(state)
+      + '&token_access_type=offline';
+    window.location.href = url;
+  });
+});
+
+// ── EXCHANGE CODE ───────────────────────────────────────────────
+function exchangeCode(code, verifier) {
+  fetch('https://api.dropbox.com/oauth2/token', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'code='             + encodeURIComponent(code)
+        + '&grant_type=authorization_code'
+        + '&client_id='       + encodeURIComponent(APP_KEY)
+        + '&client_secret='   + encodeURIComponent(APP_SECRET)
+        + '&redirect_uri='    + encodeURIComponent(REDIRECT)
+        + '&code_verifier='   + encodeURIComponent(verifier)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (!d.access_token) { showLogin(); alert('Errore login. Riprova.'); return; }
+    saveTokens(d);
+    onConnected();
+  })
+  .catch(function() { showLogin(); alert('Errore di rete. Riprova.'); });
+}
+
+// ── TOKEN MANAGEMENT ────────────────────────────────────────────
+function saveTokens(d) {
+  accessToken  = d.access_token;
+  if (d.refresh_token) refreshToken = d.refresh_token;
+  tokenExpiry  = Date.now() + ((d.expires_in || 14400) * 1000) - 60000;
+  localStorage.setItem('dbx_access',  accessToken);
+  localStorage.setItem('dbx_refresh', refreshToken);
+  localStorage.setItem('dbx_expiry',  String(tokenExpiry));
+}
+
+function ensureValidToken() {
+  if (accessToken && Date.now() < tokenExpiry) return Promise.resolve(true);
+  if (!refreshToken) return Promise.resolve(false);
+  return fetch('https://api.dropbox.com/oauth2/token', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'grant_type=refresh_token'
+        + '&refresh_token=' + encodeURIComponent(refreshToken)
+        + '&client_id='     + encodeURIComponent(APP_KEY)
+        + '&client_secret=' + encodeURIComponent(APP_SECRET)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (!d.access_token) return false;
     saveTokens(d);
     return true;
-  } catch{ return false; }
+  })
+  .catch(function() { return false; });
 }
 
-// ════════════════════════════════════════════
-// CONNECTED
-// ════════════════════════════════════════════
-async function onConnected(){
-  try{
-    const r = await dbxPost(`${API}/users/get_current_account`, null);
-    const u = await r.json();
-    document.getElementById('loginScreen').style.display = 'none';
-    showLoading(false);
+// ── DROPBOX API ─────────────────────────────────────────────────
+function dbxPost(url, body) {
+  return ensureValidToken().then(function() {
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': body ? 'application/json' : 'application/x-www-form-urlencoded',
+      },
+      body: body ? JSON.stringify(body) : null,
+    });
+  });
+}
+
+function dbxDownload(path) {
+  return ensureValidToken().then(function() {
+    return fetch(CONTENT + '/files/download', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Dropbox-API-Arg': JSON.stringify({path: path}),
+      },
+    });
+  });
+}
+
+// ── ON CONNECTED ────────────────────────────────────────────────
+function onConnected() {
+  dbxPost(API + '/users/get_current_account', null)
+  .then(function(r) { return r.json(); })
+  .then(function(u) {
     document.getElementById('dbxDot').className = 'dot ok';
-    const name = u.name?.display_name?.split(' ')[0] || 'Marco';
+    var name = (u.name && u.name.display_name) ? u.name.display_name.split(' ')[0] : 'Marco';
     document.getElementById('dbxLabel').textContent = name;
-    document.getElementById('drawerUser').textContent = u.name?.display_name || '';
-    await autoLoadDb();
-  } catch{
-    showLoading(false);
-    showLoginScreen();
-  }
+    document.getElementById('drawerUser').textContent = (u.name && u.name.display_name) || '';
+    showApp();
+    autoLoadDb();
+  })
+  .catch(function() { showLogin(); });
 }
 
-// ════════════════════════════════════════════
-// AUTO LOAD data.db
-// ════════════════════════════════════════════
-async function autoLoadDb(){
-  showLoading(true, 'Caricamento ' + DB_FILENAME + '...');
-  try{
-    await ensureValidToken();
-    // Try direct path first
-    const directPath = DB_FOLDER + '/' + DB_FILENAME;
-    let r = await dbxDownload(directPath);
-    // If direct path fails, search
-    if(!r.ok){
-      const searchRes = await dbxPost(API + '/files/search_v2',{
-        query: DB_FILENAME, options:{filename_only:true}
-      });
-      const searchData = await searchRes.json();
-      const found = (searchData.matches||[])
-        .map(m=>m.metadata?.metadata)
-        .find(f=>f&&f['.tag']==='file'&&f.name.toLowerCase()===DB_FILENAME.toLowerCase());
-      if(!found){
-        // Last resort: list root
-        const listRes = await dbxPost(API + '/files/list_folder',{path:'', recursive:true});
-        const listData = await listRes.json();
-        const foundInList = (listData.entries||[]).find(e=>e['.tag']==='file'&&e.name.toLowerCase()===DB_FILENAME.toLowerCase());
-        if(foundInList){
-          r = await dbxDownload(foundInList.path_lower);
-        } else {
-          throw new Error('File ' + DB_FILENAME + ' non trovato. Percorsi cercati: ' + directPath);
-        }
-      } else {
-        r = await dbxDownload(found.path_lower);
-      }
-    }
-    if(!r.ok) throw new Error('Download fallito: ' + r.status);
+// ── AUTO LOAD DB ────────────────────────────────────────────────
+function autoLoadDb() {
+  showLoading('Caricamento ' + DB_FILE + '...');
+  var directPath = DB_FOLDER + '/' + DB_FILE;
+  dbxDownload(directPath)
+  .then(function(r) {
+    if (r.ok) return r;
+    // fallback: search
+    return dbxPost(API + '/files/search_v2', {query: DB_FILE, options:{filename_only:true}})
+    .then(function(sr) { return sr.json(); })
+    .then(function(sd) {
+      var found = (sd.matches||[]).map(function(m){return m.metadata && m.metadata.metadata;}).filter(function(f){return f && f['.tag']==='file' && f.name.toLowerCase()===DB_FILE.toLowerCase();})[0];
+      if (!found) throw new Error('File ' + DB_FILE + ' non trovato in ' + DB_FOLDER);
+      return dbxDownload(found.path_lower);
+    });
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('Download fallito: ' + r.status);
+    return r.arrayBuffer();
+  })
+  .then(function(buf) {
+    if (!SQL) throw new Error('SQL.js non pronto');
+    sqlDb = new SQL.Database(new Uint8Array(buf));
+    document.getElementById('dbName').textContent = DB_FILE;
+    document.getElementById('dbBanner').classList.add('show');
+    showApp();
+    showTables();
+    loadCovers();
+  })
+  .catch(function(e) {
+    showApp();
+    document.getElementById('drawerFiles').innerHTML = '<div class="drawer-empty">' + e.message + '<br><br>Verifica che il file sia in /MarcosMusic/</div>';
+    document.getElementById('drawer').classList.add('open');
+    listDbFiles();
+  });
+}
 
+// ── LIST DB FILES ───────────────────────────────────────────────
+function listDbFiles() {
+  var df = document.getElementById('drawerFiles');
+  df.innerHTML = '<div class="drawer-empty"><span class="mini-spin"></span> Ricerca...</div>';
+  dbxPost(API + '/files/search_v2', {query:'db', options:{filename_only:true, file_extensions:['db','sqlite','sqlite3']}})
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var files = (d.matches||[]).map(function(m){return m.metadata&&m.metadata.metadata;}).filter(function(f){return f&&f['.tag']==='file'&&/\.(db|sqlite|sqlite3)$/i.test(f.name);});
+    if (!files.length) { df.innerHTML='<div class="drawer-empty">Nessun file .db trovato.</div>'; return; }
+    df.innerHTML = '';
+    files.forEach(function(f) {
+      var row = document.createElement('div');
+      row.className = 'drawer-file';
+      row.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="df-name">' + f.name + '</span><span class="df-size">' + fmtSize(f.size) + '</span>';
+      row.addEventListener('click', function() { document.getElementById('drawer').classList.remove('open'); loadDb(f.path_lower, f.name); });
+      df.appendChild(row);
+    });
+  })
+  .catch(function(e) { df.innerHTML='<div class="drawer-empty">Errore: '+e.message+'</div>'; });
+}
+
+function fmtSize(b) { return b>1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(0)+' KB'; }
+
+// ── LOAD DB ─────────────────────────────────────────────────────
+function loadDb(path, name) {
+  showLoading('Download ' + name + '...');
+  dbxDownload(path)
+  .then(function(r) { if(!r.ok) throw new Error('download failed'); return r.arrayBuffer(); })
+  .then(function(buf) {
+    if (!SQL) throw new Error('SQL.js non pronto');
+    sqlDb = new SQL.Database(new Uint8Array(buf));
+    document.getElementById('dbName').textContent = name;
+    document.getElementById('dbBanner').classList.add('show');
+    showApp();
+    showTables();
+    loadCovers();
+  })
+  .catch(function(e) { showApp(); alert('Errore: ' + e.message); });
+}
+
+// ── LOAD COVERS ─────────────────────────────────────────────────
+function loadCovers() {
+  var prog = document.getElementById('coversProgress');
+  prog.innerHTML = '<span class="mini-spin"></span> Caricamento copertine...';
+  dbxPost(API + '/files/list_folder', {path: COVERS_DIR, recursive: false})
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    var imgs = (d.entries||[]).filter(function(e){return e['.tag']==='file'&&/\.(jpg|jpeg|png|gif|webp)$/i.test(e.name);});
+    if (!imgs.length) { prog.textContent=''; return; }
+    var done = 0;
+    prog.textContent = 'Copertine: 0 / ' + imgs.length;
+    function loadNext(i) {
+      if (i >= imgs.length) { prog.textContent = done + ' copertine caricate'; setTimeout(function(){prog.textContent='';}, 3000); return; }
+      dbxDownload(imgs[i].path_lower)
+      .then(function(r) { return r.ok ? r.blob() : null; })
+      .then(function(blob) {
+        if (blob) { covers[imgs[i].name.toLowerCase()] = URL.createObjectURL(blob); done++; }
+        prog.textContent = 'Copertine: ' + done + ' / ' + imgs.length;
+        if (done % 10 === 0) renderGrid();
+        loadNext(i + 1);
+      })
+      .catch(function() { loadNext(i + 1); });
+    }
+    loadNext(0);
+  })
+  .catch(function() { prog.textContent = ''; });
+}
+
+// ── DRAWER ──────────────────────────────────────────────────────
+document.getElementById('dbxPill').addEventListener('click', function() { if(accessToken){document.getElementById('drawer').classList.add('open'); listDbFiles();}});
+document.getElementById('drawerClose').addEventListener('click', function() { document.getElementById('drawer').classList.remove('open'); });
+document.getElementById('changeDb').addEventListener('click', function() { document.getElementById('drawer').classList.add('open'); listDbFiles(); });
+document.getElementById('drawer').addEventListener('click', function(e) { if(e.target===document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open'); });
+document.getElementById('drawerLogout').addEventListener('click', function() {
+  localStorage.clear();
+  accessToken=''; refreshToken=''; tokenExpiry=0;
+  allAlbums=[]; covers={}; sqlDb=null;
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('dbxDot').className='dot';
+  document.getElementById('dbxLabel').textContent='Dropbox';
+  document.getElementById('albumGrid').innerHTML='';
+  ['statsBar','dbBanner','columnMapper','tableSelector'].forEach(function(id){document.getElementById(id).classList.remove('show');});
+  showLogin();
+});
+
+// ── TABLE SELECTION ─────────────────────────────────────────────
+function showTables() {
+  var res = sqlDb.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+  if (!res.length || !res[0].values.length) { alert('Nessuna tabella trovata.'); return; }
+  var tables = res[0].values.map(function(r){return r[0];});
+  if (tables.length === 1) { selectTable(tables[0]); return; }
+  var tl = document.getElementById('tableList');
+  tl.innerHTML = '';
+  tables.forEach(function(t) {
+    var b = document.createElement('button'); b.className='tbl-btn'; b.textContent=t;
+    b.addEventListener('click', function(){document.getElementById('tableSelector').classList.remove('show'); selectTable(t);});
+    tl.appendChild(b);
+  });
+  document.getElementById('tableSelector').classList.add('show');
+}
+
+function selectTable(name) { currentTable=name; showMapper(name); }
+
+// ── COLUMN MAPPER ───────────────────────────────────────────────
+function showMapper(table) {
+  var res = sqlDb.exec('PRAGMA table_info(' + table + ')');
+  if (!res.length) return;
+  var cols = res[0].values.map(function(r){return r[1];});
+  var auto = {title:['titolo','title','nome','name','album'],artist:['artista','artist','autore','author','interprete'],serial:['seriale','serial','numero','number','codice','code','nr'],category:['raccolta','categoria','category','genere','genre','tipo','collana'],cover:['copertina','cover','immagine','image','img','foto','photo','filename','file']};
+  ['mapTitle','mapArtist','mapSerial','mapCategory','mapCover'].forEach(function(id,i){
+    var key=['title','artist','serial','category','cover'][i];
+    var sel=document.getElementById(id);
+    sel.innerHTML='<option value="">-- nessuna --</option>';
+    cols.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+    var m=cols.find(function(c){return auto[key].some(function(k){return c.toLowerCase().indexOf(k)!==-1;});});
+    if(m) sel.value=m;
+  });
+  document.getElementById('columnMapper').classList.add('show');
+}
+
+document.getElementById('mapConfirm').addEventListener('click', function() {
+  colMap.title    = document.getElementById('mapTitle').value;
+  colMap.artist   = document.getElementById('mapArtist').value;
+  colMap.serial   = document.getElementById('mapSerial').value;
+  colMap.category = document.getElementById('mapCategory').value;
+  colMap.cover    = document.getElementById('mapCover').value;
+  if (!colMap.title) { alert('Seleziona almeno la colonna Titolo.'); return; }
+  document.getElementById('columnMapper').classList.remove('show');
+  loadAlbums();
+});
+
+// ── LOAD ALBUMS ─────────────────────────────────────────────────
+function loadAlbums() {
+  var fields = [colMap.title,colMap.artist,colMap.serial,colMap.category,colMap.cover].filter(Boolean).join(', ');
+  var res = sqlDb.exec('SELECT ' + fields + ' FROM ' + currentTable);
+  if (!res.length) { allAlbums=[]; renderGrid(); return; }
+  var cols = res[0].columns;
+  allAlbums = res[0].values.map(function(row) {
+    var o={}; cols.forEach(function(c,i){o[c]=row[i];});
+    return {title:o[colMap.title]||'',artist:o[colMap.artist]||'',serial:o[colMap.serial]||'',category:o[colMap.category]||'',coverFile:o[colMap.cover]||''};
+  });
+  renderGrid();
+  document.getElementById('statsBar').classList.add('show');
+}
+
+// ── SEARCH & FILTER ─────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', function(e){currentSearch=e.target.value.toLowerCase();renderGrid();});
+document.querySelectorAll('.filter-btn').forEach(function(b){
+  b.addEventListener('click', function(){document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active');});b.classList.add('active');currentFilter=b.dataset.cat;renderGrid();});
+});
+function filtered() {
+  return allAlbums.filter(function(a){
+    var mc = currentFilter==='all' || a.category===currentFilter;
+    var q  = currentSearch;
+    return mc && (!q || a.title.toLowerCase().indexOf(q)!==-1 || a.artist.toLowerCase().indexOf(q)!==-1 || a.serial.toLowerCase().indexOf(q)!==-1);
+  });
+}
+
+// ── RENDER ──────────────────────────────────────────────────────
+function renderGrid() {
+  var list = filtered();
+  document.getElementById('countLbl').textContent = list.length;
+  document.getElementById('catLbl').textContent = currentFilter==='all' ? '' : currentFilter;
+  var grid = document.getElementById('albumGrid');
+  grid.innerHTML = '';
+  document.getElementById('emptyState').classList.toggle('show', list.length===0 && allAlbums.length>0);
+  list.forEach(function(a, i) {
+    var card = document.createElement('div');
+    card.className = 'album-card';
+    card.style.animationDelay = (i*0.025) + 's';
+    var url = a.coverFile ? (covers[a.coverFile.toLowerCase()] || null) : null;
+    var cc  = CAT_CLASS[a.category] || '';
+    card.innerHTML =
+      (url ? '<img class="album-cover" src="'+url+'" alt="'+a.title+'" loading="lazy">'
+           : '<div class="album-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
+      '<div class="album-info">' +
+        (a.category ? '<div class="album-cat '+cc+'">'+a.category+'</div>' : '') +
+        '<div class="album-title">'+a.title+'</div>' +
+        (a.artist ? '<div class="album-artist">'+a.artist+'</div>' : '') +
+        (a.serial ? '<div class="album-serial">'+a.serial+'</div>' : '') +
+      '</div>';
+    card.addEventListener('click', function(){openModal(a);});
+    grid.appendChild(card);
+  });
+}
+
+// ── MODAL ───────────────────────────────────────────────────────
+function openModal(a) {
+  var url = a.coverFile ? (covers[a.coverFile.toLowerCase()] || null) : null;
+  var cc  = CAT_CLASS[a.category] || '';
+  document.getElementById('modalContent').innerHTML =
+    (url ? '<img class="modal-cover" src="'+url+'" alt="'+a.title+'">'
+         : '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
+    '<div class="modal-body">' +
+      (a.category ? '<div class="modal-cat '+cc+'">'+a.category+'</div>' : '') +
+      '<div class="modal-title">'+a.title+'</div>' +
+      (a.artist ? '<div class="modal-artist">'+a.artist+'</div>' : '') +
+      '<div class="modal-divider"></div>' +
+      (a.serial ? '<div class="modal-row"><span class="modal-lbl">Numero di serie</span><span class="modal-val">'+a.serial+'</span></div>' : '') +
+      '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
+    '</div>';
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('modal').addEventListener('click', function(e){if(e.target===document.getElementById('modal'))closeModal();});
+</script>
+</body>
+</html>
