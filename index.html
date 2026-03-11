@@ -402,9 +402,17 @@ function loadDatabase(){
     return r.arrayBuffer();
   })
   .then(function(buf){
-    if (!SQL) throw new Error('SQL.js non pronto');
-    sqlDb = new SQL.Database(new Uint8Array(buf));
-    loadSymphytumData();
+    function tryInit(buf, attempts){
+      if (SQL) {
+        sqlDb = new SQL.Database(new Uint8Array(buf));
+        loadSymphytumData();
+      } else if (attempts > 0) {
+        setTimeout(function(){ tryInit(buf, attempts-1); }, 300);
+      } else {
+        showApp(); alert('SQL.js non caricato. Ricarica la pagina.');
+      }
+    }
+    tryInit(buf, 20);
   })
   .catch(function(e){
     showApp();
