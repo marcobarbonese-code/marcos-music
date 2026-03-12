@@ -224,9 +224,21 @@ var currentFilter = 'all';
 var currentSearch = '';
 
 // ── SQL.JS ───────────────────────────────────────────────
+var sqlJsReady = false;
+var sqlJsCallbacks = [];
 initSqlJs({locateFile: function(f){ return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f; }})
-  .then(function(s){ SQL = s; })
+  .then(function(s){
+    SQL = s;
+    sqlJsReady = true;
+    sqlJsCallbacks.forEach(function(cb){ cb(); });
+    sqlJsCallbacks = [];
+  })
   .catch(function(e){ console.error('SQL.js', e); });
+
+function whenSqlReady(cb){
+  if (sqlJsReady) cb();
+  else sqlJsCallbacks.push(cb);
+}
 
 // ── SCREENS ──────────────────────────────────────────────
 function showLogin(){
@@ -402,23 +414,15 @@ function loadDatabase(){
     return r.arrayBuffer();
   })
   .then(function(buf){
-    // Wait for SQL.js to be ready, retrying every 300ms up to 20 times
     var arr = new Uint8Array(buf);
-    function tryInit(attempts){
-      if (SQL) {
-        try {
-          sqlDb = new SQL.Database(arr);
-          loadSymphytumData();
-        } catch(e) {
-          showApp(); alert('Errore apertura DB: ' + e.message);
-        }
-      } else if (attempts > 0) {
-        setTimeout(function(){ tryInit(attempts - 1); }, 300);
-      } else {
-        showApp(); alert('SQL.js non caricato. Ricarica la pagina.');
+    whenSqlReady(function(){
+      try {
+        sqlDb = new SQL.Database(arr);
+        loadSymphytumData();
+      } catch(e) {
+        showApp(); alert('Errore apertura DB: ' + e.message);
       }
-    }
-    tryInit(20);
+    });
   })
   .catch(function(e){
     showApp();
