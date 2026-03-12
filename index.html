@@ -369,13 +369,12 @@ function ensureValidToken(){
 // ── DROPBOX API ───────────────────────────────────────────
 function dbxPost(url, body){
   return ensureValidToken().then(function(){
+    var headers = {'Authorization':'Bearer ' + accessToken};
+    if (body) headers['Content-Type'] = 'application/json';
     return fetch(url, {
       method:'POST',
-      headers:{
-        'Authorization':'Bearer ' + accessToken,
-        'Content-Type': body ? 'application/json' : 'application/x-www-form-urlencoded',
-      },
-      body: body ? JSON.stringify(body) : null,
+      headers: headers,
+      body: body ? JSON.stringify(body) : undefined,
     });
   });
 }
