@@ -513,24 +513,18 @@ function loadCovers(){
   var done = 0;
   prog.textContent = 'Copertine: 0 / ' + hashes.length;
 
-  function loadNext(i){
-    if (i >= hashes.length){
-      prog.textContent = done + ' copertine caricate';
-      setTimeout(function(){ prog.textContent = ''; }, 3000);
-      return;
-    }
-    var hash = hashes[i];
-    var path = COVERS_DIR + '/' + hash;
-    dbxDownload(path)
+  var total = hashes.length;
+  var completed = 0;
+
+  function loadOne(hash){
+    return dbxDownload(COVERS_DIR + '/' + hash)
     .then(function(r){ return r.ok ? r.blob() : null; })
     .then(function(blob){
       if (blob){
         var key = hash.toLowerCase();
         covers[key] = URL.createObjectURL(blob);
         done++;
-        // Replace placeholder immediately in DOM
-        var els = document.querySelectorAll('[data-cover="' + key + '"]');
-        els.forEach(function(el){
+        document.querySelectorAll('[data-cover="' + key + '"]').forEach(function(el){
           var img = document.createElement('img');
           img.className = 'album-cover';
           img.src = covers[key];
@@ -538,12 +532,32 @@ function loadCovers(){
           el.parentNode.replaceChild(img, el);
         });
       }
-      prog.textContent = 'Copertine: ' + done + ' / ' + hashes.length;
-      loadNext(i + 1);
+      completed++;
+      prog.textContent = 'Copertine: ' + done + ' / ' + total;
+      if (completed === total){
+        renderGrid();
+        setTimeout(function(){ prog.textContent = ''; }, 3000);
+      }
     })
-    .catch(function(){ loadNext(i + 1); });
+    .catch(function(){
+      completed++;
+      if (completed === total){
+        renderGrid();
+        setTimeout(function(){ prog.textContent = ''; }, 3000);
+      }
+    });
   }
-  loadNext(0);
+
+  // Load in parallel batches of 8
+  var BATCH = 8;
+  function runBatch(start){
+    if (start >= total) return;
+    var batch = hashes.slice(start, start + BATCH);
+    Promise.all(batch.map(loadOne)).then(function(){
+      runBatch(start + BATCH);
+    });
+  }
+  runBatch(0);
 }
 
 // ── DRAWER ────────────────────────────────────────────────
