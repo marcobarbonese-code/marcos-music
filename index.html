@@ -455,47 +455,26 @@ function loadSymphytumData(){
     }
   } catch(e){ console.error('collections', e); }
 
-  // 2. Build fileMap: "tableName:recordId" -> hash_name using original_dir_path
-  var fileMap = {}; // "tableName:recordId" -> hash_name
-  try {
-    var fr = sqlDb.exec("SELECT _id, hash_name, original_dir_path FROM files");
-    if (fr.length) {
-      fr[0].values.forEach(function(row){
-        var recordId  = row[0];
-        var hashName  = row[1] || '';
-        var dirPath   = row[2] || '';
-        if (!hashName) return;
-        // original_dir_path contains the collection table name as last path component
-        var parts = dirPath.replace(/\\/g, '/').split('/');
-        var tablePart = parts[parts.length - 1] || parts[parts.length - 2] || '';
-        if (tablePart) {
-          fileMap[tablePart + ':' + recordId] = hashName;
-        }
-        // Also store by recordId alone as fallback
-        if (!fileMap['global:' + recordId]) fileMap['global:' + recordId] = hashName;
-      });
-    }
-  } catch(e){ console.error('files', e); }
-
-  // 3. Read each collection table
+  // 2 & 3. Read each collection with JOIN to files for correct cover mapping
   allAlbums = [];
   var collectionNames = Object.keys(collections);
 
   collectionNames.forEach(function(collName){
     var tableName = collections[collName];
     try {
-      var tr = sqlDb.exec("SELECT _id, \"1\", \"2\", \"3\" FROM \"" + tableName + "\"");
+      var tr = sqlDb.exec(
+        "SELECT t._id, t.\"1\", t.\"2\", t.\"3\", f.hash_name " +
+        "FROM \"" + tableName + "\" t " +
+        "LEFT JOIN files f ON f._id = t._id"
+      );
       if (tr.length) {
         tr[0].values.forEach(function(row){
-          var id = row[0];
-          // Look up by tableName:id first, then global fallback
-          var hash = fileMap[tableName + ':' + id] || fileMap['global:' + id] || '';
           allAlbums.push({
-            title:    String(row[1] || ''),
-            artist:   String(row[2] || ''),
-            serial:   String(row[3] || ''),
-            category: collName,
-            coverHash: hash
+            title:     String(row[1] || ''),
+            artist:    String(row[2] || ''),
+            serial:    String(row[3] || ''),
+            category:  collName,
+            coverHash: row[4] || ''
           });
         });
       }
@@ -539,7 +518,16 @@ function loadCovers(){
       if (blob){
         covers[hash.toLowerCase()] = URL.createObjectURL(blob);
         done++;
-        if (done % 10 === 0) renderGrid();
+        // Update images in grid immediately without full re-render
+        var imgs = document.querySelectorAll('[data-cover="' + hash.toLowerCase() + '"]');
+        imgs.forEach(function(el){
+          var img = document.createElement('img');
+          img.className = 'album-cover';
+          img.src = covers[hash.toLowerCase()];
+          img.alt = '';
+          img.loading = 'lazy';
+          el.parentNode.replaceChild(img, el);
+        });
       }
       prog.textContent = 'Copertine: ' + done + ' / ' + hashes.length;
       loadNext(i + 1);
@@ -612,7 +600,7 @@ function renderGrid(){
     card.innerHTML =
       (url
         ? '<img class="album-cover" src="' + url + '" alt="' + a.title + '" loading="lazy">'
-        : '<div class="album-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
+        : '<div class="album-ph" data-cover="' + (a.coverHash ? a.coverHash.toLowerCase() : '') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
       '<div class="album-info">' +
         (a.category ? '<div class="album-cat ' + cc + '">' + a.category + '</div>' : '') +
         '<div class="album-title">' + a.title + '</div>' +
