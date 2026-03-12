@@ -400,7 +400,8 @@ function onConnected(){
     var name = (u.name && u.name.display_name) ? u.name.display_name.split(' ')[0] : 'Marco';
     document.getElementById('dbxLabel').textContent = name;
     document.getElementById('drawerUser').textContent = (u.name && u.name.display_name) || '';
-    loadDatabase();
+    // Wait for SQL.js before loading database
+    whenSqlReady(function(){ loadDatabase(); });
   })
   .catch(function(){ showLogin(); });
 }
