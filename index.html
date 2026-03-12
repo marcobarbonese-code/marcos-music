@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Marco's Music</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Marco's Music">
+<meta name="theme-color" content="#141414">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -130,7 +136,7 @@ main{padding:16px;}
   </div>
   <div class="filters">
     <button class="filter-btn active" data-cat="all">Tutti</button>
-    <button class="filter-btn" data-cat="Colonne Sonore">Colonne Sonore</button>
+    <button class="filter-btn" data-cat="Colonne sonore">Colonne Sonore</button>
     <button class="filter-btn" data-cat="Italiana">Italiana</button>
     <button class="filter-btn" data-cat="Straniera">Straniera</button>
     <button class="filter-btn" data-cat="Jazz">Jazz</button>
@@ -208,8 +214,9 @@ const CONTENT    = 'https://content.dropboxapi.com/2';
 
 // Symphytum collection name → CSS class
 const CAT_CLASS = {
-  'Colonne Sonore':'cat-cs','Italiana':'cat-it',
-  'Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'
+  'Colonne Sonore':'cat-cs','Colonne sonore':'cat-cs',
+  'Italiana':'cat-it','Straniera':'cat-st',
+  'Jazz':'cat-jz','Classica':'cat-cl'
 };
 
 // ── STATE ────────────────────────────────────────────────
@@ -448,13 +455,24 @@ function loadSymphytumData(){
     }
   } catch(e){ console.error('collections', e); }
 
-  // 2. Read files table: _id -> hash_name
-  var fileMap = {}; // record _id -> hash_name
+  // 2. Build fileMap: "tableName:recordId" -> hash_name using original_dir_path
+  var fileMap = {}; // "tableName:recordId" -> hash_name
   try {
-    var fr = sqlDb.exec("SELECT _id, hash_name FROM files");
+    var fr = sqlDb.exec("SELECT _id, hash_name, original_dir_path FROM files");
     if (fr.length) {
       fr[0].values.forEach(function(row){
-        if (row[1]) fileMap[row[0]] = row[1];
+        var recordId  = row[0];
+        var hashName  = row[1] || '';
+        var dirPath   = row[2] || '';
+        if (!hashName) return;
+        // original_dir_path contains the collection table name as last path component
+        var parts = dirPath.replace(/\\/g, '/').split('/');
+        var tablePart = parts[parts.length - 1] || parts[parts.length - 2] || '';
+        if (tablePart) {
+          fileMap[tablePart + ':' + recordId] = hashName;
+        }
+        // Also store by recordId alone as fallback
+        if (!fileMap['global:' + recordId]) fileMap['global:' + recordId] = hashName;
       });
     }
   } catch(e){ console.error('files', e); }
@@ -469,15 +487,13 @@ function loadSymphytumData(){
       var tr = sqlDb.exec("SELECT _id, \"1\", \"2\", \"3\" FROM \"" + tableName + "\"");
       if (tr.length) {
         tr[0].values.forEach(function(row){
-          var id     = row[0];
-          var title  = row[1] || '';
-          var artist = row[2] || '';
-          var serial = row[3] || '';
-          var hash   = fileMap[id] || '';
+          var id = row[0];
+          // Look up by tableName:id first, then global fallback
+          var hash = fileMap[tableName + ':' + id] || fileMap['global:' + id] || '';
           allAlbums.push({
-            title:    String(title),
-            artist:   String(artist),
-            serial:   String(serial),
+            title:    String(row[1] || ''),
+            artist:   String(row[2] || ''),
+            serial:   String(row[3] || ''),
             category: collName,
             coverHash: hash
           });
