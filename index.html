@@ -477,18 +477,22 @@ function loadSymphytumData(){
     'c286833dd25708b90e87f5278d2d78490': 'Classica'
   };
 
-  // Italiana uses t._id as foreign key to files, all others use t."4"
-  var useIdJoin = {'cad69e69cac16415b3c38315578dc71f4': true};
+  // Column mapping per collection:
+  // Italiana:      1=Title, 2=Artist, 3=files._id (image), 4=Serial
+  // All others:    1=Title, 2=Artist, 3=Serial,            4=files._id (image)
+  var italianTable = 'cad69e69cac16415b3c38315578dc71f4';
 
   allAlbums = [];
   Object.keys(tableToName).forEach(function(tableName){
     var collName = tableToName[tableName];
-    var joinCol = useIdJoin[tableName] ? 't._id' : 't."4"';
+    var isItaliana = tableName === italianTable;
+    var imgCol  = isItaliana ? 't."3"' : 't."4"';
+    var serCol  = isItaliana ? '"4"'   : '"3"';
     try {
       var tr = sqlDb.exec(
-        'SELECT t."1", t."2", t."3", f.hash_name ' +
+        'SELECT t."1", t."2", t.' + serCol + ', f.hash_name ' +
         'FROM "' + tableName + '" t ' +
-        'LEFT JOIN files f ON f._id = ' + joinCol
+        'LEFT JOIN files f ON f._id = ' + imgCol
       );
       if (tr.length) {
         tr[0].values.forEach(function(row){
