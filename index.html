@@ -32,6 +32,10 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .dbx-pill:hover{border-color:var(--gold);}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all 0.3s;}
 .dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.reload-btn{display:none;background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+.reload-btn:hover{border-color:var(--gold);color:var(--gold);}
+.reload-btn.show{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.05em;}
+.reload-btn svg{width:13px;height:13px;}
 .search-wrap{position:relative;margin-bottom:10px;}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;}
 #searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 12px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
@@ -72,6 +76,9 @@ main{padding:16px;}
 #coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
 
 #albumGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:600px){#albumGrid{grid-template-columns:repeat(4,1fr);gap:10px;}}
+@media(min-width:900px){#albumGrid{grid-template-columns:repeat(6,1fr);gap:8px;}}
+@media(min-width:1200px){#albumGrid{grid-template-columns:repeat(8,1fr);gap:8px;}}
 .album-card{background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.25s;animation:fadeIn 0.3s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .album-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
@@ -125,6 +132,9 @@ main{padding:16px;}
   <div class="header-top">
     <div class="record"></div>
     <div class="logo">Marco's Music</div>
+    <button class="reload-btn" id="reloadCoversBtn" title="Ricarica copertine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    </button>
     <div class="dbx-pill" id="dbxPill">
       <div class="dot" id="dbxDot"></div>
       <span id="dbxLabel">Dropbox</span>
@@ -249,6 +259,7 @@ function whenSqlReady(cb){
 
 // ── SCREENS ──────────────────────────────────────────────
 function showLogin(){
+  document.getElementById('reloadCoversBtn').classList.remove('show');
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('loadingScreen').classList.remove('show');
   document.getElementById('appScreen').classList.remove('show');
@@ -260,6 +271,7 @@ function showLoading(msg){
   document.getElementById('loadMsg').textContent = msg || 'Caricamento...';
 }
 function showApp(){
+  document.getElementById('reloadCoversBtn').classList.add('show');
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('loadingScreen').classList.remove('show');
   document.getElementById('appScreen').classList.add('show');
@@ -465,15 +477,18 @@ function loadSymphytumData(){
     'c286833dd25708b90e87f5278d2d78490': 'Classica'
   };
 
+  // Italiana uses t._id as foreign key to files, all others use t."4"
+  var useIdJoin = {'cad69e69cac16415b3c38315578dc71f4': true};
+
   allAlbums = [];
   Object.keys(tableToName).forEach(function(tableName){
     var collName = tableToName[tableName];
+    var joinCol = useIdJoin[tableName] ? 't._id' : 't."4"';
     try {
-      // col 4 is the foreign key to files._id
       var tr = sqlDb.exec(
         'SELECT t."1", t."2", t."3", f.hash_name ' +
         'FROM "' + tableName + '" t ' +
-        'LEFT JOIN files f ON f._id = t."4"'
+        'LEFT JOIN files f ON f._id = ' + joinCol
       );
       if (tr.length) {
         tr[0].values.forEach(function(row){
@@ -498,20 +513,37 @@ function loadSymphytumData(){
 }
 
 // ── LOAD COVERS ───────────────────────────────────────────
+var coversLoading = false;
+
 function loadCovers(){
+  if (coversLoading) return;
+  coversLoading = true;
+
   var prog = document.getElementById('coversProgress');
+  var reloadBtn = document.getElementById('reloadCoversBtn');
   prog.innerHTML = '<span class="mini-spin"></span> Caricamento copertine...';
+  if (reloadBtn) { reloadBtn.disabled = true; reloadBtn.style.opacity = '0.4'; }
 
-  // Get all unique hash names needed
-  var needed = {};
-  allAlbums.forEach(function(a){ if (a.coverHash) needed[a.coverHash] = true; });
-  var hashes = Object.keys(needed);
+  // Build ordered list of hashes - skip already loaded ones (resume after screen off)
+  var seen = {};
+  var hashes = [];
+  allAlbums.forEach(function(a){
+    if (a.coverHash && !seen[a.coverHash]){
+      seen[a.coverHash] = true;
+      if (!covers[a.coverHash.toLowerCase()]){
+        hashes.push(a.coverHash);
+      }
+    }
+  });
 
-  if (!hashes.length) { prog.textContent = ''; return; }
+  if (!hashes.length){
+    prog.textContent = '';
+    coversLoading = false;
+    if (reloadBtn) { reloadBtn.disabled = false; reloadBtn.style.opacity = '1'; }
+    return;
+  }
 
   var done = 0;
-  prog.textContent = 'Copertine: 0 / ' + hashes.length;
-
   var total = hashes.length;
   var completed = 0;
 
@@ -523,6 +555,7 @@ function loadCovers(){
         var key = hash.toLowerCase();
         covers[key] = URL.createObjectURL(blob);
         done++;
+        // Replace placeholder immediately in DOM
         document.querySelectorAll('[data-cover="' + key + '"]').forEach(function(el){
           var img = document.createElement('img');
           img.className = 'album-cover';
@@ -534,21 +567,23 @@ function loadCovers(){
       completed++;
       prog.textContent = 'Copertine: ' + done + ' / ' + total;
       if (completed === total){
-        renderGrid();
-        setTimeout(function(){ prog.textContent = ''; }, 3000);
+        coversLoading = false;
+        if (reloadBtn) { reloadBtn.disabled = false; reloadBtn.style.opacity = '1'; }
+        setTimeout(function(){ prog.textContent = ''; }, 2000);
       }
     })
     .catch(function(){
       completed++;
       if (completed === total){
-        renderGrid();
-        setTimeout(function(){ prog.textContent = ''; }, 3000);
+        coversLoading = false;
+        if (reloadBtn) { reloadBtn.disabled = false; reloadBtn.style.opacity = '1'; }
+        setTimeout(function(){ prog.textContent = ''; }, 2000);
       }
     });
   }
 
-  // Load in parallel batches of 8
-  var BATCH = 8;
+  // Load in parallel batches of 6
+  var BATCH = 6;
   function runBatch(start){
     if (start >= total) return;
     var batch = hashes.slice(start, start + BATCH);
