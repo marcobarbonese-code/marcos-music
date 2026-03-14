@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Marco's Music</title>
-<link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Marco's Music">
@@ -41,11 +41,12 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 #searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 12px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
 #searchInput:focus{border-color:var(--gold);}
 #searchInput::placeholder{color:var(--text-muted);}
-.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px;}
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
 .filters::-webkit-scrollbar{display:none;}
+.filters::after{content:"";flex-shrink:0;width:20px;}
 .filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap;}
-.filter-btn.active[data-cat="all"]{background:var(--gold);border-color:var(--gold);color:#000;}
-.filter-btn.active[data-cat="Colonne Sonore"]{background:#e07840;border-color:#e07840;color:#fff;}
+.filter-btn.active[data-cat="all"]{background:#3a3a3a;border-color:#555;color:var(--text);}
+.filter-btn.active[data-cat="Colonne Sonore"]{background:var(--cs);border-color:var(--cs);color:#000;}
 .filter-btn.active[data-cat="Italiana"]{background:var(--it);border-color:var(--it);color:#fff;}
 .filter-btn.active[data-cat="Straniera"]{background:var(--st);border-color:var(--st);color:#fff;}
 .filter-btn.active[data-cat="Jazz"]{background:var(--jz);border-color:var(--jz);color:#000;}
@@ -134,7 +135,6 @@ main{padding:16px;}
     <div class="logo">Marco's Music</div>
 <div class="dbx-pill" id="dbxPill">
       <div class="dot" id="dbxDot"></div>
-      <span id="dbxLabel">Dropbox</span>
     </div>
   </div>
   <div class="search-wrap">
@@ -410,7 +410,7 @@ function onConnected(){
   .then(function(u){
     document.getElementById('dbxDot').className = 'dot ok';
     var name = (u.name && u.name.display_name) ? u.name.display_name.split(' ')[0] : 'Marco';
-    document.getElementById('dbxLabel').textContent = name;
+    // dbxLabel removed
     document.getElementById('drawerUser').textContent = (u.name && u.name.display_name) || '';
     // Wait for SQL.js before loading database
     whenSqlReady(function(){ loadDatabase(); });
