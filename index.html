@@ -719,10 +719,21 @@ function loadCdpDatabase(){
       'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) '+
       'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END, e.ZTITLE'
     );
+    // Load all tracks into a map pk -> [{pos, name, artist, duration}]
+    var tracksMap = {};
+    try {
+      var tr = cdpDb.exec('SELECT ZENTRY, ZPOSITION, ZNAME, ZARTIST, ZDURATION FROM ZTRACK ORDER BY ZENTRY, ZPOSITION');
+      if(tr.length) tr[0].values.forEach(function(r){
+        var pk = r[0];
+        if(!tracksMap[pk]) tracksMap[pk]=[];
+        tracksMap[pk].push({pos:r[1],name:r[2]||'',artist:r[3]||'',dur:r[4]||''});
+      });
+    } catch(e){ console.error('tracks',e); }
+
     if(res.length){
       res[0].values.forEach(function(row){
         var collName = COLL_MAP[row[12]] || ''; if(!collName) return;
-        allAlbumsCdp.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),serial:String(row[3]||''),genre:String(row[4]||''),label:String(row[5]||''),format:String(row[6]||''),tracks:String(row[7]||''),duration:String(row[8]||''),summary:String(row[9]||''),url:String(row[10]||''),zuid:row[11],category:collName,coverHash:''});
+        allAlbumsCdp.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),serial:String(row[3]||''),genre:String(row[4]||''),label:String(row[5]||''),format:String(row[6]||''),tracks:String(row[7]||''),duration:String(row[8]||''),summary:String(row[9]||''),url:String(row[10]||''),zuid:row[11],category:collName,coverHash:'',trackList:tracksMap[row[0]]||[]});
       });
     }
     cdpLoaded = true;
@@ -834,6 +845,7 @@ function renderGrid(){
     var url = (zuidKey && covers[zuidKey]) ? covers[zuidKey] : (hashKey ? (covers[hashKey]||null) : null);
     var coverKey = zuidKey || hashKey;
     var cc  = CAT_CLASS[a.category] || '';
+    var fourthField = (currentCatalog==='cdpedia') ? (zuidKey ? 'ID: '+zuidKey : '') : a.serial;
     card.innerHTML =
       (url
         ? '<img class="album-cover" src="' + url + '" alt="' + a.title + '" loading="lazy">'
@@ -842,7 +854,7 @@ function renderGrid(){
         (a.category ? '<div class="album-cat ' + cc + '">' + a.category + '</div>' : '') +
         '<div class="album-title">' + a.title + '</div>' +
         (a.artist ? '<div class="album-artist">' + a.artist + '</div>' : '') +
-        (a.serial ? '<div class="album-serial">' + a.serial + '</div>' : '') +
+        (fourthField ? '<div class="album-serial">' + fourthField + '</div>' : '') +
       '</div>';
     card.addEventListener('click', function(){ if(currentCatalog==='cdpedia') openModalCdp(a); else openModal(a); });
     grid.appendChild(card);
@@ -895,10 +907,31 @@ function openModalCdp(a){
   if(a.serial)   rows += '<div class="modal-row"><span class="modal-lbl">Numero</span><span class="modal-val">' + a.serial + '</span></div>';
   if(a.label)    rows += '<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">' + a.label + '</span></div>';
   if(a.format)   rows += '<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">' + a.format + '</span></div>';
-  if(a.genre)    rows += '<div class="modal-row"><span class="modal-lbl">Genere</span><span class="modal-val">' + a.genre + '</span></div>';
-  if(a.tracks)   rows += '<div class="modal-row"><span class="modal-lbl">Tracce</span><span class="modal-val">' + a.tracks + '</span></div>';
   if(a.duration) rows += '<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">' + a.duration + '</span></div>';
   if(a.url)      rows += '<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="' + a.url + '" target="_blank" style="color:var(--gold)">Discogs ↗</a></span></div>';
+
+  // Genre full width
+  var genreHtml = a.genre
+    ? '<div style="font-size:10px;color:var(--text-muted);letter-spacing:0.08em;margin-bottom:10px;">' + a.genre + '</div>'
+    : '';
+
+  // Track list
+  var tracksHtml = '';
+  if(a.trackList && a.trackList.length){
+    var trackItems = a.trackList.map(function(t, i){
+      var num = String(i+1).padStart(2,'0');
+      var dur = t.dur ? '<span style="color:var(--text-muted);font-size:10px;margin-left:auto;flex-shrink:0;">'+t.dur+'</span>' : '';
+      var art = (t.artist && t.artist !== a.artist) ? '<span style="color:var(--text-muted);font-size:10px;display:block;">'+t.artist+'</span>' : '';
+      return '<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">'
+        + '<span style="color:var(--text-muted);font-size:10px;flex-shrink:0;width:20px;">'+num+'</span>'
+        + '<div style="flex:1;min-width:0;"><span style="font-size:12px;">'+t.name+'</span>'+art+'</div>'
+        + dur
+        + '</div>';
+    }).join('');
+    tracksHtml = '<div class="modal-divider"></div>'
+      + '<div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div>'
+      + '<div style="max-height:200px;overflow-y:auto;">'+trackItems+'</div>';
+  }
 
   var coverHtml = url
     ? '<img class="modal-cover" src="' + url + '" alt="">'
@@ -908,22 +941,18 @@ function openModalCdp(a){
     ? '<div class="modal-artist" id="modalArtistBtn">' + a.artist + '</div>'
     : '';
 
-  var summaryHtml = a.summary
-    ? '<div class="modal-divider"></div><div style="font-size:11px;color:var(--text-muted);line-height:1.7;max-height:140px;overflow-y:auto;">' + a.summary + '</div>'
-    : '';
-
   document.getElementById('modalContent').innerHTML =
     coverHtml +
     '<div class="modal-body">' +
       (a.category ? '<div class="modal-cat ' + cc + '">' + a.category + '</div>' : '') +
       '<div class="modal-title">' + a.title + '</div>' +
       artistHtml +
+      genreHtml +
       (rows ? '<div class="modal-divider"></div>' + rows : '') +
-      summaryHtml +
+      tracksHtml +
       '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
     '</div>';
 
-  // Wire artist click after innerHTML set
   var artistBtn = document.getElementById('modalArtistBtn');
   if(artistBtn) artistBtn.addEventListener('click', function(){ filterByArtist(a.artist); });
 
