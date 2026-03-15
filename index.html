@@ -7,11 +7,11 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Marco's Music">
 <meta name="theme-color" content="#141414">
 <link rel="manifest" href="manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -19,75 +19,36 @@
   --gold:#c9a84c;--text:#e8e0d0;--text-muted:#7a7060;
   --cs:#c9a84c;--it:#e05a4e;--st:#4e9de0;--jz:#7cba6e;--cl:#b07cd4;
   --red:#e05a4e;--green:#7cba6e;
-  --header-bg:rgba(10,10,10,0.96);
-  --noise-opacity:0.4;
-  --backdrop:rgba(0,0,0,0.88);
-  --shadow:rgba(0,0,0,0.4);
-}
-[data-theme="light"]{
-  --bg:#f5f2ee;--surface:#ffffff;--surface2:#ede9e3;--border:#d8d0c4;
-  --gold:#a07830;--text:#1a1612;--text-muted:#8a7d6a;
-  --cs:#a07830;--it:#c04030;--st:#2878c0;--jz:#4a9040;--cl:#8040b0;
-  --red:#c04030;--green:#4a9040;
-  --header-bg:rgba(245,242,238,0.96);
-  --noise-opacity:0.15;
-  --backdrop:rgba(0,0,0,0.5);
-  --shadow:rgba(0,0,0,0.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
-html,body{height:100%;}
-@media(max-width:600px){body{min-height:calc(100vh + 56px);}}
-[data-theme="light"] .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg);}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:var(--noise-opacity);}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
 
-header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--header-bg);backdrop-filter:blur(12px);z-index:100;}
+header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,10,0.96);backdrop-filter:blur(12px);z-index:100;}
 .header-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .record{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:conic-gradient(from 0deg,#1a1a1a 0deg,#2a2a2a 30deg,#1a1a1a 60deg,#2a2a2a 90deg,#1a1a1a 120deg,#2a2a2a 150deg,#1a1a1a 180deg,#2a2a2a 210deg,#1a1a1a 240deg,#2a2a2a 270deg,#1a1a1a 300deg,#2a2a2a 330deg,#1a1a1a 360deg);border:2px solid var(--gold);position:relative;animation:spin 8s linear infinite;}
-[data-theme="light"] .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg);}
-[data-theme='light'] .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg);}
 .record::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--gold);}
 @keyframes spin{to{transform:rotate(360deg);}}
 .logo{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);flex:1;}
-.dbx-pill{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:0.08em;cursor:pointer;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);transition:all 0.2s;white-space:nowrap;}
-.theme-switch{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-.theme-switch svg{width:15px;height:15px;color:var(--text-muted);}
-.switch-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;cursor:pointer;transition:background 0.3s;border:1px solid var(--border);}
-.switch-track.on{background:var(--gold);}
-.switch-thumb{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--surface);transition:transform 0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
-.switch-track.on .switch-thumb{transform:translateX(16px);}
+.theme-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:'DM Mono',monospace;font-size:11px;}
+.theme-btn:hover{border-color:var(--gold);color:var(--gold);}
+.dbx-pill{display:flex;align-items:center;padding:6px 8px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;}
 .dbx-pill:hover{border-color:var(--gold);}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all 0.3s;}
-.theme-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;transition:all 0.2s;flex-shrink:0;display:flex;align-items:center;gap:5px;}
-.theme-btn:hover{border-color:var(--gold);color:var(--gold);}
-.theme-btn svg{width:13px;height:13px;}
-.theme-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.05em;}
-.theme-btn:hover{border-color:var(--gold);color:var(--gold);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all 0.3s;}
 .dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
-.theme-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.05em;}
-.theme-btn:hover{border-color:var(--gold);color:var(--gold);}
-.theme-switch{display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;}
-.theme-switch svg{width:16px;height:16px;color:var(--text-muted);transition:color 0.2s;}
-.theme-switch:hover svg{color:var(--gold);}
-.switch-track{width:32px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s;flex-shrink:0;}
-.switch-thumb{width:12px;height:12px;border-radius:50%;background:var(--text-muted);position:absolute;top:3px;left:3px;transition:all 0.3s;}
-[data-theme="light"] .switch-track{background:var(--gold);}
-[data-theme="light"] .switch-thumb{left:17px;background:#fff;}
-
 .search-wrap{position:relative;margin-bottom:10px;display:flex;align-items:center;}
-.search-wrap>.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;pointer-events:none;}
-.search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;display:none;line-height:0;}
-.search-clear:hover{color:var(--text);}
-.search-clear.show{display:block;}
-#searchInput{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 34px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;pointer-events:none;}
+#searchInput{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 36px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
 #searchInput:focus{border-color:var(--gold);}
 #searchInput::placeholder{color:var(--text-muted);}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;display:none;line-height:0;}
+.search-clear:hover{color:var(--text);}
+.search-clear.show{display:block;}
 .filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
 .filters::-webkit-scrollbar{display:none;}
-.filters::after{content:"";flex-shrink:0;width:20px;}
-.filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap;}
-.filter-btn.active[data-cat="all"]{background:#3a3a3a;border-color:#555;color:#fff;}
-[data-theme='light'] .filter-btn.active[data-cat="all"]{background:#4a4440;border-color:#4a4440;color:#fff;}
+.filters::after{content:'';flex-shrink:0;width:20px;}
+.filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.filter-btn.active[data-cat="all"]{background:#3a3a3a;border-color:#555;color:var(--text);}
 .filter-btn.active[data-cat="Colonne Sonore"]{background:var(--cs);border-color:var(--cs);color:#000;}
 .filter-btn.active[data-cat="Italiana"]{background:var(--it);border-color:var(--it);color:#fff;}
 .filter-btn.active[data-cat="Straniera"]{background:var(--st);border-color:var(--st);color:#fff;}
@@ -95,31 +56,24 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .filter-btn.active[data-cat="Classica"]{background:var(--cl);border-color:var(--cl);color:#fff;}
 
 main{padding:16px;}
-.catalog-switch{display:none;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;gap:3px;}
-.catalog-switch.show{display:flex;}
-.cat-sw-btn{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
-.cat-sw-btn.active{background:var(--gold);color:#000;}
-.cat-sw-btn:not(.active):hover{color:var(--text);}
-
 #loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 24px;width:100%;max-width:320px;}
 .login-icon{margin-bottom:16px;color:var(--gold);}
 .login-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);margin-bottom:8px;}
 .login-sub{font-size:11px;color:var(--text-muted);line-height:1.8;margin-bottom:24px;}
-.login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;letter-spacing:0.1em;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;letter-spacing:0.1em;transition:opacity 0.2s;}
 .login-btn:hover{opacity:0.85;}
-.login-note{font-size:10px;color:var(--text-muted);margin-top:14px;line-height:1.7;}
+.login-note{font-size:10px;color:var(--text-muted);margin-top:14px;}
 
-#loadingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;gap:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.1em;}
+#loadingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;gap:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.1em;}
 #loadingScreen.show{display:flex;}
 .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
 .mini-spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
 
 #appScreen{display:none;}
 #appScreen.show{display:block;}
-
-#statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.05em;}
-#statsBar.show{display:flex;justify-content:space-between;align-items:center;}
+#statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
+#statsBar.show{display:flex;justify-content:space-between;}
 .stats-n{color:var(--gold);}
 #coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
 
@@ -129,8 +83,8 @@ main{padding:16px;}
 @media(min-width:1200px){#albumGrid{grid-template-columns:repeat(8,1fr);gap:8px;}}
 .album-card{background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.25s;animation:fadeIn 0.3s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.album-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px var(--shadow);}
-.album-cover{width:100%;aspect-ratio:1;object-fit:cover;background:var(--surface2);display:block;}
+.album-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.album-cover{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
 .album-ph{width:100%;aspect-ratio:1;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
 .album-info{padding:10px;}
 .album-cat{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
@@ -143,9 +97,9 @@ main{padding:16px;}
 #emptyState.show{display:block;}
 #emptyState p{font-size:13px;margin-top:8px;}
 
-#drawer{display:none;position:fixed;inset:0;background:var(--backdrop);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#drawer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
 #drawer.open{display:flex;}
-.drawer-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 20px 28px;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;}
+.drawer-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 20px 28px;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
 @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
 .drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 20px;}
 .drawer-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px;}
@@ -156,48 +110,51 @@ main{padding:16px;}
 .d-btn.danger{border-color:var(--red);color:var(--red);}
 .d-btn.danger:hover{background:rgba(224,90,78,0.1);}
 
-#modal{display:none;position:fixed;inset:0;background:var(--backdrop);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
 #modal.open{display:flex;}
 .modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
 .modal-cover{width:100%;max-height:420px;object-fit:contain;background:var(--surface2);display:block;}
-.modal-ph{width:100%;height:180px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
+.modal-ph{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
 .modal-body{padding:20px;}
 .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
-.modal-title{font-family:'Playfair Display',serif;font-size:24px;line-height:1.2;margin-bottom:6px;}
-.modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:16px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;transition:color 0.2s;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;line-height:1.2;margin-bottom:6px;}
+.modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:8px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;transition:color 0.2s;}
 .modal-artist:hover{color:var(--gold);}
+.modal-genre{font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;}
 .modal-divider{height:1px;background:var(--border);margin:14px 0;}
-.modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
-.modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
-.modal-val{font-size:13px;color:var(--text);}
-.modal-close{width:100%;margin-top:14px;margin-bottom:8px;padding:14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;}
+.modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:12px;}
+.modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;}
+.modal-val{font-size:13px;color:var(--text);text-align:right;}
+.modal-close{width:100%;margin-top:14px;margin-bottom:8px;padding:14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s;}
 .modal-close:hover{border-color:var(--gold);color:var(--gold);}
+.track-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
+.track-num{color:var(--text-muted);font-size:10px;flex-shrink:0;width:22px;}
+.track-info{flex:1;min-width:0;}
+.track-name{font-size:12px;}
+.track-artist{font-size:10px;color:var(--text-muted);}
+.track-dur{color:var(--text-muted);font-size:10px;flex-shrink:0;}
 
-[data-theme='light'] .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg);}
+body.light{--bg:#f5f2ee;--surface:#ffffff;--surface2:#ede9e3;--border:#d8d0c4;--gold:#a07830;--text:#1a1612;--text-muted:#8a7d6a;--cs:#a07830;--it:#c04030;--st:#2878c0;--jz:#4a9040;--cl:#8040b0;--red:#c04030;--green:#4a9040;}
+body.light header{background:rgba(245,242,238,0.96) !important;}
+body.light .login-btn{color:#fff !important;}
+body.light #drawer,body.light #modal{background:rgba(0,0,0,0.45) !important;}
+body.light .filter-btn.active[data-cat="all"]{background:#4a4440 !important;border-color:#4a4440 !important;color:#fff !important;}
+body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg) !important;}
 </style>
 </head>
 <body>
-
 <header>
   <div class="header-top">
     <div class="record"></div>
     <div class="logo">Marco's Music</div>
     <button class="theme-btn" id="themeBtn">☀</button>
-    <div class="dbx-pill" id="dbxPill" style="padding:6px 8px;cursor:pointer;">
-      <div class="dot" id="dbxDot"></div>
-    </div>
-  </div>
-  <div class="catalog-switch" id="catalogSwitch">
-    <button class="cat-sw-btn active" id="btnSymphytum" onclick="switchCatalog('symphytum')">Symphytum</button>
-    <button class="cat-sw-btn" id="btnCdpedia" onclick="switchCatalog('cdpedia')">CDpedia</button>
+    <div class="dbx-pill" id="dbxPill"><div class="dot" id="dbxDot"></div></div>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="searchInput" placeholder="Cerca titolo, artista, seriale..." autocomplete="off" spellcheck="false">
-    <button class="search-clear" id="searchClear">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
+    <input type="text" id="searchInput" placeholder="Cerca titolo, artista, numero..." autocomplete="off" spellcheck="false">
+    <button class="search-clear" id="searchClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   </div>
   <div class="filters">
     <button class="filter-btn active" data-cat="all">Tutti</button>
@@ -212,36 +169,19 @@ main{padding:16px;}
 <main>
   <div id="loginScreen">
     <div class="login-card">
-      <div class="login-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px">
-          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-        </svg>
-      </div>
+      <div class="login-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
       <div class="login-title">Marco's Music</div>
       <div class="login-sub">Collega il tuo Dropbox per accedere alla collezione.</div>
-      <button class="login-btn" id="loginBtn">
-        ACCEDI CON DROPBOX
-      </button>
+      <button class="login-btn" id="loginBtn">ACCEDI CON DROPBOX</button>
       <div class="login-note">Accesso sicuro tramite OAuth 2.</div>
     </div>
   </div>
-
-  <div id="loadingScreen">
-    <div class="spinner"></div>
-    <span id="loadMsg">Caricamento...</span>
-  </div>
-
+  <div id="loadingScreen"><div class="spinner"></div><span id="loadMsg">Caricamento...</span></div>
   <div id="appScreen">
-    <div id="statsBar">
-      <span><span class="stats-n" id="countLbl">0</span> album</span>
-      <span id="catLbl"></span>
-    </div>
+    <div id="statsBar"><span><span class="stats-n" id="countLbl">0</span> album</span><span id="catLbl"></span></div>
     <div id="coversProgress"></div>
     <div id="albumGrid"></div>
-    <div id="emptyState">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <p>Nessun album trovato</p>
-    </div>
+    <div id="emptyState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>Nessun album trovato</p></div>
   </div>
 </main>
 
@@ -270,744 +210,331 @@ main{padding:16px;}
 const APP_KEY    = 'js14z2382chcui3';
 const APP_SECRET = '0dmnr5p5jloljcb';
 const REDIRECT   = 'https://marcobarbonese-code.github.io/marcos-music/';
-const DB_FOLDER  = '/MarcosMusic';
-const DB_FILE    = 'data.db';
-const COVERS_DIR = '/MarcosMusic/files';
+const DB_PATH    = '/MarcosMusic/Database.cdpd';
+const COVERS_DIR = '/MarcosMusic/Covers';
 const API        = 'https://api.dropboxapi.com/2';
 const CONTENT    = 'https://content.dropboxapi.com/2';
-
-// Symphytum collection name → CSS class
-const CAT_CLASS = {
-  'Colonne Sonore':'cat-cs',
-  'Italiana':'cat-it','Straniera':'cat-st',
-  'Jazz':'cat-jz','Classica':'cat-cl'
-};
-
-// ── CDPEDIA CONFIG ───────────────────────────────────────
-const CDP_DB_PATH    = '/MarcosMusic/Database.cdpd';
-const CDP_COVERS_DIR = '/MarcosMusic/Covers';
-const COLL_MAP = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'Italiana'};
+const CAT_CLASS  = {'Colonne Sonore':'cat-cs','Italiana':'cat-it','Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'};
+const COLL_MAP   = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'Italiana'};
 
 // ── STATE ────────────────────────────────────────────────
-var SQL = null;
-var currentCatalog = 'symphytum'; // 'symphytum' or 'cdpedia'
-var allAlbumsCache = []; // Symphytum albums cache
-var coversCache = {};    // Symphytum covers cache
-var allAlbumsCdp = [];   // CDpedia albums cache
-var coversCdp = {};      // CDpedia covers cache
-var cdpLoaded = false;   // CDpedia already loaded?
-var cdpCoversLoading = false;
-var sqlDb = null;
-var accessToken = '';
-var refreshToken = '';
-var tokenExpiry = 0;
-var allAlbums = [];   // [{title, artist, serial, category, coverHash}]
-var covers = {};      // hash_name.toLowerCase() -> objectURL
-var currentFilter = 'all';
-var currentSearch = '';
+var SQL = null, sqlJsReady = false, sqlJsCallbacks = [];
+var accessToken = '', refreshToken = '', tokenExpiry = 0;
+var allAlbums = [], covers = {}, currentFilter = 'all', currentSearch = '';
+var coversLoading = false;
 
-// ── SQL.JS ───────────────────────────────────────────────
-var sqlJsReady = false;
-var sqlJsCallbacks = [];
-initSqlJs({locateFile: function(f){ return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f; }})
-  .then(function(s){
-    SQL = s;
-    sqlJsReady = true;
-    sqlJsCallbacks.forEach(function(cb){ cb(); });
-    sqlJsCallbacks = [];
-  })
-  .catch(function(e){ console.error('SQL.js', e); });
+initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/'+f;}})
+  .then(function(s){SQL=s;sqlJsReady=true;sqlJsCallbacks.forEach(function(cb){cb();});sqlJsCallbacks=[];});
+function whenSqlReady(cb){if(sqlJsReady)cb();else sqlJsCallbacks.push(cb);}
 
-function whenSqlReady(cb){
-  if (sqlJsReady) cb();
-  else sqlJsCallbacks.push(cb);
+// ── THEME ────────────────────────────────────────────────
+function applyTheme(t){
+  if(t==='light'){document.body.classList.add('light');document.getElementById('themeBtn').textContent='☾';document.querySelector('meta[name="theme-color"]').content='#f5f2ee';}
+  else{document.body.classList.remove('light');document.getElementById('themeBtn').textContent='☀';document.querySelector('meta[name="theme-color"]').content='#141414';}
+  localStorage.setItem('theme',t);
 }
 
 // ── SCREENS ──────────────────────────────────────────────
-function showLogin(){
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loadingScreen').classList.remove('show');
-  document.getElementById('appScreen').classList.remove('show');
-}
-function showLoading(msg){
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('loadingScreen').classList.add('show');
-  document.getElementById('appScreen').classList.remove('show');
-  document.getElementById('loadMsg').textContent = msg || 'Caricamento...';
-}
-function showApp(){
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('loadingScreen').classList.remove('show');
-  document.getElementById('appScreen').classList.add('show');
-  document.getElementById('catalogSwitch').classList.add('show');
-}
+function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('loadingScreen').classList.remove('show');document.getElementById('appScreen').classList.remove('show');}
+function showLoading(msg){document.getElementById('loginScreen').style.display='none';document.getElementById('loadingScreen').classList.add('show');document.getElementById('appScreen').classList.remove('show');document.getElementById('loadMsg').textContent=msg||'Caricamento...';}
+function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('loadingScreen').classList.remove('show');document.getElementById('appScreen').classList.add('show');}
 
 // ── BOOT ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function(){
+  // Theme
+  if(localStorage.getItem('theme')==='light') document.body.classList.add('light');
+  document.getElementById('themeBtn').textContent = document.body.classList.contains('light') ? '☾' : '☀';
+  document.getElementById('themeBtn').addEventListener('click', function(){applyTheme(document.body.classList.contains('light')?'dark':'light');});
+
+  // Search
+  document.getElementById('searchInput').addEventListener('input', function(e){
+    currentSearch=e.target.value.toLowerCase();
+    document.getElementById('searchClear').classList.toggle('show', e.target.value.length>0);
+    renderGrid();
+  });
+  document.getElementById('searchClear').addEventListener('click', function(){
+    document.getElementById('searchInput').value=''; currentSearch='';
+    this.classList.remove('show'); renderGrid();
+  });
+
+  // Filters
+  document.querySelectorAll('.filter-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active'); currentFilter=b.dataset.cat; renderGrid();
+    });
+  });
+
+  // Drawer
+  document.getElementById('dbxPill').addEventListener('click', function(){if(accessToken)document.getElementById('drawer').classList.add('open');});
+  document.getElementById('drawerClose').addEventListener('click', function(){document.getElementById('drawer').classList.remove('open');});
+  document.getElementById('drawer').addEventListener('click', function(e){if(e.target===document.getElementById('drawer'))document.getElementById('drawer').classList.remove('open');});
+  document.getElementById('drawerLogout').addEventListener('click', function(){
+    localStorage.clear(); accessToken=''; refreshToken=''; tokenExpiry=0; allAlbums=[]; covers={};
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('dbxDot').className='dot';
+    document.getElementById('albumGrid').innerHTML='';
+    document.getElementById('statsBar').classList.remove('show');
+    showLogin();
+  });
+
+  // Modal
+  document.getElementById('modal').addEventListener('click', function(e){if(e.target===document.getElementById('modal'))closeModal();});
+
+  // OAuth
   var params = new URLSearchParams(window.location.search);
-  var code  = params.get('code');
-  var state = params.get('state');
-
-  if (code && state) {
+  var code = params.get('code'), state = params.get('state');
+  if(code && state){
     window.history.replaceState({}, '', REDIRECT);
-    var savedState   = localStorage.getItem('oauth_state');
-    var codeVerifier = localStorage.getItem('code_verifier');
-    localStorage.removeItem('oauth_state');
-    localStorage.removeItem('code_verifier');
-    if (!codeVerifier || state !== savedState) { showLogin(); return; }
-    showLoading('Connessione a Dropbox...');
-    exchangeCode(code, codeVerifier);
-    return;
+    var savedState=localStorage.getItem('oauth_state'), codeVerifier=localStorage.getItem('code_verifier');
+    localStorage.removeItem('oauth_state'); localStorage.removeItem('code_verifier');
+    if(!codeVerifier || state!==savedState){showLogin();return;}
+    showLoading('Connessione a Dropbox...'); exchangeCode(code, codeVerifier); return;
   }
-
-  accessToken  = localStorage.getItem('dbx_access')  || '';
-  refreshToken = localStorage.getItem('dbx_refresh') || '';
-  tokenExpiry  = parseInt(localStorage.getItem('dbx_expiry') || '0');
-
-  if (refreshToken) {
-    showLoading('Connessione...');
-    ensureValidToken().then(function(ok){
-      if (ok) onConnected(); else showLogin();
-    });
-    return;
-  }
+  accessToken=localStorage.getItem('dbx_access')||'';
+  refreshToken=localStorage.getItem('dbx_refresh')||'';
+  tokenExpiry=parseInt(localStorage.getItem('dbx_expiry')||'0');
+  if(refreshToken){showLoading('Connessione...');ensureValidToken().then(function(ok){if(ok)onConnected();else showLogin();});return;}
   showLogin();
-
-  // Catalog switcher
-  var btnS = document.getElementById('btnSymphytum');
-  var btnC = document.getElementById('btnCdpedia');
-  if(btnS) btnS.addEventListener('click', function(){
-    if(currentCatalog==='symphytum') return;
-    currentCatalog='symphytum';
-    btnS.classList.add('active'); btnC.classList.remove('active');
-    allAlbums = allAlbumsCache.slice(); covers = Object.assign({},coversCache);
-    coversLoading=false; renderGrid();
-  });
-  if(btnC) btnC.addEventListener('click', function(){
-    if(currentCatalog==='cdpedia') return;
-    currentCatalog='cdpedia';
-    btnS.classList.remove('active'); btnC.classList.add('active');
-    if(cdpLoaded){ allAlbums=allAlbumsCdp; covers=coversCdp; renderGrid(); if(!cdpCoversLoading) loadCdpCovers(); }
-    else { loadCdpDatabase(); }
-  });
-
-  // Theme button
-  var themeBtn = document.getElementById('themeBtn');
-  if(themeBtn){
-    if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); themeBtn.textContent='☾'; }
-    themeBtn.addEventListener('click', function(){
-      applyTheme(document.body.classList.contains('light')?'dark':'light');
-    });
-  }
 });
 
 // ── PKCE ─────────────────────────────────────────────────
-function randomBase64(len){
-  var arr = new Uint8Array(len);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode.apply(null, arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-function sha256Base64(str){
-  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-  });
-}
+function randomBase64(len){var arr=new Uint8Array(len);crypto.getRandomValues(arr);return btoa(String.fromCharCode.apply(null,arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
+function sha256Base64(str){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(function(buf){return btoa(String.fromCharCode.apply(null,new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');});}
 
-// ── LOGIN ────────────────────────────────────────────────
 document.getElementById('loginBtn').addEventListener('click', function(){
-  var verifier = randomBase64(64);
-  var state    = randomBase64(16);
-  localStorage.setItem('code_verifier', verifier);
-  localStorage.setItem('oauth_state', state);
-  sha256Base64(verifier).then(function(challenge){
-    window.location.href = 'https://www.dropbox.com/oauth2/authorize'
-      + '?client_id='             + encodeURIComponent(APP_KEY)
-      + '&response_type=code'
-      + '&redirect_uri='          + encodeURIComponent(REDIRECT)
-      + '&code_challenge='        + encodeURIComponent(challenge)
-      + '&code_challenge_method=S256'
-      + '&state='                 + encodeURIComponent(state)
-      + '&token_access_type=offline';
+  var v=randomBase64(64), s=randomBase64(16);
+  localStorage.setItem('code_verifier',v); localStorage.setItem('oauth_state',s);
+  sha256Base64(v).then(function(c){
+    window.location.href='https://www.dropbox.com/oauth2/authorize?client_id='+encodeURIComponent(APP_KEY)+'&response_type=code&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_challenge='+encodeURIComponent(c)+'&code_challenge_method=S256&state='+encodeURIComponent(s)+'&token_access_type=offline';
   });
 });
 
-// ── EXCHANGE CODE ────────────────────────────────────────
-function exchangeCode(code, verifier){
-  fetch('https://api.dropbox.com/oauth2/token', {
-    method:'POST',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:'code='           + encodeURIComponent(code)
-       + '&grant_type=authorization_code'
-       + '&client_id='     + encodeURIComponent(APP_KEY)
-       + '&client_secret=' + encodeURIComponent(APP_SECRET)
-       + '&redirect_uri='  + encodeURIComponent(REDIRECT)
-       + '&code_verifier=' + encodeURIComponent(verifier)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(d){
-    if (!d.access_token) { showLogin(); alert('Errore login. Riprova.'); return; }
-    saveTokens(d);
-    onConnected();
-  })
-  .catch(function(){ showLogin(); alert('Errore di rete. Riprova.'); });
-}
-
 // ── TOKENS ───────────────────────────────────────────────
-function saveTokens(d){
-  accessToken = d.access_token;
-  if (d.refresh_token) refreshToken = d.refresh_token;
-  tokenExpiry = Date.now() + ((d.expires_in || 14400) * 1000) - 60000;
-  localStorage.setItem('dbx_access',  accessToken);
-  localStorage.setItem('dbx_refresh', refreshToken);
-  localStorage.setItem('dbx_expiry',  String(tokenExpiry));
+function exchangeCode(code,verifier){
+  fetch('https://api.dropbox.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'code='+encodeURIComponent(code)+'&grant_type=authorization_code&client_id='+encodeURIComponent(APP_KEY)+'&client_secret='+encodeURIComponent(APP_SECRET)+'&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_verifier='+encodeURIComponent(verifier)})
+  .then(function(r){return r.json();}).then(function(d){if(!d.access_token){showLogin();alert('Errore login.');return;}saveTokens(d);onConnected();}).catch(function(){showLogin();alert('Errore di rete.');});
 }
+function saveTokens(d){accessToken=d.access_token;if(d.refresh_token)refreshToken=d.refresh_token;tokenExpiry=Date.now()+((d.expires_in||14400)*1000)-60000;localStorage.setItem('dbx_access',accessToken);localStorage.setItem('dbx_refresh',refreshToken);localStorage.setItem('dbx_expiry',String(tokenExpiry));}
 function ensureValidToken(){
-  if (accessToken && Date.now() < tokenExpiry) return Promise.resolve(true);
-  if (!refreshToken) return Promise.resolve(false);
-  return fetch('https://api.dropbox.com/oauth2/token', {
-    method:'POST',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:'grant_type=refresh_token'
-       + '&refresh_token=' + encodeURIComponent(refreshToken)
-       + '&client_id='     + encodeURIComponent(APP_KEY)
-       + '&client_secret=' + encodeURIComponent(APP_SECRET)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(d){ if (!d.access_token) return false; saveTokens(d); return true; })
-  .catch(function(){ return false; });
+  if(accessToken&&Date.now()<tokenExpiry)return Promise.resolve(true);
+  if(!refreshToken)return Promise.resolve(false);
+  return fetch('https://api.dropbox.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(refreshToken)+'&client_id='+encodeURIComponent(APP_KEY)+'&client_secret='+encodeURIComponent(APP_SECRET)})
+  .then(function(r){return r.json();}).then(function(d){if(!d.access_token)return false;saveTokens(d);return true;}).catch(function(){return false;});
 }
 
 // ── DROPBOX API ───────────────────────────────────────────
-function dbxPost(url, body){
-  return ensureValidToken().then(function(){
-    var headers = {'Authorization':'Bearer ' + accessToken};
-    if (body) headers['Content-Type'] = 'application/json';
-    return fetch(url, {
-      method:'POST',
-      headers: headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  });
-}
-function dbxDownload(path){
-  return ensureValidToken().then(function(){
-    return fetch(CONTENT + '/files/download', {
-      method:'POST',
-      headers:{
-        'Authorization':'Bearer ' + accessToken,
-        'Dropbox-API-Arg': JSON.stringify({path: path}),
-      },
-    });
-  });
-}
+function dbxPost(url,body){return ensureValidToken().then(function(){var h={'Authorization':'Bearer '+accessToken};if(body)h['Content-Type']='application/json';return fetch(url,{method:'POST',headers:h,body:body?JSON.stringify(body):undefined});});}
+function dbxDownload(path){return ensureValidToken().then(function(){return fetch(CONTENT+'/files/download',{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Dropbox-API-Arg':JSON.stringify({path:path})}});});}
 
 // ── ON CONNECTED ──────────────────────────────────────────
 function onConnected(){
-  dbxPost(API + '/users/get_current_account', null)
-  .then(function(r){ return r.json(); })
+  dbxPost(API+'/users/get_current_account',null)
+  .then(function(r){return r.json();})
   .then(function(u){
-    document.getElementById('dbxDot').className = 'dot ok';
-    var name = (u.name && u.name.display_name) ? u.name.display_name.split(' ')[0] : 'Marco';
-    // dbxLabel removed
-    document.getElementById('drawerUser').textContent = (u.name && u.name.display_name) || '';
-    // Wait for SQL.js before loading database
-    whenSqlReady(function(){ loadDatabase(); });
-  })
-  .catch(function(){ showLogin(); });
+    document.getElementById('dbxDot').className='dot ok';
+    document.getElementById('drawerUser').textContent=(u.name&&u.name.display_name)||'';
+    whenSqlReady(function(){loadDatabase();});
+  }).catch(function(){showLogin();});
 }
 
 // ── LOAD DATABASE ─────────────────────────────────────────
 function loadDatabase(){
   showLoading('Caricamento database...');
-  dbxDownload(DB_FOLDER + '/' + DB_FILE)
-  .then(function(r){
-    if (!r.ok) throw new Error('File ' + DB_FILE + ' non trovato in ' + DB_FOLDER);
-    return r.arrayBuffer();
-  })
+  dbxDownload(DB_PATH)
+  .then(function(r){if(!r.ok)throw new Error('File non trovato: '+DB_PATH);return r.arrayBuffer();})
   .then(function(buf){
-    var arr = new Uint8Array(buf);
-    whenSqlReady(function(){
-      try {
-        sqlDb = new SQL.Database(arr);
-        loadSymphytumData();
-      } catch(e) {
-        showApp(); alert('Errore apertura DB: ' + e.message);
-      }
-    });
+    var db = new SQL.Database(new Uint8Array(buf));
+    loadData(db);
   })
-  .catch(function(e){
-    showApp();
-    alert('Errore: ' + e.message);
-  });
+  .catch(function(e){showApp();alert('Errore: '+e.message);});
 }
 
-// ── LOAD SYMPHYTUM DATA ───────────────────────────────────
-// Reads Collections table to get collection names + table names,
-// then reads each table to get albums,
-// then reads files table to map _id -> hash_name (cover filename)
-function loadSymphytumData(){
+// ── LOAD DATA ─────────────────────────────────────────────
+function loadData(db){
   showLoading('Lettura collezioni...');
-
-  // 1. Read collections map
-  var collections = {};
-  try {
-    var cr = sqlDb.exec("SELECT name, table_name FROM collections");
-    if (cr.length) {
-      cr[0].values.forEach(function(row){
-        collections[row[0]] = row[1]; // name -> table_name
-      });
-    }
-  } catch(e){ console.error('collections', e); }
-
-  // Collection table -> name mapping (hardcoded from DB inspection)
-  // Structure: col 1=Title, col 2=Artist, col 3=Serial, col 4=files._id (image link)
-  // Order matches filter buttons: Colonne Sonore, Italiana, Straniera, Jazz, Classica
-  var tableToName = {
-    'c5025f478ea2b31521ef8efa8e2b6c751': 'Colonne Sonore',
-    'cad69e69cac16415b3c38315578dc71f4': 'Italiana',
-    'c4f40d96ffa68115fbacfddf386d7b1ce': 'Straniera',
-    'c84099dce140ad0b1356b08ad49ac3662': 'Jazz',
-    'c286833dd25708b90e87f5278d2d78490': 'Classica'
-  };
-
-  // Column mapping per collection:
-  // Italiana:      1=Title, 2=Artist, 3=files._id (image), 4=Serial
-  // All others:    1=Title, 2=Artist, 3=Serial,            4=files._id (image)
-  var italianTable = 'cad69e69cac16415b3c38315578dc71f4';
-
   allAlbums = [];
-  Object.keys(tableToName).forEach(function(tableName){
-    var collName = tableToName[tableName];
-    var isItaliana = tableName === italianTable;
-    var imgCol  = isItaliana ? 't."3"' : 't."4"';
-    var serCol  = isItaliana ? '"4"'   : '"3"';
-    try {
-      var tr = sqlDb.exec(
-        'SELECT t."1", t."2", t.' + serCol + ', f.hash_name ' +
-        'FROM "' + tableName + '" t ' +
-        'LEFT JOIN files f ON f._id = ' + imgCol
-      );
-      if (tr.length) {
-        tr[0].values.forEach(function(row){
-          allAlbums.push({
-            title:     String(row[0] || ''),
-            artist:    String(row[1] || ''),
-            serial:    String(row[2] || ''),
-            category:  collName,
-            coverHash: String(row[3] || '')
-          });
-        });
-      }
-    } catch(e){ console.error('table ' + tableName, e); }
-  });
 
-  showApp();
-  document.getElementById('statsBar').classList.add('show');
-  allAlbumsCache = allAlbums.slice();
-  renderGrid();
-
-  // 4. Load covers in background
-  loadCovers();
-}
-
-// ── LOAD COVERS ───────────────────────────────────────────
-var coversLoading = false;
-
-function loadCovers(){
-  if (coversLoading) return;
-  coversLoading = true;
-
-  var prog = document.getElementById('coversProgress');
-
-  prog.innerHTML = '<span class="mini-spin"></span> Caricamento copertine...';
-
-
-  // Build ordered list of hashes - skip already loaded ones (resume after screen off)
-  var seen = {};
-  var hashes = [];
-  allAlbums.forEach(function(a){
-    if (a.coverHash && !seen[a.coverHash]){
-      seen[a.coverHash] = true;
-      if (!covers[a.coverHash.toLowerCase()]){
-        hashes.push(a.coverHash);
-      }
-    }
-  });
-
-  if (!hashes.length){
-    prog.textContent = '';
-    coversLoading = false;
-    if (reloadBtn) { reloadBtn.disabled = false; reloadBtn.style.opacity = '1'; }
-    return;
-  }
-
-  var done = 0;
-  var total = hashes.length;
-  var completed = 0;
-
-  function loadOne(hash){
-    return dbxDownload(COVERS_DIR + '/' + hash)
-    .then(function(r){ return r.ok ? r.blob() : null; })
-    .then(function(blob){
-      if (blob){
-        var key = hash.toLowerCase();
-        covers[key] = URL.createObjectURL(blob);
-        done++;
-        // Replace placeholder immediately in DOM
-        document.querySelectorAll('[data-cover="' + key + '"]').forEach(function(el){
-          var img = document.createElement('img');
-          img.className = 'album-cover';
-          img.src = covers[key];
-          img.alt = '';
-          el.parentNode.replaceChild(img, el);
-        });
-      }
-      completed++;
-      prog.textContent = 'Copertine: ' + done + ' / ' + total;
-      if (completed === total){
-        coversLoading = false;
-        if(currentCatalog==='symphytum') coversCache = Object.assign({}, covers);
-        setTimeout(function(){ prog.textContent = ''; }, 2000);
-      }
-    })
-    .catch(function(){
-      completed++;
-      if (completed === total){
-        coversLoading = false;
-        if(currentCatalog==='symphytum') coversCache = Object.assign({}, covers);
-        setTimeout(function(){ prog.textContent = ''; }, 2000);
-      }
+  // Load tracks map
+  var tracksMap = {};
+  try{
+    var tr = db.exec('SELECT ZENTRY, ZPOSITION, ZNAME, ZARTIST, ZDURATION FROM ZTRACK ORDER BY ZENTRY, ZPOSITION');
+    if(tr.length) tr[0].values.forEach(function(r){
+      if(!tracksMap[r[0]]) tracksMap[r[0]]=[];
+      tracksMap[r[0]].push({pos:r[1],name:String(r[2]||''),artist:String(r[3]||''),dur:String(r[4]||'')});
     });
-  }
+  }catch(e){console.error('tracks',e);}
 
-  // Load in parallel batches of 6
-  var BATCH = 6;
-  function runBatch(start){
-    if (start >= total) return;
-    var batch = hashes.slice(start, start + BATCH);
-    Promise.all(batch.map(loadOne)).then(function(){
-      runBatch(start + BATCH);
-    });
-  }
-  runBatch(0);
-}
-
-// ── LOAD CDPEDIA DATABASE ────────────────────────────────
-function switchCatalog(cat){
-  if(currentCatalog===cat) return;
-  currentCatalog=cat;
-  document.getElementById('btnSymphytum').classList.toggle('active', cat==='symphytum');
-  document.getElementById('btnCdpedia').classList.toggle('active', cat==='cdpedia');
-  // Reset search and filter
-  document.getElementById('searchInput').value='';
-  document.getElementById('searchClear').classList.remove('show');
-  currentSearch='';
-  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
-  document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
-  currentFilter='all';
-  if(cat==='cdpedia'){
-    if(cdpLoaded){ allAlbums=allAlbumsCdp; covers=coversCdp; renderGrid(); if(!cdpCoversLoading) loadCdpCovers(); }
-    else { loadCdpDatabase(); }
-  } else {
-    // Restore Symphytum - keep existing covers object (may still be loading)
-    allAlbums = allAlbumsCache.slice();
-    // Don't replace covers if we have more covers than cache (loading was in progress)
-    if(Object.keys(coversCache).length >= Object.keys(covers).length){
-      covers = Object.assign({}, coversCache);
-    }
-    coversLoading = false;
-    renderGrid();
-  }
-}
-
-function loadCdpDatabase(){
-  console.log('loadCdpDatabase called, path:', CDP_DB_PATH);
-  showLoading('Caricamento CDpedia...');
-  dbxDownload(CDP_DB_PATH)
-  .then(function(r){ if(!r.ok) throw new Error('File non trovato: '+CDP_DB_PATH); return r.arrayBuffer(); })
-  .then(function(buf){
-    var cdpDb = new SQL.Database(new Uint8Array(buf));
-    allAlbumsCdp = [];
-    var res = cdpDb.exec(
+  // Load albums
+  try{
+    var res = db.exec(
       'SELECT e.Z_PK, e.ZTITLE, e.ZARTIST, e.ZCATALOGNUMBER, e.ZGENRE, '+
       'e.ZLABEL, e.ZFORMAT, e.ZNUMBEROFTRACKS, e.ZDURATION, e.ZSUMMARY, e.ZURL, e.ZUID, ec.Z_1COLLECTIONS, e.ZCOLLECTIONID '+
       'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES = e.Z_PK '+
       'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) '+
       'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END, CAST(e.ZCOLLECTIONID AS INTEGER)'
     );
-    // Load all tracks into a map pk -> [{pos, name, artist, duration}]
-    var tracksMap = {};
-    try {
-      var tr = cdpDb.exec('SELECT ZENTRY, ZPOSITION, ZNAME, ZARTIST, ZDURATION FROM ZTRACK ORDER BY ZENTRY, ZPOSITION');
-      if(tr.length) tr[0].values.forEach(function(r){
-        var pk = r[0];
-        if(!tracksMap[pk]) tracksMap[pk]=[];
-        tracksMap[pk].push({pos:r[1],name:r[2]||'',artist:r[3]||'',dur:r[4]||''});
-      });
-    } catch(e){ console.error('tracks',e); }
-
     if(res.length){
       res[0].values.forEach(function(row){
-        var collName = COLL_MAP[row[12]] || ''; if(!collName) return;
-        allAlbumsCdp.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),serial:String(row[3]||''),genre:String(row[4]||''),label:String(row[5]||''),format:String(row[6]||''),tracks:String(row[7]||''),duration:String(row[8]||''),summary:String(row[9]||''),url:String(row[10]||''),zuid:row[11],category:collName,coverHash:'',trackList:tracksMap[row[0]]||[],identificativo:String(row[13]||'')});
+        var cat = COLL_MAP[row[12]]||''; if(!cat) return;
+        allAlbums.push({
+          pk:            row[0],
+          title:         String(row[1]||''),
+          artist:        String(row[2]||''),
+          serial:        String(row[3]||''),
+          genre:         String(row[4]||''),
+          label:         String(row[5]||''),
+          format:        String(row[6]||''),
+          numTracks:     String(row[7]||''),
+          duration:      String(row[8]||''),
+          summary:       String(row[9]||''),
+          url:           String(row[10]||''),
+          zuid:          row[11],
+          category:      cat,
+          identificativo:String(row[13]||''),
+          trackList:     tracksMap[row[0]]||[]
+        });
       });
     }
-    cdpLoaded = true;
-    allAlbums = allAlbumsCdp;
-    covers = coversCdp;
-    showApp();
-    document.getElementById('statsBar').classList.add('show');
-    renderGrid();
-    loadCdpCovers();
-  })
-  .catch(function(e){ showApp(); alert('Errore CDpedia: '+e.message); });
+  }catch(e){console.error('albums',e);}
+
+  showApp();
+  document.getElementById('statsBar').classList.add('show');
+  renderGrid();
+  loadCovers();
 }
 
-function loadCdpCovers(){
-  if(cdpCoversLoading) return;
-  cdpCoversLoading = true;
+// ── LOAD COVERS ───────────────────────────────────────────
+function loadCovers(){
+  if(coversLoading) return;
+  coversLoading = true;
   var prog = document.getElementById('coversProgress');
-  prog.innerHTML='<span class="mini-spin"></span> Caricamento copertine CDpedia...';
+  prog.innerHTML='<span class="mini-spin"></span> Caricamento copertine...';
+
   var seen={}, zuids=[];
-  allAlbumsCdp.forEach(function(a){ if(a.zuid&&!seen[a.zuid]&&!coversCdp[''+a.zuid]){seen[a.zuid]=true;zuids.push(a.zuid);} });
-  if(!zuids.length){prog.textContent='';cdpCoversLoading=false;return;}
-  var done=0,completed=0,total=zuids.length;
+  allAlbums.forEach(function(a){if(a.zuid&&!seen[a.zuid]&&!covers[String(a.zuid)]){seen[a.zuid]=true;zuids.push(a.zuid);}});
+
+  if(!zuids.length){prog.textContent='';coversLoading=false;return;}
+
+  var done=0, completed=0, total=zuids.length;
   prog.textContent='Copertine: 0 / '+total;
+
   function loadOne(zuid){
-    var key=''+zuid;
-    function tryExt(ext){ return dbxDownload(CDP_COVERS_DIR+'/'+zuid+'.'+ext).then(function(r){return r.ok?r.blob():null;}); }
+    var key=String(zuid);
+    function tryExt(ext){return dbxDownload(COVERS_DIR+'/'+zuid+'.'+ext).then(function(r){return r.ok?r.blob():null;});}
     return tryExt('jpg').then(function(b){return b||tryExt('png');}).then(function(b){return b||tryExt('jpeg');})
     .then(function(blob){
-      if(blob){ coversCdp[key]=URL.createObjectURL(blob); done++;
-        if(currentCatalog==='cdpedia') document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){var img=document.createElement('img');img.className='album-cover';img.src=coversCdp[key];img.alt='';el.parentNode.replaceChild(img,el);});
+      if(blob){
+        covers[key]=URL.createObjectURL(blob); done++;
+        document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){
+          var img=document.createElement('img');img.className='album-cover';img.src=covers[key];img.alt='';
+          el.parentNode.replaceChild(img,el);
+        });
       }
       completed++; prog.textContent='Copertine: '+done+' / '+total;
-      if(completed===total){cdpCoversLoading=false;setTimeout(function(){prog.textContent='';},2000);}
-    }).catch(function(){completed++;if(completed===total){cdpCoversLoading=false;setTimeout(function(){prog.textContent='';},2000);}});
+      if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}
+    }).catch(function(){completed++;if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}});
   }
+
   function runBatch(start){if(start>=total)return;Promise.all(zuids.slice(start,start+6).map(loadOne)).then(function(){runBatch(start+6);});}
   runBatch(0);
 }
 
-// ── DRAWER ────────────────────────────────────────────────
-document.getElementById('dbxPill').addEventListener('click', function(){
-  if (accessToken) document.getElementById('drawer').classList.add('open');
-});
-document.getElementById('drawerClose').addEventListener('click', function(){
-  document.getElementById('drawer').classList.remove('open');
-});
-document.getElementById('drawer').addEventListener('click', function(e){
-  if (e.target === document.getElementById('drawer')) document.getElementById('drawer').classList.remove('open');
-});
-document.getElementById('drawerLogout').addEventListener('click', function(){
-  localStorage.clear();
-  accessToken=''; refreshToken=''; tokenExpiry=0;
-  allAlbums=[]; covers={}; sqlDb=null;
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('dbxDot').className = 'dot';
-  document.getElementById('dbxLabel').textContent = 'Dropbox';
-  document.getElementById('albumGrid').innerHTML = '';
-  document.getElementById('statsBar').classList.remove('show');
-  showLogin();
-});
-
 // ── SEARCH & FILTER ───────────────────────────────────────
-document.getElementById('searchInput').addEventListener('input', function(e){
-  currentSearch = e.target.value.toLowerCase();
-  document.getElementById('searchClear').classList.toggle('show', e.target.value.length > 0);
-  renderGrid();
-});
-document.getElementById('searchClear').addEventListener('click', function(){
-  document.getElementById('searchInput').value = '';
-  currentSearch = '';
-  this.classList.remove('show');
-  renderGrid();
-  document.getElementById('searchInput').focus();
-});
-document.querySelectorAll('.filter-btn').forEach(function(b){
-  b.addEventListener('click', function(){
-    document.querySelectorAll('.filter-btn').forEach(function(x){ x.classList.remove('active'); });
-    b.classList.add('active');
-    currentFilter = b.dataset.cat;
-    renderGrid();
-  });
-});
 function filtered(){
   return allAlbums.filter(function(a){
-    var mc = currentFilter === 'all' || a.category === currentFilter;
-    var q  = currentSearch;
-    return mc && (!q ||
-      a.title.toLowerCase().indexOf(q)  !== -1 ||
-      a.artist.toLowerCase().indexOf(q) !== -1 ||
-      a.serial.toLowerCase().indexOf(q) !== -1);
+    var mc=currentFilter==='all'||a.category===currentFilter;
+    var q=currentSearch;
+    return mc&&(!q||a.title.toLowerCase().indexOf(q)!==-1||a.artist.toLowerCase().indexOf(q)!==-1||a.identificativo.indexOf(q)!==-1||a.serial.toLowerCase().indexOf(q)!==-1);
   });
 }
 
 // ── RENDER ────────────────────────────────────────────────
 function renderGrid(){
-  var list = filtered();
-  document.getElementById('countLbl').textContent = list.length;
-  document.getElementById('catLbl').textContent = currentFilter === 'all' ? '' : currentFilter;
-  var grid = document.getElementById('albumGrid');
-  grid.innerHTML = '';
-  document.getElementById('emptyState').classList.toggle('show', list.length === 0 && allAlbums.length > 0);
-
-  list.forEach(function(a, i){
-    var card = document.createElement('div');
-    card.className = 'album-card';
-    card.style.animationDelay = (i * 0.02) + 's';
-    var hashKey = a.coverHash ? a.coverHash.toLowerCase() : '';
-    var zuidKey = a.zuid ? ''+a.zuid : '';
-    var url = (zuidKey && covers[zuidKey]) ? covers[zuidKey] : (hashKey ? (covers[hashKey]||null) : null);
-    var coverKey = zuidKey || hashKey;
-    var cc  = CAT_CLASS[a.category] || '';
-    var fourthField = (currentCatalog==='cdpedia') ? (a.identificativo || '') : a.serial;
-    card.innerHTML =
-      (url
-        ? '<img class="album-cover" src="' + url + '" alt="' + a.title + '" loading="lazy">'
-        : '<div class="album-ph" data-cover="' + coverKey + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
-      '<div class="album-info">' +
-        (a.category ? '<div class="album-cat ' + cc + '">' + a.category + '</div>' : '') +
-        '<div class="album-title">' + a.title + '</div>' +
-        (a.artist ? '<div class="album-artist">' + a.artist + '</div>' : '') +
-        (fourthField ? '<div class="album-serial">' + fourthField + '</div>' : '') +
+  var list=filtered();
+  document.getElementById('countLbl').textContent=list.length;
+  document.getElementById('catLbl').textContent=currentFilter==='all'?'':currentFilter;
+  var grid=document.getElementById('albumGrid');
+  grid.innerHTML='';
+  document.getElementById('emptyState').classList.toggle('show',list.length===0&&allAlbums.length>0);
+  list.forEach(function(a,i){
+    var card=document.createElement('div'); card.className='album-card'; card.style.animationDelay=(i*0.015)+'s';
+    var key=a.zuid?String(a.zuid):'';
+    var url=key?(covers[key]||null):null;
+    var cc=CAT_CLASS[a.category]||'';
+    card.innerHTML=
+      (url?'<img class="album-cover" src="'+url+'" alt="'+a.title+'" loading="lazy">':
+           '<div class="album-ph" data-cover="'+key+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
+      '<div class="album-info">'+
+        (a.category?'<div class="album-cat '+cc+'">'+a.category+'</div>':'')+
+        '<div class="album-title">'+a.title+'</div>'+
+        (a.artist?'<div class="album-artist">'+a.artist+'</div>':'')+
+        (a.identificativo?'<div class="album-serial">'+a.identificativo+'</div>':'')+
       '</div>';
-    card.addEventListener('click', function(){ if(currentCatalog==='cdpedia') openModalCdp(a); else openModal(a); });
+    card.addEventListener('click',function(){openModal(a);});
     grid.appendChild(card);
   });
 }
 
-// ── FILTER BY ARTIST ─────────────────────────────────────
+// ── FILTER BY ARTIST ──────────────────────────────────────
 function filterByArtist(artist){
   closeModal();
-  document.getElementById('searchInput').value = artist;
-  currentSearch = artist.toLowerCase();
-  // Reset category filter to all
-  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('searchInput').value=artist; currentSearch=artist.toLowerCase();
+  document.getElementById('searchClear').classList.add('show');
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
-  currentFilter = 'all';
-  renderGrid();
-  // Scroll to top
-  window.scrollTo({top:0, behavior:'smooth'});
+  currentFilter='all'; renderGrid(); window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ── MODAL ─────────────────────────────────────────────────
 function openModal(a){
-  var hashKey = a.coverHash ? a.coverHash.toLowerCase() : '';
-  var zuidKey = a.zuid ? ''+a.zuid : '';
-  var activeCov = (currentCatalog==='cdpedia') ? coversCdp : covers;
-  var url = (zuidKey && activeCov[zuidKey]) ? activeCov[zuidKey] : (hashKey ? (activeCov[hashKey]||null) : null);
-  var cc  = CAT_CLASS[a.category] || '';
-  document.getElementById('modalContent').innerHTML =
-    (url
-      ? '<img class="modal-cover" src="' + url + '" alt="' + a.title + '">'
-      : '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
-    '<div class="modal-body">' +
-      (a.category ? '<div class="modal-cat ' + cc + '">' + a.category + '</div>' : '') +
-      '<div class="modal-title">' + a.title + '</div>' +
-      (a.artist ? '<div class="modal-artist" onclick="filterByArtist(\'' + a.artist.replace(/'/g, "\\'") + '\')">' + a.artist + '</div>' : '') +
-      '<div class="modal-divider"></div>' +
-      (a.serial ? '<div class="modal-row"><span class="modal-lbl">Numero di serie</span><span class="modal-val">' + a.serial + '</span></div>' : '') +
-      '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
-    '</div>';
-  document.getElementById('modal').classList.add('open');
-  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-  document.body.style.overflow = 'hidden';
-}
-function openModalCdp(a){
-  var zuidKey = a.zuid ? String(a.zuid) : '';
-  var url = zuidKey ? (coversCdp[zuidKey] || null) : null;
-  var cc  = CAT_CLASS[a.category] || '';
+  var key=a.zuid?String(a.zuid):'';
+  var url=key?(covers[key]||null):null;
+  var cc=CAT_CLASS[a.category]||'';
 
-  var rows = '';
-  if(a.identificativo) rows += '<div class="modal-row"><span class="modal-lbl">Identificativo</span><span class="modal-val">' + a.identificativo + '</span></div>';
-  if(a.serial)   rows += '<div class="modal-row"><span class="modal-lbl">Numero</span><span class="modal-val">' + a.serial + '</span></div>';
-  if(a.label)    rows += '<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">' + a.label + '</span></div>';
-  if(a.format)   rows += '<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">' + a.format + '</span></div>';
-  if(a.duration) rows += '<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">' + a.duration + '</span></div>';
-  if(a.url)      rows += '<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="' + a.url + '" target="_blank" style="color:var(--gold)">Discogs ↗</a></span></div>';
+  var rows='';
+  if(a.identificativo) rows+='<div class="modal-row"><span class="modal-lbl">Identificativo</span><span class="modal-val">'+a.identificativo+'</span></div>';
+  if(a.serial)         rows+='<div class="modal-row"><span class="modal-lbl">Numero</span><span class="modal-val">'+a.serial+'</span></div>';
+  if(a.label)          rows+='<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">'+a.label+'</span></div>';
+  if(a.format)         rows+='<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">'+a.format+'</span></div>';
+  if(a.duration)       rows+='<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">'+a.duration+'</span></div>';
+  if(a.url)            rows+='<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="'+a.url+'" target="_blank" style="color:var(--gold)">Discogs ↗</a></span></div>';
 
-  // Genre full width
-  var genreHtml = a.genre
-    ? '<div style="font-size:10px;color:var(--text-muted);letter-spacing:0.08em;margin-bottom:10px;">' + a.genre + '</div>'
-    : '';
-
-  // Track list
-  var tracksHtml = '';
-  if(a.trackList && a.trackList.length){
-    var trackItems = a.trackList.map(function(t, i){
-      var num = String(i+1).padStart(2,'0');
-      var dur = t.dur ? '<span style="color:var(--text-muted);font-size:10px;margin-left:auto;flex-shrink:0;">'+t.dur+'</span>' : '';
-      var art = (t.artist && t.artist !== a.artist) ? '<span style="color:var(--text-muted);font-size:10px;display:block;">'+t.artist+'</span>' : '';
-      return '<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">'
-        + '<span style="color:var(--text-muted);font-size:10px;flex-shrink:0;width:20px;">'+num+'</span>'
-        + '<div style="flex:1;min-width:0;"><span style="font-size:12px;">'+t.name+'</span>'+art+'</div>'
-        + dur
-        + '</div>';
+  var tracksHtml='';
+  if(a.trackList&&a.trackList.length){
+    var items=a.trackList.map(function(t,i){
+      return '<div class="track-row">'+
+        '<span class="track-num">'+String(i+1).padStart(2,'0')+'</span>'+
+        '<div class="track-info"><div class="track-name">'+t.name+'</div>'+(t.artist&&t.artist!==a.artist?'<div class="track-artist">'+t.artist+'</div>':'')+' </div>'+
+        (t.dur?'<span class="track-dur">'+t.dur+'</span>':'')+
+        '</div>';
     }).join('');
-    tracksHtml = '<div class="modal-divider"></div>'
-      + '<div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div>'
-      + '<div style="max-height:200px;overflow-y:auto;">'+trackItems+'</div>';
+    tracksHtml='<div class="modal-divider"></div>'+
+      '<div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div>'+
+      '<div style="max-height:200px;overflow-y:auto;">'+items+'</div>';
   }
 
-  var coverHtml = url
-    ? '<img class="modal-cover" src="' + url + '" alt="">'
-    : '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>';
-
-  var artistHtml = a.artist
-    ? '<div class="modal-artist" id="modalArtistBtn">' + a.artist + '</div>'
-    : '';
-
-  document.getElementById('modalContent').innerHTML =
-    coverHtml +
-    '<div class="modal-body">' +
-      (a.category ? '<div class="modal-cat ' + cc + '">' + a.category + '</div>' : '') +
-      '<div class="modal-title">' + a.title + '</div>' +
-      artistHtml +
-      genreHtml +
-      (rows ? '<div class="modal-divider"></div>' + rows : '') +
-      tracksHtml +
-      '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
+  document.getElementById('modalContent').innerHTML=
+    (url?'<img class="modal-cover" src="'+url+'" alt="">':
+         '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
+    '<div class="modal-body">'+
+      (a.category?'<div class="modal-cat '+cc+'">'+a.category+'</div>':'')+
+      '<div class="modal-title">'+a.title+'</div>'+
+      (a.artist?'<div class="modal-artist" id="mdlArtist">'+a.artist+'</div>':'')+
+      (a.genre?'<div class="modal-genre">'+a.genre+'</div>':'')+
+      (rows?'<div class="modal-divider"></div>'+rows:'')+
+      tracksHtml+
+      '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>'+
     '</div>';
 
-  var artistBtn = document.getElementById('modalArtistBtn');
-  if(artistBtn) artistBtn.addEventListener('click', function(){ filterByArtist(a.artist); });
-
+  var ab=document.getElementById('mdlArtist');
+  if(ab) ab.addEventListener('click',function(){filterByArtist(a.artist);});
   document.getElementById('modal').classList.add('open');
-  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-  document.body.style.overflow = 'hidden';
+  document.getElementById('modalCloseBtn').addEventListener('click',closeModal);
+  document.body.style.overflow='hidden';
 }
-
-function closeModal(){
-  document.getElementById('modal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.getElementById('modal').addEventListener('click', function(e){
-  if (e.target === document.getElementById('modal')) closeModal();
-});
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
 </script>
-<style>
-body.light{
-  --bg:#f5f2ee;--surface:#ffffff;--surface2:#ede9e3;--border:#d8d0c4;
-  --gold:#a07830;--text:#1a1612;--text-muted:#8a7d6a;
-  --cs:#a07830;--it:#c04030;--st:#2878c0;--jz:#4a9040;--cl:#8040b0;
-  --red:#c04030;--green:#4a9040;
-}
-body.light header{background:rgba(245,242,238,0.96) !important;}
-body.light .login-btn{color:#fff !important;}
-body.light .album-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1) !important;}
-body.light #drawer,body.light #modal{background:rgba(0,0,0,0.45) !important;}
-body.light .filter-btn.active[data-cat="all"]{background:#4a4440 !important;border-color:#4a4440 !important;color:#fff !important;}
-body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg) !important;}
-</style>
-<script>
-function applyTheme(t){
-  if(t==='light'){document.body.classList.add('light');var b=document.getElementById('themeBtn');if(b)b.textContent='☾';document.querySelector('meta[name="theme-color"]').content='#f5f2ee';}
-  else{document.body.classList.remove('light');var b=document.getElementById('themeBtn');if(b)b.textContent='☀';document.querySelector('meta[name="theme-color"]').content='#141414';}
-  localStorage.setItem('theme',t);
-}
-
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
-</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}</script>
 </body>
 </html>
