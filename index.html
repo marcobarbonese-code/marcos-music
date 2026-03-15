@@ -75,8 +75,8 @@ main{padding:16px;}
 #statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
 #statsBar.show{display:flex;justify-content:space-between;align-items:center;}
 .stats-n{color:var(--gold);}
-.sort-btn{background:none;border:none;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;padding:0 2px;transition:color 0.2s;}
-.sort-btn:hover{color:var(--gold);}
+.sort-btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;padding:4px 10px;border-radius:20px;transition:all 0.2s;letter-spacing:0.05em;}
+.sort-btn:hover{border-color:var(--gold);color:var(--gold);}
 #coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
 
 #albumGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
@@ -181,7 +181,8 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
   <div id="loadingScreen"><div class="spinner"></div><span id="loadMsg">Caricamento...</span></div>
   <div id="appScreen">
     <div id="statsBar">
-      <span><span class="stats-n" id="countLbl">0</span> album &nbsp;<button class="sort-btn" id="sortBtn">↑</button></span>
+      <span><span class="stats-n" id="countLbl">0</span> album</span>
+      <button class="sort-btn" id="sortBtn">↑ ID</button>
       <span id="catLbl"></span>
     </div>
     <div id="coversProgress"></div>
