@@ -76,7 +76,10 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 
 .search-wrap{position:relative;margin-bottom:10px;}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;}
-#searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 12px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--surface);border:none;color:var(--text-muted);cursor:pointer;padding:2px 4px;display:none;line-height:1;border-radius:4px;}
+.search-clear:hover{color:var(--text);}
+.search-clear.show{display:block;}
+#searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 34px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
 #searchInput:focus{border-color:var(--gold);}
 #searchInput::placeholder{color:var(--text-muted);}
 .filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
@@ -157,7 +160,8 @@ main{padding:16px;}
 .modal-body{padding:20px;}
 .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
 .modal-title{font-family:'Playfair Display',serif;font-size:24px;line-height:1.2;margin-bottom:6px;}
-.modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:16px;}
+.modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:16px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;transition:color 0.2s;}
+.modal-artist:hover{color:var(--gold);}
 .modal-divider{height:1px;background:var(--border);margin:14px 0;}
 .modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
 .modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
@@ -182,6 +186,9 @@ main{padding:16px;}
   <div class="search-wrap">
     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="searchInput" placeholder="Cerca titolo, artista, seriale..." autocomplete="off" spellcheck="false">
+    <button class="search-clear" id="searchClear">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
   </div>
   <div class="filters">
     <button class="filter-btn active" data-cat="all">Tutti</button>
@@ -659,7 +666,16 @@ document.getElementById('drawerLogout').addEventListener('click', function(){
 
 // ── SEARCH & FILTER ───────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', function(e){
-  currentSearch = e.target.value.toLowerCase(); renderGrid();
+  currentSearch = e.target.value.toLowerCase();
+  document.getElementById('searchClear').classList.toggle('show', e.target.value.length > 0);
+  renderGrid();
+});
+document.getElementById('searchClear').addEventListener('click', function(){
+  document.getElementById('searchInput').value = '';
+  currentSearch = '';
+  this.classList.remove('show');
+  renderGrid();
+  document.getElementById('searchInput').focus();
 });
 document.querySelectorAll('.filter-btn').forEach(function(b){
   b.addEventListener('click', function(){
@@ -711,6 +727,20 @@ function renderGrid(){
   });
 }
 
+// ── FILTER BY ARTIST ─────────────────────────────────────
+function filterByArtist(artist){
+  closeModal();
+  document.getElementById('searchInput').value = artist;
+  currentSearch = artist.toLowerCase();
+  // Reset category filter to all
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
+  currentFilter = 'all';
+  renderGrid();
+  // Scroll to top
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 // ── MODAL ─────────────────────────────────────────────────
 function openModal(a){
   var hashKey = a.coverHash ? a.coverHash.toLowerCase() : '';
@@ -723,7 +753,7 @@ function openModal(a){
     '<div class="modal-body">' +
       (a.category ? '<div class="modal-cat ' + cc + '">' + a.category + '</div>' : '') +
       '<div class="modal-title">' + a.title + '</div>' +
-      (a.artist ? '<div class="modal-artist">' + a.artist + '</div>' : '') +
+      (a.artist ? '<div class="modal-artist" onclick="filterByArtist(\'' + a.artist.replace(/'/g, "\\'") + '\')">' + a.artist + '</div>' : '') +
       '<div class="modal-divider"></div>' +
       (a.serial ? '<div class="modal-row"><span class="modal-lbl">Numero di serie</span><span class="modal-val">' + a.serial + '</span></div>' : '') +
       '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
@@ -783,14 +813,7 @@ function applyTheme(t){
   }
   localStorage.setItem('theme',t);
 }
-window.addEventListener('DOMContentLoaded',function(){
-  var btn = document.getElementById('themeBtn');
-  if(btn) btn.addEventListener('click',function(){
-    applyTheme(document.body.classList.contains('light')?'dark':'light');
-  });
-  // Set correct icon on load
-  if(document.body.classList.contains('light') && btn) btn.textContent='☾';
-});
+
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
 </script>
 </body>
