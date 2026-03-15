@@ -369,6 +369,33 @@ window.addEventListener('DOMContentLoaded', function(){
     return;
   }
   showLogin();
+
+  // Catalog switcher
+  var btnS = document.getElementById('btnSymphytum');
+  var btnC = document.getElementById('btnCdpedia');
+  if(btnS) btnS.addEventListener('click', function(){
+    if(currentCatalog==='symphytum') return;
+    currentCatalog='symphytum';
+    btnS.classList.add('active'); btnC.classList.remove('active');
+    allAlbums = allAlbumsCache.slice(); covers = Object.assign({},coversCache);
+    coversLoading=false; renderGrid();
+  });
+  if(btnC) btnC.addEventListener('click', function(){
+    if(currentCatalog==='cdpedia') return;
+    currentCatalog='cdpedia';
+    btnS.classList.remove('active'); btnC.classList.add('active');
+    if(cdpLoaded){ allAlbums=allAlbumsCdp; covers=coversCdp; renderGrid(); if(!cdpCoversLoading) loadCdpCovers(); }
+    else { loadCdpDatabase(); }
+  });
+
+  // Theme button
+  var themeBtn = document.getElementById('themeBtn');
+  if(themeBtn){
+    if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); themeBtn.textContent='☾'; }
+    themeBtn.addEventListener('click', function(){
+      applyTheme(document.body.classList.contains('light')?'dark':'light');
+    });
+  }
 });
 
 // ── PKCE ─────────────────────────────────────────────────
@@ -846,19 +873,6 @@ function closeModal(){
   document.getElementById('modal').classList.remove('open');
   document.body.style.overflow = '';
 }
-// ── THEME SWITCH ─────────────────────────────────────────
-(function(){
-  var saved = localStorage.getItem('theme') || 'dark';
-  if(saved === 'light') document.documentElement.setAttribute('data-theme','light');
-  document.getElementById('themeSwitch').addEventListener('click', function(){
-    var current = document.documentElement.getAttribute('data-theme');
-    var next = current === 'light' ? 'dark' : 'light';
-    if(next === 'light') document.documentElement.setAttribute('data-theme','light');
-    else document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('theme', next);
-  });
-})();
-
 document.getElementById('modal').addEventListener('click', function(e){
   if (e.target === document.getElementById('modal')) closeModal();
 });
@@ -878,19 +892,9 @@ body.light .filter-btn.active[data-cat="all"]{background:#4a4440 !important;bord
 body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg) !important;}
 </style>
 <script>
-(function(){
-  if(localStorage.getItem('theme')==='light') document.body.classList.add('light');
-})();
 function applyTheme(t){
-  if(t==='light'){
-    document.body.classList.add('light');
-    document.getElementById('themeBtn').textContent='☾';
-    document.querySelector('meta[name="theme-color"]').content='#f5f2ee';
-  } else {
-    document.body.classList.remove('light');
-    document.getElementById('themeBtn').textContent='☀';
-    document.querySelector('meta[name="theme-color"]').content='#141414';
-  }
+  if(t==='light'){document.body.classList.add('light');var b=document.getElementById('themeBtn');if(b)b.textContent='☾';document.querySelector('meta[name="theme-color"]').content='#f5f2ee';}
+  else{document.body.classList.remove('light');var b=document.getElementById('themeBtn');if(b)b.textContent='☀';document.querySelector('meta[name="theme-color"]').content='#141414';}
   localStorage.setItem('theme',t);
 }
 
