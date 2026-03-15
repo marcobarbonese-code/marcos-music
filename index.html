@@ -716,7 +716,8 @@ function loadCdpDatabase(){
       'SELECT e.Z_PK, e.ZTITLE, e.ZARTIST, e.ZCATALOGNUMBER, e.ZGENRE, '+
       'e.ZLABEL, e.ZFORMAT, e.ZNUMBEROFTRACKS, e.ZDURATION, e.ZSUMMARY, e.ZURL, e.ZUID, ec.Z_1COLLECTIONS '+
       'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES = e.Z_PK '+
-      'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) ORDER BY ec.Z_1COLLECTIONS, e.ZTITLE'
+      'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) '+
+      'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END, e.ZTITLE'
     );
     if(res.length){
       res[0].values.forEach(function(row){
@@ -843,7 +844,7 @@ function renderGrid(){
         (a.artist ? '<div class="album-artist">' + a.artist + '</div>' : '') +
         (a.serial ? '<div class="album-serial">' + a.serial + '</div>' : '') +
       '</div>';
-    card.addEventListener('click', function(){ openModal(a); });
+    card.addEventListener('click', function(){ if(currentCatalog==='cdpedia') openModalCdp(a); else openModal(a); });
     grid.appendChild(card);
   });
 }
@@ -865,7 +866,9 @@ function filterByArtist(artist){
 // ── MODAL ─────────────────────────────────────────────────
 function openModal(a){
   var hashKey = a.coverHash ? a.coverHash.toLowerCase() : '';
-  var url = hashKey ? (covers[hashKey] || null) : null;
+  var zuidKey = a.zuid ? ''+a.zuid : '';
+  var activeCov = (currentCatalog==='cdpedia') ? coversCdp : covers;
+  var url = (zuidKey && activeCov[zuidKey]) ? activeCov[zuidKey] : (hashKey ? (activeCov[hashKey]||null) : null);
   var cc  = CAT_CLASS[a.category] || '';
   document.getElementById('modalContent').innerHTML =
     (url
@@ -883,6 +886,52 @@ function openModal(a){
   document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
   document.body.style.overflow = 'hidden';
 }
+function openModalCdp(a){
+  var zuidKey = a.zuid ? String(a.zuid) : '';
+  var url = zuidKey ? (coversCdp[zuidKey] || null) : null;
+  var cc  = CAT_CLASS[a.category] || '';
+
+  var rows = '';
+  if(a.serial)   rows += '<div class="modal-row"><span class="modal-lbl">Numero</span><span class="modal-val">' + a.serial + '</span></div>';
+  if(a.label)    rows += '<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">' + a.label + '</span></div>';
+  if(a.format)   rows += '<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">' + a.format + '</span></div>';
+  if(a.genre)    rows += '<div class="modal-row"><span class="modal-lbl">Genere</span><span class="modal-val">' + a.genre + '</span></div>';
+  if(a.tracks)   rows += '<div class="modal-row"><span class="modal-lbl">Tracce</span><span class="modal-val">' + a.tracks + '</span></div>';
+  if(a.duration) rows += '<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">' + a.duration + '</span></div>';
+  if(a.url)      rows += '<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="' + a.url + '" target="_blank" style="color:var(--gold)">Discogs ↗</a></span></div>';
+
+  var coverHtml = url
+    ? '<img class="modal-cover" src="' + url + '" alt="">'
+    : '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>';
+
+  var artistHtml = a.artist
+    ? '<div class="modal-artist" id="modalArtistBtn">' + a.artist + '</div>'
+    : '';
+
+  var summaryHtml = a.summary
+    ? '<div class="modal-divider"></div><div style="font-size:11px;color:var(--text-muted);line-height:1.7;max-height:140px;overflow-y:auto;">' + a.summary + '</div>'
+    : '';
+
+  document.getElementById('modalContent').innerHTML =
+    coverHtml +
+    '<div class="modal-body">' +
+      (a.category ? '<div class="modal-cat ' + cc + '">' + a.category + '</div>' : '') +
+      '<div class="modal-title">' + a.title + '</div>' +
+      artistHtml +
+      (rows ? '<div class="modal-divider"></div>' + rows : '') +
+      summaryHtml +
+      '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>' +
+    '</div>';
+
+  // Wire artist click after innerHTML set
+  var artistBtn = document.getElementById('modalArtistBtn');
+  if(artistBtn) artistBtn.addEventListener('click', function(){ filterByArtist(a.artist); });
+
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+  document.body.style.overflow = 'hidden';
+}
+
 function closeModal(){
   document.getElementById('modal').classList.remove('open');
   document.body.style.overflow = '';
