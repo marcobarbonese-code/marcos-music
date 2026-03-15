@@ -32,7 +32,7 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .logo{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);flex:1;}
 .theme-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:'DM Mono',monospace;font-size:11px;}
 .theme-btn:hover{border-color:var(--gold);color:var(--gold);}
-.dbx-pill{display:flex;align-items:center;padding:6px 8px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;}
+.dbx-pill{display:flex;align-items:center;padding:6px 8px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;flex-shrink:0;}
 .dbx-pill:hover{border-color:var(--gold);}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all 0.3s;}
 .dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
@@ -47,9 +47,6 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
 .filters::-webkit-scrollbar{display:none;}
 .filters::after{content:'';flex-shrink:0;width:20px;}
-.sort-btn{flex-shrink:0;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:4px;}
-.sort-btn:hover{border-color:var(--gold);color:var(--gold);}
-.sort-btn svg{width:12px;height:12px;}
 .filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
 .filter-btn.active[data-cat="all"]{background:#3a3a3a;border-color:#555;color:var(--text);}
 .filter-btn.active[data-cat="Colonne Sonore"]{background:var(--cs);border-color:var(--cs);color:#000;}
@@ -78,6 +75,8 @@ main{padding:16px;}
 #statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
 #statsBar.show{display:flex;justify-content:space-between;align-items:center;}
 .stats-n{color:var(--gold);}
+.sort-btn{background:none;border:none;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;padding:0 2px;transition:color 0.2s;}
+.sort-btn:hover{color:var(--gold);}
 #coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
 
 #albumGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
@@ -94,7 +93,7 @@ main{padding:16px;}
 .cat-cs{color:var(--cs)}.cat-it{color:var(--it)}.cat-st{color:var(--st)}.cat-jz{color:var(--jz)}.cat-cl{color:var(--cl)}
 .album-title{font-family:'Playfair Display',serif;font-size:13px;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .album-artist{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.album-serial{font-size:10px;color:var(--text);margin-top:4px;letter-spacing:0.08em;}
+.album-serial{font-size:10px;color:var(--text);margin-top:4px;}
 
 #emptyState{display:none;text-align:center;padding:60px 20px;color:var(--text-muted);}
 #emptyState.show{display:block;}
@@ -166,10 +165,6 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
     <button class="filter-btn" data-cat="Straniera">Straniera</button>
     <button class="filter-btn" data-cat="Jazz">Jazz</button>
     <button class="filter-btn" data-cat="Classica">Classica</button>
-    <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
-      <svg id="sortIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
-      <span id="sortLabel">A→Z</span>
-    </button>
   </div>
 </header>
 
@@ -185,7 +180,10 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
   </div>
   <div id="loadingScreen"><div class="spinner"></div><span id="loadMsg">Caricamento...</span></div>
   <div id="appScreen">
-    <div id="statsBar"><span><span class="stats-n" id="countLbl">0</span> album</span><span id="catLbl"></span><button id="sortBtn" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:12px;cursor:pointer;transition:all 0.2s;" title="Ordine">↑ ID</button></div>
+    <div id="statsBar">
+      <span><span class="stats-n" id="countLbl">0</span> album &nbsp;<button class="sort-btn" id="sortBtn">↑</button></span>
+      <span id="catLbl"></span>
+    </div>
     <div id="coversProgress"></div>
     <div id="albumGrid"></div>
     <div id="emptyState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>Nessun album trovato</p></div>
@@ -213,7 +211,6 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 <script>
-// ── CONFIG ───────────────────────────────────────────────
 const APP_KEY    = 'js14z2382chcui3';
 const APP_SECRET = '0dmnr5p5jloljcb';
 const REDIRECT   = 'https://marcobarbonese-code.github.io/marcos-music/';
@@ -224,88 +221,71 @@ const CONTENT    = 'https://content.dropboxapi.com/2';
 const CAT_CLASS  = {'Colonne Sonore':'cat-cs','Italiana':'cat-it','Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'};
 const COLL_MAP   = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'Italiana'};
 
-// ── STATE ────────────────────────────────────────────────
-var SQL = null, sqlJsReady = false, sqlJsCallbacks = [];
-var accessToken = '', refreshToken = '', tokenExpiry = 0;
-var allAlbums = [], covers = {}, currentFilter = 'all', currentSearch = '';
-var coversLoading = false;
-var sortAsc = true;
-var sortDir = 'asc'; // 'asc' or 'desc'
+var SQL=null, sqlJsReady=false, sqlJsCallbacks=[];
+var accessToken='', refreshToken='', tokenExpiry=0;
+var allAlbums=[], covers={}, currentFilter='all', currentSearch='';
+var coversLoading=false, sortAsc=true;
 
 initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/'+f;}})
   .then(function(s){SQL=s;sqlJsReady=true;sqlJsCallbacks.forEach(function(cb){cb();});sqlJsCallbacks=[];});
 function whenSqlReady(cb){if(sqlJsReady)cb();else sqlJsCallbacks.push(cb);}
 
-// ── THEME ────────────────────────────────────────────────
 function applyTheme(t){
   if(t==='light'){document.body.classList.add('light');document.getElementById('themeBtn').textContent='☾';document.querySelector('meta[name="theme-color"]').content='#f5f2ee';}
   else{document.body.classList.remove('light');document.getElementById('themeBtn').textContent='☀';document.querySelector('meta[name="theme-color"]').content='#141414';}
   localStorage.setItem('theme',t);
 }
 
-// ── SCREENS ──────────────────────────────────────────────
 function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('loadingScreen').classList.remove('show');document.getElementById('appScreen').classList.remove('show');}
 function showLoading(msg){document.getElementById('loginScreen').style.display='none';document.getElementById('loadingScreen').classList.add('show');document.getElementById('appScreen').classList.remove('show');document.getElementById('loadMsg').textContent=msg||'Caricamento...';}
 function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('loadingScreen').classList.remove('show');document.getElementById('appScreen').classList.add('show');}
 
-// ── BOOT ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function(){
-  // Theme
   if(localStorage.getItem('theme')==='light') document.body.classList.add('light');
-  document.getElementById('themeBtn').textContent = document.body.classList.contains('light') ? '☾' : '☀';
-  document.getElementById('themeBtn').addEventListener('click', function(){applyTheme(document.body.classList.contains('light')?'dark':'light');});
+  document.getElementById('themeBtn').textContent=document.body.classList.contains('light')?'☾':'☀';
+  document.getElementById('themeBtn').addEventListener('click',function(){applyTheme(document.body.classList.contains('light')?'dark':'light');});
 
-  // Search
-  document.getElementById('searchInput').addEventListener('input', function(e){
+  document.getElementById('searchInput').addEventListener('input',function(e){
     currentSearch=e.target.value.toLowerCase();
-    document.getElementById('searchClear').classList.toggle('show', e.target.value.length>0);
+    document.getElementById('searchClear').classList.toggle('show',e.target.value.length>0);
     renderGrid();
   });
-  document.getElementById('searchClear').addEventListener('click', function(){
-    document.getElementById('searchInput').value=''; currentSearch='';
-    this.classList.remove('show'); renderGrid();
+  document.getElementById('searchClear').addEventListener('click',function(){
+    document.getElementById('searchInput').value='';currentSearch='';this.classList.remove('show');renderGrid();
   });
 
-  // Filters
   document.querySelectorAll('.filter-btn').forEach(function(b){
-    b.addEventListener('click', function(){
+    b.addEventListener('click',function(){
       document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active');});
-      b.classList.add('active'); currentFilter=b.dataset.cat; renderGrid();
+      b.classList.add('active');currentFilter=b.dataset.cat;renderGrid();
     });
   });
 
-  // Drawer
-  document.getElementById('dbxPill').addEventListener('click', function(){if(accessToken)document.getElementById('drawer').classList.add('open');});
-  document.getElementById('drawerClose').addEventListener('click', function(){document.getElementById('drawer').classList.remove('open');});
-  document.getElementById('drawer').addEventListener('click', function(e){if(e.target===document.getElementById('drawer'))document.getElementById('drawer').classList.remove('open');});
-  document.getElementById('drawerLogout').addEventListener('click', function(){
-    localStorage.clear(); accessToken=''; refreshToken=''; tokenExpiry=0; allAlbums=[]; covers={};
+  document.getElementById('sortBtn').addEventListener('click',function(){
+    sortAsc=!sortAsc;this.textContent=sortAsc?'↑':'↓';renderGrid();
+  });
+
+  document.getElementById('dbxPill').addEventListener('click',function(){if(accessToken)document.getElementById('drawer').classList.add('open');});
+  document.getElementById('drawerClose').addEventListener('click',function(){document.getElementById('drawer').classList.remove('open');});
+  document.getElementById('drawer').addEventListener('click',function(e){if(e.target===document.getElementById('drawer'))document.getElementById('drawer').classList.remove('open');});
+  document.getElementById('drawerLogout').addEventListener('click',function(){
+    localStorage.clear();accessToken='';refreshToken='';tokenExpiry=0;allAlbums=[];covers={};
     document.getElementById('drawer').classList.remove('open');
     document.getElementById('dbxDot').className='dot';
     document.getElementById('albumGrid').innerHTML='';
     document.getElementById('statsBar').classList.remove('show');
     showLogin();
   });
+  document.getElementById('modal').addEventListener('click',function(e){if(e.target===document.getElementById('modal'))closeModal();});
 
-  // Sort button
-  document.getElementById('sortBtn').addEventListener('click', function(){
-    sortAsc = !sortAsc;
-    this.textContent = (sortAsc ? '↑' : '↓') + ' ID';
-    renderGrid();
-  });
-
-  // Modal
-  document.getElementById('modal').addEventListener('click', function(e){if(e.target===document.getElementById('modal'))closeModal();});
-
-  // OAuth
-  var params = new URLSearchParams(window.location.search);
-  var code = params.get('code'), state = params.get('state');
-  if(code && state){
-    window.history.replaceState({}, '', REDIRECT);
-    var savedState=localStorage.getItem('oauth_state'), codeVerifier=localStorage.getItem('code_verifier');
-    localStorage.removeItem('oauth_state'); localStorage.removeItem('code_verifier');
-    if(!codeVerifier || state!==savedState){showLogin();return;}
-    showLoading('Connessione a Dropbox...'); exchangeCode(code, codeVerifier); return;
+  var params=new URLSearchParams(window.location.search);
+  var code=params.get('code'),state=params.get('state');
+  if(code&&state){
+    window.history.replaceState({},''  ,REDIRECT);
+    var ss=localStorage.getItem('oauth_state'),cv=localStorage.getItem('code_verifier');
+    localStorage.removeItem('oauth_state');localStorage.removeItem('code_verifier');
+    if(!cv||state!==ss){showLogin();return;}
+    showLoading('Connessione a Dropbox...');exchangeCode(code,cv);return;
   }
   accessToken=localStorage.getItem('dbx_access')||'';
   refreshToken=localStorage.getItem('dbx_refresh')||'';
@@ -314,19 +294,15 @@ window.addEventListener('DOMContentLoaded', function(){
   showLogin();
 });
 
-// ── PKCE ─────────────────────────────────────────────────
-function randomBase64(len){var arr=new Uint8Array(len);crypto.getRandomValues(arr);return btoa(String.fromCharCode.apply(null,arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
-function sha256Base64(str){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(function(buf){return btoa(String.fromCharCode.apply(null,new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');});}
+function randomBase64(len){var a=new Uint8Array(len);crypto.getRandomValues(a);return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
+function sha256Base64(s){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)).then(function(b){return btoa(String.fromCharCode.apply(null,new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');});}
 
-document.getElementById('loginBtn').addEventListener('click', function(){
-  var v=randomBase64(64), s=randomBase64(16);
-  localStorage.setItem('code_verifier',v); localStorage.setItem('oauth_state',s);
-  sha256Base64(v).then(function(c){
-    window.location.href='https://www.dropbox.com/oauth2/authorize?client_id='+encodeURIComponent(APP_KEY)+'&response_type=code&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_challenge='+encodeURIComponent(c)+'&code_challenge_method=S256&state='+encodeURIComponent(s)+'&token_access_type=offline';
-  });
+document.getElementById('loginBtn').addEventListener('click',function(){
+  var v=randomBase64(64),s=randomBase64(16);
+  localStorage.setItem('code_verifier',v);localStorage.setItem('oauth_state',s);
+  sha256Base64(v).then(function(c){window.location.href='https://www.dropbox.com/oauth2/authorize?client_id='+encodeURIComponent(APP_KEY)+'&response_type=code&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_challenge='+encodeURIComponent(c)+'&code_challenge_method=S256&state='+encodeURIComponent(s)+'&token_access_type=offline';});
 });
 
-// ── TOKENS ───────────────────────────────────────────────
 function exchangeCode(code,verifier){
   fetch('https://api.dropbox.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'code='+encodeURIComponent(code)+'&grant_type=authorization_code&client_id='+encodeURIComponent(APP_KEY)+'&client_secret='+encodeURIComponent(APP_SECRET)+'&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_verifier='+encodeURIComponent(verifier)})
   .then(function(r){return r.json();}).then(function(d){if(!d.access_token){showLogin();alert('Errore login.');return;}saveTokens(d);onConnected();}).catch(function(){showLogin();alert('Errore di rete.');});
@@ -339,11 +315,9 @@ function ensureValidToken(){
   .then(function(r){return r.json();}).then(function(d){if(!d.access_token)return false;saveTokens(d);return true;}).catch(function(){return false;});
 }
 
-// ── DROPBOX API ───────────────────────────────────────────
 function dbxPost(url,body){return ensureValidToken().then(function(){var h={'Authorization':'Bearer '+accessToken};if(body)h['Content-Type']='application/json';return fetch(url,{method:'POST',headers:h,body:body?JSON.stringify(body):undefined});});}
 function dbxDownload(path){return ensureValidToken().then(function(){return fetch(CONTENT+'/files/download',{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Dropbox-API-Arg':JSON.stringify({path:path})}});});}
 
-// ── ON CONNECTED ──────────────────────────────────────────
 function onConnected(){
   dbxPost(API+'/users/get_current_account',null)
   .then(function(r){return r.json();})
@@ -354,134 +328,78 @@ function onConnected(){
   }).catch(function(){showLogin();});
 }
 
-// ── LOAD DATABASE ─────────────────────────────────────────
 function loadDatabase(){
   showLoading('Caricamento database...');
   dbxDownload(DB_PATH)
   .then(function(r){if(!r.ok)throw new Error('File non trovato: '+DB_PATH);return r.arrayBuffer();})
-  .then(function(buf){
-    var db = new SQL.Database(new Uint8Array(buf));
-    loadData(db);
-  })
+  .then(function(buf){loadData(new SQL.Database(new Uint8Array(buf)));})
   .catch(function(e){showApp();alert('Errore: '+e.message);});
 }
 
-// ── LOAD DATA ─────────────────────────────────────────────
 function loadData(db){
   showLoading('Lettura collezioni...');
-  allAlbums = [];
-
-  // Load tracks map
-  var tracksMap = {};
+  allAlbums=[];
+  var tracksMap={};
   try{
-    var tr = db.exec('SELECT ZENTRY, ZPOSITION, ZNAME, ZARTIST, ZDURATION FROM ZTRACK ORDER BY ZENTRY, ZPOSITION');
-    if(tr.length) tr[0].values.forEach(function(r){
-      if(!tracksMap[r[0]]) tracksMap[r[0]]=[];
-      tracksMap[r[0]].push({pos:r[1],name:String(r[2]||''),artist:String(r[3]||''),dur:String(r[4]||'')});
-    });
-  }catch(e){console.error('tracks',e);}
-
-  // Load albums
+    var tr=db.exec('SELECT ZENTRY,ZPOSITION,ZNAME,ZARTIST,ZDURATION FROM ZTRACK ORDER BY ZENTRY,ZPOSITION');
+    if(tr.length)tr[0].values.forEach(function(r){if(!tracksMap[r[0]])tracksMap[r[0]]=[];tracksMap[r[0]].push({name:String(r[2]||''),artist:String(r[3]||''),dur:String(r[4]||'')});});
+  }catch(e){}
   try{
-    var res = db.exec(
-      'SELECT e.Z_PK, e.ZTITLE, e.ZARTIST, e.ZCATALOGNUMBER, e.ZGENRE, '+
-      'e.ZLABEL, e.ZFORMAT, e.ZNUMBEROFTRACKS, e.ZDURATION, e.ZSUMMARY, e.ZURL, e.ZUID, ec.Z_1COLLECTIONS, e.ZCOLLECTIONID '+
-      'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES = e.Z_PK '+
+    var res=db.exec(
+      'SELECT e.Z_PK,e.ZTITLE,e.ZARTIST,e.ZGENRE,e.ZLABEL,e.ZFORMAT,e.ZDURATION,e.ZURL,e.ZUID,ec.Z_1COLLECTIONS,e.ZCOLLECTIONID '+
+      'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES=e.Z_PK '+
       'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) '+
-      'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END, CAST(e.ZCOLLECTIONID AS INTEGER)'
+      'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END,CAST(e.ZCOLLECTIONID AS INTEGER)'
     );
-    if(res.length){
-      res[0].values.forEach(function(row){
-        var cat = COLL_MAP[row[12]]||''; if(!cat) return;
-        allAlbums.push({
-          pk:            row[0],
-          title:         String(row[1]||''),
-          artist:        String(row[2]||''),
-          serial:        String(row[3]||''),
-          genre:         String(row[4]||''),
-          label:         String(row[5]||''),
-          format:        String(row[6]||''),
-          numTracks:     String(row[7]||''),
-          duration:      String(row[8]||''),
-          summary:       String(row[9]||''),
-          url:           String(row[10]||''),
-          zuid:          row[11],
-          category:      cat,
-          identificativo:String(row[13]||''),
-          trackList:     tracksMap[row[0]]||[]
-        });
-      });
-    }
-  }catch(e){console.error('albums',e);}
-
+    if(res.length)res[0].values.forEach(function(row){
+      var cat=COLL_MAP[row[9]]||'';if(!cat)return;
+      allAlbums.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),genre:String(row[3]||''),label:String(row[4]||''),format:String(row[5]||''),duration:String(row[6]||''),url:String(row[7]||''),zuid:row[8],category:cat,identificativo:String(row[10]||''),trackList:tracksMap[row[0]]||[]});
+    });
+  }catch(e){console.error(e);}
   showApp();
   document.getElementById('statsBar').classList.add('show');
   renderGrid();
   loadCovers();
 }
 
-// ── LOAD COVERS ───────────────────────────────────────────
 function loadCovers(){
-  if(coversLoading) return;
-  coversLoading = true;
-  var prog = document.getElementById('coversProgress');
+  if(coversLoading)return;
+  coversLoading=true;
+  var prog=document.getElementById('coversProgress');
   prog.innerHTML='<span class="mini-spin"></span> Caricamento copertine...';
-
-  var seen={}, zuids=[];
+  var seen={},zuids=[];
   allAlbums.forEach(function(a){if(a.zuid&&!seen[a.zuid]&&!covers[String(a.zuid)]){seen[a.zuid]=true;zuids.push(a.zuid);}});
-
   if(!zuids.length){prog.textContent='';coversLoading=false;return;}
-
-  var done=0, completed=0, total=zuids.length;
+  var done=0,completed=0,total=zuids.length;
   prog.textContent='Copertine: 0 / '+total;
-
   function loadOne(zuid){
     var key=String(zuid);
-    function tryExt(ext){return dbxDownload(COVERS_DIR+'/'+zuid+'.'+ext).then(function(r){return r.ok?r.blob():null;});}
+    function tryExt(e){return dbxDownload(COVERS_DIR+'/'+zuid+'.'+e).then(function(r){return r.ok?r.blob():null;});}
     return tryExt('jpg').then(function(b){return b||tryExt('png');}).then(function(b){return b||tryExt('jpeg');})
     .then(function(blob){
-      if(blob){
-        covers[key]=URL.createObjectURL(blob); done++;
-        document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){
-          var img=document.createElement('img');img.className='album-cover';img.src=covers[key];img.alt='';
-          el.parentNode.replaceChild(img,el);
-        });
-      }
-      completed++; prog.textContent='Copertine: '+done+' / '+total;
+      if(blob){covers[key]=URL.createObjectURL(blob);done++;document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){var img=document.createElement('img');img.className='album-cover';img.src=covers[key];img.alt='';el.parentNode.replaceChild(img,el);});}
+      completed++;prog.textContent='Copertine: '+done+' / '+total;
       if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}
     }).catch(function(){completed++;if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}});
   }
-
-  function runBatch(start){if(start>=total)return;Promise.all(zuids.slice(start,start+6).map(loadOne)).then(function(){runBatch(start+6);});}
+  function runBatch(s){if(s>=total)return;Promise.all(zuids.slice(s,s+6).map(loadOne)).then(function(){runBatch(s+6);});}
   runBatch(0);
 }
 
-// ── SORT ─────────────────────────────────────────────────
-function toggleSort(){
-  sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-  document.getElementById('sortLabel').textContent = sortDir === 'asc' ? 'A→Z' : 'Z→A';
-  document.getElementById('sortIcon').innerHTML = sortDir === 'asc'
-    ? '<path d="M3 6h18M7 12h10M11 18h2"/>'
-    : '<path d="M3 18h18M7 12h10M11 6h2"/>';
-  renderGrid();
-}
-
-// ── SEARCH & FILTER ───────────────────────────────────────
 function filtered(){
-  var list = allAlbums.filter(function(a){
+  var list=allAlbums.filter(function(a){
     var mc=currentFilter==='all'||a.category===currentFilter;
     var q=currentSearch;
-    return mc&&(!q||a.title.toLowerCase().indexOf(q)!==-1||a.artist.toLowerCase().indexOf(q)!==-1||a.identificativo.indexOf(q)!==-1||a.serial.toLowerCase().indexOf(q)!==-1);
+    if(!mc)return false;
+    if(!q)return true;
+    var qIsNum=/^\d+$/.test(q);
+    var matchId=qIsNum?(a.identificativo===q):a.identificativo.indexOf(q)!==-1;
+    return a.title.toLowerCase().indexOf(q)!==-1||a.artist.toLowerCase().indexOf(q)!==-1||matchId;
   });
-  list.sort(function(a,b){
-    var ia = parseInt(a.identificativo)||0;
-    var ib = parseInt(b.identificativo)||0;
-    return sortDir==='asc' ? ia-ib : ib-ia;
-  });
+  list.sort(function(a,b){var ai=parseInt(a.identificativo)||0,bi=parseInt(b.identificativo)||0;return sortAsc?ai-bi:bi-ai;});
   return list;
 }
 
-// ── RENDER ────────────────────────────────────────────────
 function renderGrid(){
   var list=filtered();
   document.getElementById('countLbl').textContent=list.length;
@@ -490,7 +408,7 @@ function renderGrid(){
   grid.innerHTML='';
   document.getElementById('emptyState').classList.toggle('show',list.length===0&&allAlbums.length>0);
   list.forEach(function(a,i){
-    var card=document.createElement('div'); card.className='album-card'; card.style.animationDelay=(i*0.015)+'s';
+    var card=document.createElement('div');card.className='album-card';card.style.animationDelay=(i*0.015)+'s';
     var key=a.zuid?String(a.zuid):'';
     var url=key?(covers[key]||null):null;
     var cc=CAT_CLASS[a.category]||'';
@@ -508,47 +426,34 @@ function renderGrid(){
   });
 }
 
-// ── FILTER BY ARTIST ──────────────────────────────────────
 function filterByArtist(artist){
   closeModal();
-  document.getElementById('searchInput').value=artist; currentSearch=artist.toLowerCase();
+  document.getElementById('searchInput').value=artist;currentSearch=artist.toLowerCase();
   document.getElementById('searchClear').classList.add('show');
   document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
-  currentFilter='all'; renderGrid(); window.scrollTo({top:0,behavior:'smooth'});
+  currentFilter='all';renderGrid();window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── MODAL ─────────────────────────────────────────────────
 function openModal(a){
   var key=a.zuid?String(a.zuid):'';
   var url=key?(covers[key]||null):null;
   var cc=CAT_CLASS[a.category]||'';
-
   var rows='';
   if(a.identificativo) rows+='<div class="modal-row"><span class="modal-lbl">Identificativo</span><span class="modal-val">'+a.identificativo+'</span></div>';
-
   if(a.label)          rows+='<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">'+a.label+'</span></div>';
   if(a.format)         rows+='<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">'+a.format+'</span></div>';
   if(a.duration)       rows+='<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">'+a.duration+'</span></div>';
-  if(a.url)            rows+='<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="'+a.url+'" target="_blank" style="color:var(--gold)">Discogs ↗</a></span></div>';
-
+  if(a.url)            rows+='<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="'+a.url+'" target="_blank" style="color:var(--gold)">Discogs \u2197</a></span></div>';
   var tracksHtml='';
   if(a.trackList&&a.trackList.length){
     var items=a.trackList.map(function(t,i){
-      return '<div class="track-row">'+
-        '<span class="track-num">'+String(i+1).padStart(2,'0')+'</span>'+
-        '<div class="track-info"><div class="track-name">'+t.name+'</div>'+(t.artist&&t.artist!==a.artist?'<div class="track-artist">'+t.artist+'</div>':'')+' </div>'+
-        (t.dur?'<span class="track-dur">'+t.dur+'</span>':'')+
-        '</div>';
+      return '<div class="track-row"><span class="track-num">'+String(i+1).padStart(2,'0')+'</span><div class="track-info"><div class="track-name">'+t.name+'</div>'+(t.artist&&t.artist!==a.artist?'<div class="track-artist">'+t.artist+'</div>':'')+' </div>'+(t.dur?'<span class="track-dur">'+t.dur+'</span>':'')+'</div>';
     }).join('');
-    tracksHtml='<div class="modal-divider"></div>'+
-      '<div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div>'+
-      '<div style="max-height:200px;overflow-y:auto;">'+items+'</div>';
+    tracksHtml='<div class="modal-divider"></div><div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div><div style="max-height:200px;overflow-y:auto;">'+items+'</div>';
   }
-
   document.getElementById('modalContent').innerHTML=
-    (url?'<img class="modal-cover" src="'+url+'" alt="">':
-         '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
+    (url?'<img class="modal-cover" src="'+url+'" alt="">':'<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
     '<div class="modal-body">'+
       (a.category?'<div class="modal-cat '+cc+'">'+a.category+'</div>':'')+
       '<div class="modal-title">'+a.title+'</div>'+
@@ -558,9 +463,8 @@ function openModal(a){
       tracksHtml+
       '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>'+
     '</div>';
-
   var ab=document.getElementById('mdlArtist');
-  if(ab) ab.addEventListener('click',function(){filterByArtist(a.artist);});
+  if(ab)ab.addEventListener('click',function(){filterByArtist(a.artist);});
   document.getElementById('modal').classList.add('open');
   document.getElementById('modalCloseBtn').addEventListener('click',closeModal);
   document.body.style.overflow='hidden';
