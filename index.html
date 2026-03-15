@@ -291,9 +291,11 @@ const COLL_MAP = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'It
 // ── STATE ────────────────────────────────────────────────
 var SQL = null;
 var currentCatalog = 'symphytum'; // 'symphytum' or 'cdpedia'
-var allAlbumsCdp = [];  // CDpedia albums cache
-var coversCdp = {};     // CDpedia covers cache
-var cdpLoaded = false;  // CDpedia already loaded?
+var allAlbumsCache = []; // Symphytum albums cache
+var coversCache = {};    // Symphytum covers cache
+var allAlbumsCdp = [];   // CDpedia albums cache
+var coversCdp = {};      // CDpedia covers cache
+var cdpLoaded = false;   // CDpedia already loaded?
 var cdpCoversLoading = false;
 var sqlDb = null;
 var accessToken = '';
@@ -664,7 +666,7 @@ function loadCovers(){
       prog.textContent = 'Copertine: ' + done + ' / ' + total;
       if (completed === total){
         coversLoading = false;
-
+        if(currentCatalog==='symphytum') coversCache = Object.assign({}, covers);
         setTimeout(function(){ prog.textContent = ''; }, 2000);
       }
     })
@@ -672,7 +674,7 @@ function loadCovers(){
       completed++;
       if (completed === total){
         coversLoading = false;
-
+        if(currentCatalog==='symphytum') coversCache = Object.assign({}, covers);
         setTimeout(function(){ prog.textContent = ''; }, 2000);
       }
     });
