@@ -95,6 +95,11 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .filter-btn.active[data-cat="Classica"]{background:var(--cl);border-color:var(--cl);color:#fff;}
 
 main{padding:16px;}
+.catalog-switch{display:none;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;display:flex;gap:3px;}
+.catalog-switch.show{display:flex;}
+.cat-sw-btn{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
+.cat-sw-btn.active{background:var(--gold);color:#000;}
+.cat-sw-btn:not(.active):hover{color:var(--text);}
 
 #loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 24px;width:100%;max-width:320px;}
@@ -223,6 +228,10 @@ main{padding:16px;}
   </div>
 
   <div id="appScreen">
+    <div class="catalog-switch" id="catalogSwitch">
+      <button class="cat-sw-btn active" id="btnSymphytum">Symphytum</button>
+      <button class="cat-sw-btn" id="btnCdpedia">CDpedia</button>
+    </div>
     <div id="statsBar">
       <span><span class="stats-n" id="countLbl">0</span> album</span>
       <span id="catLbl"></span>
@@ -241,9 +250,6 @@ main{padding:16px;}
     <div class="drawer-handle"></div>
     <div class="drawer-title">Marco's Music</div>
     <div class="drawer-sub">Connesso come <strong id="drawerUser" style="color:var(--gold)"></strong></div>
-    <div class="drawer-row" style="margin-bottom:8px;">
-      <a href="cdpedia.html" class="d-btn" style="text-align:center;text-decoration:none;">CDpedia</a>
-    </div>
     <div class="drawer-row">
       <button class="d-btn" id="drawerClose">Chiudi</button>
       <button class="d-btn danger" id="drawerLogout">Disconnetti</button>
@@ -277,8 +283,18 @@ const CAT_CLASS = {
   'Jazz':'cat-jz','Classica':'cat-cl'
 };
 
+// ── CDPEDIA CONFIG ───────────────────────────────────────
+const CDP_DB_PATH    = '/MarcosMusic/Database.cdpd';
+const CDP_COVERS_DIR = '/MarcosMusic/Covers';
+const COLL_MAP = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'Italiana'};
+
 // ── STATE ────────────────────────────────────────────────
 var SQL = null;
+var currentCatalog = 'symphytum'; // 'symphytum' or 'cdpedia'
+var allAlbumsCdp = [];  // CDpedia albums cache
+var coversCdp = {};     // CDpedia covers cache
+var cdpLoaded = false;  // CDpedia already loaded?
+var cdpCoversLoading = false;
 var sqlDb = null;
 var accessToken = '';
 var refreshToken = '';
@@ -557,6 +573,7 @@ function loadSymphytumData(){
 
   showApp();
   document.getElementById('statsBar').classList.add('show');
+  allAlbumsCache = allAlbums.slice();
   renderGrid();
 
   // 4. Load covers in background
@@ -645,6 +662,63 @@ function loadCovers(){
   runBatch(0);
 }
 
+// ── LOAD CDPEDIA DATABASE ────────────────────────────────
+function loadCdpDatabase(){
+  showLoading('Caricamento CDpedia...');
+  dbxDownload(CDP_DB_PATH)
+  .then(function(r){ if(!r.ok) throw new Error('File non trovato: '+CDP_DB_PATH); return r.arrayBuffer(); })
+  .then(function(buf){
+    var cdpDb = new SQL.Database(new Uint8Array(buf));
+    allAlbumsCdp = [];
+    var res = cdpDb.exec(
+      'SELECT e.Z_PK, e.ZTITLE, e.ZARTIST, e.ZCATALOGNUMBER, e.ZGENRE, '+
+      'e.ZLABEL, e.ZFORMAT, e.ZNUMBEROFTRACKS, e.ZDURATION, e.ZSUMMARY, e.ZURL, e.ZUID, ec.Z_1COLLECTIONS '+
+      'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES = e.Z_PK '+
+      'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) ORDER BY ec.Z_1COLLECTIONS, e.ZTITLE'
+    );
+    if(res.length){
+      res[0].values.forEach(function(row){
+        var collName = COLL_MAP[row[12]] || ''; if(!collName) return;
+        allAlbumsCdp.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),serial:String(row[3]||''),genre:String(row[4]||''),label:String(row[5]||''),format:String(row[6]||''),tracks:String(row[7]||''),duration:String(row[8]||''),summary:String(row[9]||''),url:String(row[10]||''),zuid:row[11],category:collName,coverHash:''});
+      });
+    }
+    cdpLoaded = true;
+    allAlbums = allAlbumsCdp;
+    covers = coversCdp;
+    showApp();
+    document.getElementById('statsBar').classList.add('show');
+    renderGrid();
+    loadCdpCovers();
+  })
+  .catch(function(e){ showApp(); alert('Errore CDpedia: '+e.message); });
+}
+
+function loadCdpCovers(){
+  if(cdpCoversLoading) return;
+  cdpCoversLoading = true;
+  var prog = document.getElementById('coversProgress');
+  prog.innerHTML='<span class="mini-spin"></span> Caricamento copertine CDpedia...';
+  var seen={}, zuids=[];
+  allAlbumsCdp.forEach(function(a){ if(a.zuid&&!seen[a.zuid]&&!coversCdp[''+a.zuid]){seen[a.zuid]=true;zuids.push(a.zuid);} });
+  if(!zuids.length){prog.textContent='';cdpCoversLoading=false;return;}
+  var done=0,completed=0,total=zuids.length;
+  prog.textContent='Copertine: 0 / '+total;
+  function loadOne(zuid){
+    var key=''+zuid;
+    function tryExt(ext){ return dbxDownload(CDP_COVERS_DIR+'/'+zuid+'.'+ext).then(function(r){return r.ok?r.blob():null;}); }
+    return tryExt('jpg').then(function(b){return b||tryExt('png');}).then(function(b){return b||tryExt('jpeg');})
+    .then(function(blob){
+      if(blob){ coversCdp[key]=URL.createObjectURL(blob); done++;
+        if(currentCatalog==='cdpedia') document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){var img=document.createElement('img');img.className='album-cover';img.src=coversCdp[key];img.alt='';el.parentNode.replaceChild(img,el);});
+      }
+      completed++; prog.textContent='Copertine: '+done+' / '+total;
+      if(completed===total){cdpCoversLoading=false;setTimeout(function(){prog.textContent='';},2000);}
+    }).catch(function(){completed++;if(completed===total){cdpCoversLoading=false;setTimeout(function(){prog.textContent='';},2000);}});
+  }
+  function runBatch(start){if(start>=total)return;Promise.all(zuids.slice(start,start+6).map(loadOne)).then(function(){runBatch(start+6);});}
+  runBatch(0);
+}
+
 // ── DRAWER ────────────────────────────────────────────────
 document.getElementById('dbxPill').addEventListener('click', function(){
   if (accessToken) document.getElementById('drawer').classList.add('open');
@@ -713,12 +787,14 @@ function renderGrid(){
     card.className = 'album-card';
     card.style.animationDelay = (i * 0.02) + 's';
     var hashKey = a.coverHash ? a.coverHash.toLowerCase() : '';
-    var url = hashKey ? (covers[hashKey] || null) : null;
+    var zuidKey = a.zuid ? ''+a.zuid : '';
+    var url = (zuidKey && covers[zuidKey]) ? covers[zuidKey] : (hashKey ? (covers[hashKey]||null) : null);
+    var coverKey = zuidKey || hashKey;
     var cc  = CAT_CLASS[a.category] || '';
     card.innerHTML =
       (url
         ? '<img class="album-cover" src="' + url + '" alt="' + a.title + '" loading="lazy">'
-        : '<div class="album-ph" data-cover="' + hashKey + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
+        : '<div class="album-ph" data-cover="' + coverKey + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>') +
       '<div class="album-info">' +
         (a.category ? '<div class="album-cat ' + cc + '">' + a.category + '</div>' : '') +
         '<div class="album-title">' + a.title + '</div>' +
