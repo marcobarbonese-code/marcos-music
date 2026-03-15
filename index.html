@@ -47,6 +47,9 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
 .filters::-webkit-scrollbar{display:none;}
 .filters::after{content:'';flex-shrink:0;width:20px;}
+.sort-btn{flex-shrink:0;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:4px;}
+.sort-btn:hover{border-color:var(--gold);color:var(--gold);}
+.sort-btn svg{width:12px;height:12px;}
 .filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
 .filter-btn.active[data-cat="all"]{background:#3a3a3a;border-color:#555;color:var(--text);}
 .filter-btn.active[data-cat="Colonne Sonore"]{background:var(--cs);border-color:var(--cs);color:#000;}
@@ -73,7 +76,7 @@ main{padding:16px;}
 #appScreen{display:none;}
 #appScreen.show{display:block;}
 #statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
-#statsBar.show{display:flex;justify-content:space-between;}
+#statsBar.show{display:flex;justify-content:space-between;align-items:center;}
 .stats-n{color:var(--gold);}
 #coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
 
@@ -163,6 +166,10 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
     <button class="filter-btn" data-cat="Straniera">Straniera</button>
     <button class="filter-btn" data-cat="Jazz">Jazz</button>
     <button class="filter-btn" data-cat="Classica">Classica</button>
+    <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
+      <svg id="sortIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+      <span id="sortLabel">A→Z</span>
+    </button>
   </div>
 </header>
 
@@ -178,7 +185,7 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
   </div>
   <div id="loadingScreen"><div class="spinner"></div><span id="loadMsg">Caricamento...</span></div>
   <div id="appScreen">
-    <div id="statsBar"><span><span class="stats-n" id="countLbl">0</span> album</span><span id="catLbl"></span></div>
+    <div id="statsBar"><span><span class="stats-n" id="countLbl">0</span> album</span><span id="catLbl"></span><button id="sortBtn" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:12px;cursor:pointer;transition:all 0.2s;" title="Ordine">↑ ID</button></div>
     <div id="coversProgress"></div>
     <div id="albumGrid"></div>
     <div id="emptyState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>Nessun album trovato</p></div>
@@ -222,6 +229,8 @@ var SQL = null, sqlJsReady = false, sqlJsCallbacks = [];
 var accessToken = '', refreshToken = '', tokenExpiry = 0;
 var allAlbums = [], covers = {}, currentFilter = 'all', currentSearch = '';
 var coversLoading = false;
+var sortAsc = true;
+var sortDir = 'asc'; // 'asc' or 'desc'
 
 initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/'+f;}})
   .then(function(s){SQL=s;sqlJsReady=true;sqlJsCallbacks.forEach(function(cb){cb();});sqlJsCallbacks=[];});
@@ -276,6 +285,13 @@ window.addEventListener('DOMContentLoaded', function(){
     document.getElementById('albumGrid').innerHTML='';
     document.getElementById('statsBar').classList.remove('show');
     showLogin();
+  });
+
+  // Sort button
+  document.getElementById('sortBtn').addEventListener('click', function(){
+    sortAsc = !sortAsc;
+    this.textContent = (sortAsc ? '↑' : '↓') + ' ID';
+    renderGrid();
   });
 
   // Modal
@@ -440,13 +456,29 @@ function loadCovers(){
   runBatch(0);
 }
 
+// ── SORT ─────────────────────────────────────────────────
+function toggleSort(){
+  sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  document.getElementById('sortLabel').textContent = sortDir === 'asc' ? 'A→Z' : 'Z→A';
+  document.getElementById('sortIcon').innerHTML = sortDir === 'asc'
+    ? '<path d="M3 6h18M7 12h10M11 18h2"/>'
+    : '<path d="M3 18h18M7 12h10M11 6h2"/>';
+  renderGrid();
+}
+
 // ── SEARCH & FILTER ───────────────────────────────────────
 function filtered(){
-  return allAlbums.filter(function(a){
+  var list = allAlbums.filter(function(a){
     var mc=currentFilter==='all'||a.category===currentFilter;
     var q=currentSearch;
     return mc&&(!q||a.title.toLowerCase().indexOf(q)!==-1||a.artist.toLowerCase().indexOf(q)!==-1||a.identificativo.indexOf(q)!==-1||a.serial.toLowerCase().indexOf(q)!==-1);
   });
+  list.sort(function(a,b){
+    var ia = parseInt(a.identificativo)||0;
+    var ib = parseInt(b.identificativo)||0;
+    return sortDir==='asc' ? ia-ib : ib-ia;
+  });
+  return list;
 }
 
 // ── RENDER ────────────────────────────────────────────────
@@ -494,7 +526,7 @@ function openModal(a){
 
   var rows='';
   if(a.identificativo) rows+='<div class="modal-row"><span class="modal-lbl">Identificativo</span><span class="modal-val">'+a.identificativo+'</span></div>';
-  if(a.serial)         rows+='<div class="modal-row"><span class="modal-lbl">Numero</span><span class="modal-val">'+a.serial+'</span></div>';
+
   if(a.label)          rows+='<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">'+a.label+'</span></div>';
   if(a.format)         rows+='<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">'+a.format+'</span></div>';
   if(a.duration)       rows+='<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">'+a.duration+'</span></div>';
