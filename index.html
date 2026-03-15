@@ -696,11 +696,18 @@ function switchCatalog(cat){
   currentCatalog=cat;
   document.getElementById('btnSymphytum').classList.toggle('active', cat==='symphytum');
   document.getElementById('btnCdpedia').classList.toggle('active', cat==='cdpedia');
+  // Reset search and filter
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchClear').classList.remove('show');
+  currentSearch='';
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
+  currentFilter='all';
   if(cat==='cdpedia'){
     if(cdpLoaded){ allAlbums=allAlbumsCdp; covers=coversCdp; renderGrid(); if(!cdpCoversLoading) loadCdpCovers(); }
     else { loadCdpDatabase(); }
   } else {
-    allAlbums=allAlbumsCache.slice(); covers=Object.assign({},coversCache); coversLoading=false; renderGrid();
+    allAlbums=allAlbumsCache.slice(); covers=coversCache; coversLoading=false; renderGrid();
   }
 }
 
@@ -714,7 +721,7 @@ function loadCdpDatabase(){
     allAlbumsCdp = [];
     var res = cdpDb.exec(
       'SELECT e.Z_PK, e.ZTITLE, e.ZARTIST, e.ZCATALOGNUMBER, e.ZGENRE, '+
-      'e.ZLABEL, e.ZFORMAT, e.ZNUMBEROFTRACKS, e.ZDURATION, e.ZSUMMARY, e.ZURL, e.ZUID, ec.Z_1COLLECTIONS '+
+      'e.ZLABEL, e.ZFORMAT, e.ZNUMBEROFTRACKS, e.ZDURATION, e.ZSUMMARY, e.ZURL, e.ZUID, ec.Z_1COLLECTIONS, e.ZCOLLECTIONID '+
       'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES = e.Z_PK '+
       'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) '+
       'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END, e.ZTITLE'
@@ -733,7 +740,7 @@ function loadCdpDatabase(){
     if(res.length){
       res[0].values.forEach(function(row){
         var collName = COLL_MAP[row[12]] || ''; if(!collName) return;
-        allAlbumsCdp.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),serial:String(row[3]||''),genre:String(row[4]||''),label:String(row[5]||''),format:String(row[6]||''),tracks:String(row[7]||''),duration:String(row[8]||''),summary:String(row[9]||''),url:String(row[10]||''),zuid:row[11],category:collName,coverHash:'',trackList:tracksMap[row[0]]||[]});
+        allAlbumsCdp.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),serial:String(row[3]||''),genre:String(row[4]||''),label:String(row[5]||''),format:String(row[6]||''),tracks:String(row[7]||''),duration:String(row[8]||''),summary:String(row[9]||''),url:String(row[10]||''),zuid:row[11],category:collName,coverHash:'',trackList:tracksMap[row[0]]||[],identificativo:String(row[13]||'')});
       });
     }
     cdpLoaded = true;
@@ -845,7 +852,7 @@ function renderGrid(){
     var url = (zuidKey && covers[zuidKey]) ? covers[zuidKey] : (hashKey ? (covers[hashKey]||null) : null);
     var coverKey = zuidKey || hashKey;
     var cc  = CAT_CLASS[a.category] || '';
-    var fourthField = (currentCatalog==='cdpedia') ? (zuidKey ? 'ID: '+zuidKey : '') : a.serial;
+    var fourthField = (currentCatalog==='cdpedia') ? (a.identificativo || '') : a.serial;
     card.innerHTML =
       (url
         ? '<img class="album-cover" src="' + url + '" alt="' + a.title + '" loading="lazy">'
@@ -904,6 +911,7 @@ function openModalCdp(a){
   var cc  = CAT_CLASS[a.category] || '';
 
   var rows = '';
+  if(a.identificativo) rows += '<div class="modal-row"><span class="modal-lbl">Identificativo</span><span class="modal-val">' + a.identificativo + '</span></div>';
   if(a.serial)   rows += '<div class="modal-row"><span class="modal-lbl">Numero</span><span class="modal-val">' + a.serial + '</span></div>';
   if(a.label)    rows += '<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">' + a.label + '</span></div>';
   if(a.format)   rows += '<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">' + a.format + '</span></div>';
