@@ -95,7 +95,7 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 .filter-btn.active[data-cat="Classica"]{background:var(--cl);border-color:var(--cl);color:#fff;}
 
 main{padding:16px;}
-.catalog-switch{display:none;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;display:flex;gap:3px;}
+.catalog-switch{display:none;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;gap:3px;}
 .catalog-switch.show{display:flex;}
 .cat-sw-btn{flex:1;padding:8px;border-radius:6px;border:none;background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
 .cat-sw-btn.active{background:var(--gold);color:#000;}
@@ -188,6 +188,10 @@ main{padding:16px;}
       <div class="dot" id="dbxDot"></div>
     </div>
   </div>
+  <div class="catalog-switch" id="catalogSwitch">
+    <button class="cat-sw-btn active" id="btnSymphytum">Symphytum</button>
+    <button class="cat-sw-btn" id="btnCdpedia">CDpedia</button>
+  </div>
   <div class="search-wrap">
     <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="searchInput" placeholder="Cerca titolo, artista, seriale..." autocomplete="off" spellcheck="false">
@@ -228,10 +232,6 @@ main{padding:16px;}
   </div>
 
   <div id="appScreen">
-    <div class="catalog-switch" id="catalogSwitch">
-      <button class="cat-sw-btn active" id="btnSymphytum">Symphytum</button>
-      <button class="cat-sw-btn" id="btnCdpedia">CDpedia</button>
-    </div>
     <div id="statsBar">
       <span><span class="stats-n" id="countLbl">0</span> album</span>
       <span id="catLbl"></span>
@@ -664,6 +664,7 @@ function loadCovers(){
 
 // ── LOAD CDPEDIA DATABASE ────────────────────────────────
 function loadCdpDatabase(){
+  console.log('loadCdpDatabase called, path:', CDP_DB_PATH);
   showLoading('Caricamento CDpedia...');
   dbxDownload(CDP_DB_PATH)
   .then(function(r){ if(!r.ok) throw new Error('File non trovato: '+CDP_DB_PATH); return r.arrayBuffer(); })
