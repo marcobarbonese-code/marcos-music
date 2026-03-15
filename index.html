@@ -709,7 +709,14 @@ function switchCatalog(cat){
     if(cdpLoaded){ allAlbums=allAlbumsCdp; covers=coversCdp; renderGrid(); if(!cdpCoversLoading) loadCdpCovers(); }
     else { loadCdpDatabase(); }
   } else {
-    allAlbums=allAlbumsCache.slice(); covers=coversCache; coversLoading=false; renderGrid();
+    // Restore Symphytum - keep existing covers object (may still be loading)
+    allAlbums = allAlbumsCache.slice();
+    // Don't replace covers if we have more covers than cache (loading was in progress)
+    if(Object.keys(coversCache).length >= Object.keys(covers).length){
+      covers = Object.assign({}, coversCache);
+    }
+    coversLoading = false;
+    renderGrid();
   }
 }
 
