@@ -189,8 +189,8 @@ main{padding:16px;}
     </div>
   </div>
   <div class="catalog-switch" id="catalogSwitch">
-    <button class="cat-sw-btn active" id="btnSymphytum">Symphytum</button>
-    <button class="cat-sw-btn" id="btnCdpedia">CDpedia</button>
+    <button class="cat-sw-btn active" id="btnSymphytum" onclick="switchCatalog('symphytum')">Symphytum</button>
+    <button class="cat-sw-btn" id="btnCdpedia" onclick="switchCatalog('cdpedia')">CDpedia</button>
   </div>
   <div class="search-wrap">
     <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -691,6 +691,19 @@ function loadCovers(){
 }
 
 // ── LOAD CDPEDIA DATABASE ────────────────────────────────
+function switchCatalog(cat){
+  if(currentCatalog===cat) return;
+  currentCatalog=cat;
+  document.getElementById('btnSymphytum').classList.toggle('active', cat==='symphytum');
+  document.getElementById('btnCdpedia').classList.toggle('active', cat==='cdpedia');
+  if(cat==='cdpedia'){
+    if(cdpLoaded){ allAlbums=allAlbumsCdp; covers=coversCdp; renderGrid(); if(!cdpCoversLoading) loadCdpCovers(); }
+    else { loadCdpDatabase(); }
+  } else {
+    allAlbums=allAlbumsCache.slice(); covers=Object.assign({},coversCache); coversLoading=false; renderGrid();
+  }
+}
+
 function loadCdpDatabase(){
   console.log('loadCdpDatabase called, path:', CDP_DB_PATH);
   showLoading('Caricamento CDpedia...');
