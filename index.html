@@ -74,12 +74,12 @@ header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sti
 [data-theme="light"] .switch-track{background:var(--gold);}
 [data-theme="light"] .switch-thumb{left:17px;background:#fff;}
 
-.search-wrap{position:relative;margin-bottom:10px;}
-.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;}
-.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--surface);border:none;color:var(--text-muted);cursor:pointer;padding:2px 4px;display:none;line-height:1;border-radius:4px;}
+.search-wrap{position:relative;margin-bottom:10px;display:flex;align-items:center;}
+.search-wrap>.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;pointer-events:none;}
+.search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;display:none;line-height:0;}
 .search-clear:hover{color:var(--text);}
 .search-clear.show{display:block;}
-#searchInput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 34px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
+#searchInput{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 34px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
 #searchInput:focus{border-color:var(--gold);}
 #searchInput::placeholder{color:var(--text-muted);}
 .filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
@@ -184,7 +184,7 @@ main{padding:16px;}
     </div>
   </div>
   <div class="search-wrap">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="searchInput" placeholder="Cerca titolo, artista, seriale..." autocomplete="off" spellcheck="false">
     <button class="search-clear" id="searchClear">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg>
