@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Marco's Music</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Marco's Music">
+<meta name="theme-color" content="#141414">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1e1e1e;--border:#2a2a2a;
+  --gold:#c9a84c;--text:#e8e0d0;--text-muted:#7a7060;
+  --cs:#c9a84c;--it:#e05a4e;--st:#4e9de0;--jz:#7cba6e;--cl:#b07cd4;
+  --red:#e05a4e;--green:#7cba6e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
+
+header{padding:24px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,10,0.96);backdrop-filter:blur(12px);z-index:100;}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.record{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:conic-gradient(from 0deg,#1a1a1a 0deg,#2a2a2a 30deg,#1a1a1a 60deg,#2a2a2a 90deg,#1a1a1a 120deg,#2a2a2a 150deg,#1a1a1a 180deg,#2a2a2a 210deg,#1a1a1a 240deg,#2a2a2a 270deg,#1a1a1a 300deg,#2a2a2a 330deg,#1a1a1a 360deg);border:2px solid var(--gold);position:relative;animation:spin 8s linear infinite;}
+.record::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:var(--gold);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.logo{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);flex:1;}
+.theme-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:5px 8px;border-radius:20px;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:'DM Mono',monospace;font-size:11px;}
+.theme-btn:hover{border-color:var(--gold);color:var(--gold);}
+.dbx-pill{display:flex;align-items:center;padding:6px 8px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+.dbx-pill:hover{border-color:var(--gold);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all 0.3s;}
+.dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.search-wrap{position:relative;margin-bottom:10px;display:flex;align-items:center;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:14px;height:14px;pointer-events:none;}
+#searchInput{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:10px 36px 10px 34px;border-radius:6px;outline:none;transition:border-color 0.2s;}
+#searchInput:focus{border-color:var(--gold);}
+#searchInput::placeholder{color:var(--text-muted);}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;display:none;line-height:0;}
+.search-clear:hover{color:var(--text);}
+.search-clear.show{display:block;}
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 4px 20px;-webkit-overflow-scrolling:touch;}
+.filters::-webkit-scrollbar{display:none;}
+.filters::after{content:'';flex-shrink:0;width:20px;}
+.filter-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.filter-btn.active[data-cat="all"]{background:#3a3a3a;border-color:#555;color:var(--text);}
+.filter-btn.active[data-cat="Colonne Sonore"]{background:var(--cs);border-color:var(--cs);color:#000;}
+.filter-btn.active[data-cat="Italiana"]{background:var(--it);border-color:var(--it);color:#fff;}
+.filter-btn.active[data-cat="Straniera"]{background:var(--st);border-color:var(--st);color:#fff;}
+.filter-btn.active[data-cat="Jazz"]{background:var(--jz);border-color:var(--jz);color:#000;}
+.filter-btn.active[data-cat="Classica"]{background:var(--cl);border-color:var(--cl);color:#fff;}
+
+main{padding:16px;}
+#loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 24px;width:100%;max-width:320px;}
+.login-icon{margin-bottom:16px;color:var(--gold);}
+.login-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold);margin-bottom:8px;}
+.login-sub{font-size:11px;color:var(--text-muted);line-height:1.8;margin-bottom:24px;}
+.login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;letter-spacing:0.1em;transition:opacity 0.2s;}
+.login-btn:hover{opacity:0.85;}
+.login-note{font-size:10px;color:var(--text-muted);margin-top:14px;}
+
+#loadingScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;gap:16px;font-size:12px;color:var(--text-muted);letter-spacing:0.1em;}
+#loadingScreen.show{display:flex;}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+.mini-spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px;}
+
+#appScreen{display:none;}
+#appScreen.show{display:block;}
+#statsBar{display:none;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
+#statsBar.show{display:flex;justify-content:space-between;align-items:center;width:100%;}
+.stats-n{color:var(--gold);}
+.sort-btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;padding:4px 10px;border-radius:20px;transition:all 0.2s;letter-spacing:0.05em;}
+.sort-btn:hover{border-color:var(--gold);color:var(--gold);}
+#coversProgress{font-size:10px;color:var(--text-muted);margin-bottom:10px;min-height:14px;}
+
+#albumGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:600px){#albumGrid{grid-template-columns:repeat(4,1fr);gap:10px;}}
+@media(min-width:900px){#albumGrid{grid-template-columns:repeat(6,1fr);gap:8px;}}
+@media(min-width:1200px){#albumGrid{grid-template-columns:repeat(8,1fr);gap:8px;}}
+.album-card{background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all 0.25s;animation:fadeIn 0.3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.album-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.album-cover{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+.album-ph{width:100%;aspect-ratio:1;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
+.album-info{padding:10px;}
+.album-cat{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
+.cat-cs{color:var(--cs)}.cat-it{color:var(--it)}.cat-st{color:var(--st)}.cat-jz{color:var(--jz)}.cat-cl{color:var(--cl)}
+.album-title{font-family:'Playfair Display',serif;font-size:13px;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-artist{font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.album-serial{font-size:10px;color:var(--text);margin-top:4px;}
+
+#emptyState{display:none;text-align:center;padding:60px 20px;color:var(--text-muted);}
+#emptyState.show{display:block;}
+#emptyState p{font-size:13px;margin-top:8px;}
+
+#drawer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:400;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#drawer.open{display:flex;}
+.drawer-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 20px 28px;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 20px;}
+.drawer-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px;}
+.drawer-sub{font-size:11px;color:var(--text-muted);margin-bottom:20px;}
+.drawer-row{display:flex;gap:8px;}
+.d-btn{flex:1;padding:12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;}
+.d-btn:hover{border-color:var(--text-muted);color:var(--text);}
+.d-btn.danger{border-color:var(--red);color:var(--red);}
+.d-btn.danger:hover{background:rgba(224,90,78,0.1);}
+
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#modal.open{display:flex;}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+.modal-cover{width:100%;max-height:420px;object-fit:contain;background:var(--surface2);display:block;}
+.modal-ph{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
+.modal-body{padding:20px;}
+.modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;line-height:1.2;margin-bottom:6px;}
+.modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:8px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;transition:color 0.2s;}
+.modal-artist:hover{color:var(--gold);}
+.modal-genre{font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;}
+.modal-divider{height:1px;background:var(--border);margin:14px 0;}
+.modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:12px;}
+.modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;}
+.modal-val{font-size:13px;color:var(--text);text-align:right;}
+.modal-close{width:100%;margin-top:14px;margin-bottom:8px;padding:14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s;}
+.modal-close:hover{border-color:var(--gold);color:var(--gold);}
+.track-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
+.track-num{color:var(--text-muted);font-size:10px;flex-shrink:0;width:22px;}
+.track-info{flex:1;min-width:0;}
+.track-name{font-size:12px;}
+.track-artist{font-size:10px;color:var(--text-muted);}
+.track-dur{color:var(--text-muted);font-size:10px;flex-shrink:0;}
+
+body.light{--bg:#f5f2ee;--surface:#ffffff;--surface2:#ede9e3;--border:#d8d0c4;--gold:#a07830;--text:#1a1612;--text-muted:#8a7d6a;--cs:#a07830;--it:#c04030;--st:#2878c0;--jz:#4a9040;--cl:#8040b0;--red:#c04030;--green:#4a9040;}
+body.light header{background:rgba(245,242,238,0.96) !important;}
+body.light .login-btn{color:#fff !important;}
+body.light #drawer,body.light #modal{background:rgba(0,0,0,0.45) !important;}
+body.light .filter-btn.active[data-cat="all"]{background:#4a4440 !important;border-color:#4a4440 !important;color:#fff !important;}
+body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30deg,#2a2418 60deg,#3a3020 90deg,#2a2418 120deg,#3a3020 150deg,#2a2418 180deg,#3a3020 210deg,#2a2418 240deg,#3a3020 270deg,#2a2418 300deg,#3a3020 330deg,#2a2418 360deg) !important;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <div class="record"></div>
+    <div class="logo">Marco's Music</div>
+    <button class="theme-btn" id="themeBtn">☀</button>
+    <div class="dbx-pill" id="dbxPill"><div class="dot" id="dbxDot"></div></div>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Cerca titolo, artista, numero..." autocomplete="off" spellcheck="false">
+    <button class="search-clear" id="searchClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" data-cat="all">Tutti</button>
+    <button class="filter-btn" data-cat="Colonne Sonore">Colonne Sonore</button>
+    <button class="filter-btn" data-cat="Italiana">Italiana</button>
+    <button class="filter-btn" data-cat="Straniera">Straniera</button>
+    <button class="filter-btn" data-cat="Jazz">Jazz</button>
+    <button class="filter-btn" data-cat="Classica">Classica</button>
+  </div>
+</header>
+
+<main>
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <div class="login-title">Marco's Music</div>
+      <div class="login-sub">Collega il tuo Dropbox per accedere alla collezione.</div>
+      <button class="login-btn" id="loginBtn">ACCEDI CON DROPBOX</button>
+      <div class="login-note">Accesso sicuro tramite OAuth 2.</div>
+    </div>
+  </div>
+  <div id="loadingScreen"><div class="spinner"></div><span id="loadMsg">Caricamento...</span></div>
+  <div id="appScreen">
+    <div id="statsBar">
+      <span><span class="stats-n" id="countLbl">0</span> album &nbsp;<span id="catLbl"></span></span><button class="sort-btn" id="sortBtn" style="margin-left:auto;">↑ ID</button>
+    </div>
+    <div id="coversProgress"></div>
+    <div id="albumGrid"></div>
+    <div id="emptyState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>Nessun album trovato</p></div>
+  </div>
+</main>
+
+<div id="drawer">
+  <div class="drawer-sheet">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">Marco's Music</div>
+    <div class="drawer-sub">Connesso come <strong id="drawerUser" style="color:var(--gold)"></strong></div>
+    <div class="drawer-row">
+      <button class="d-btn" id="drawerClose">Chiudi</button>
+      <button class="d-btn danger" id="drawerLogout">Disconnetti</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<script>
+const APP_KEY    = 'js14z2382chcui3';
+const APP_SECRET = '0dmnr5p5jloljcb';
+const REDIRECT   = 'https://marcobarbonese-code.github.io/marcos-music/';
+const DB_PATH    = '/MarcosMusic/Database.cdpd';
+const COVERS_DIR = '/MarcosMusic/Covers';
+const API        = 'https://api.dropboxapi.com/2';
+const CONTENT    = 'https://content.dropboxapi.com/2';
+const CAT_CLASS  = {'Colonne Sonore':'cat-cs','Italiana':'cat-it','Straniera':'cat-st','Jazz':'cat-jz','Classica':'cat-cl'};
+const COLL_MAP   = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'Italiana'};
+
+var SQL=null, sqlJsReady=false, sqlJsCallbacks=[];
+var accessToken='', refreshToken='', tokenExpiry=0;
+var allAlbums=[], covers={}, currentFilter='all', currentSearch='';
+var coversLoading=false, sortAsc=true;
+
+initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/'+f;}})
+  .then(function(s){SQL=s;sqlJsReady=true;sqlJsCallbacks.forEach(function(cb){cb();});sqlJsCallbacks=[];});
+function whenSqlReady(cb){if(sqlJsReady)cb();else sqlJsCallbacks.push(cb);}
+
+function applyTheme(t){
+  if(t==='light'){document.body.classList.add('light');document.getElementById('themeBtn').textContent='☾';document.querySelector('meta[name="theme-color"]').content='#f5f2ee';}
+  else{document.body.classList.remove('light');document.getElementById('themeBtn').textContent='☀';document.querySelector('meta[name="theme-color"]').content='#141414';}
+  localStorage.setItem('theme',t);
+}
+
+function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('loadingScreen').classList.remove('show');document.getElementById('appScreen').classList.remove('show');}
+function showLoading(msg){document.getElementById('loginScreen').style.display='none';document.getElementById('loadingScreen').classList.add('show');document.getElementById('appScreen').classList.remove('show');document.getElementById('loadMsg').textContent=msg||'Caricamento...';}
+function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('loadingScreen').classList.remove('show');document.getElementById('appScreen').classList.add('show');}
+
+window.addEventListener('DOMContentLoaded', function(){
+  if(localStorage.getItem('theme')==='light') document.body.classList.add('light');
+  document.getElementById('themeBtn').textContent=document.body.classList.contains('light')?'☾':'☀';
+  document.getElementById('themeBtn').addEventListener('click',function(){applyTheme(document.body.classList.contains('light')?'dark':'light');});
+
+  document.getElementById('searchInput').addEventListener('input',function(e){
+    currentSearch=e.target.value.toLowerCase();
+    document.getElementById('searchClear').classList.toggle('show',e.target.value.length>0);
+    renderGrid();
+  });
+  document.getElementById('searchClear').addEventListener('click',function(){
+    document.getElementById('searchInput').value='';currentSearch='';this.classList.remove('show');renderGrid();
+  });
+
+  document.querySelectorAll('.filter-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');currentFilter=b.dataset.cat;renderGrid();
+    });
+  });
+
+  document.getElementById('sortBtn').addEventListener('click',function(){
+    sortAsc=!sortAsc;this.textContent=sortAsc?'↑':'↓';renderGrid();
+  });
+
+  document.getElementById('dbxPill').addEventListener('click',function(){if(accessToken)document.getElementById('drawer').classList.add('open');});
+  document.getElementById('drawerClose').addEventListener('click',function(){document.getElementById('drawer').classList.remove('open');});
+  document.getElementById('drawer').addEventListener('click',function(e){if(e.target===document.getElementById('drawer'))document.getElementById('drawer').classList.remove('open');});
+  document.getElementById('drawerLogout').addEventListener('click',function(){
+    localStorage.clear();accessToken='';refreshToken='';tokenExpiry=0;allAlbums=[];covers={};
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('dbxDot').className='dot';
+    document.getElementById('albumGrid').innerHTML='';
+    document.getElementById('statsBar').classList.remove('show');
+    showLogin();
+  });
+  document.getElementById('modal').addEventListener('click',function(e){if(e.target===document.getElementById('modal'))closeModal();});
+
+  var params=new URLSearchParams(window.location.search);
+  var code=params.get('code'),state=params.get('state');
+  if(code&&state){
+    window.history.replaceState({},''  ,REDIRECT);
+    var ss=localStorage.getItem('oauth_state'),cv=localStorage.getItem('code_verifier');
+    localStorage.removeItem('oauth_state');localStorage.removeItem('code_verifier');
+    if(!cv||state!==ss){showLogin();return;}
+    showLoading('Connessione a Dropbox...');exchangeCode(code,cv);return;
+  }
+  accessToken=localStorage.getItem('dbx_access')||'';
+  refreshToken=localStorage.getItem('dbx_refresh')||'';
+  tokenExpiry=parseInt(localStorage.getItem('dbx_expiry')||'0');
+  if(refreshToken){showLoading('Connessione...');ensureValidToken().then(function(ok){if(ok)onConnected();else showLogin();});return;}
+  showLogin();
+});
+
+function randomBase64(len){var a=new Uint8Array(len);crypto.getRandomValues(a);return btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
+function sha256Base64(s){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)).then(function(b){return btoa(String.fromCharCode.apply(null,new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');});}
+
+document.getElementById('loginBtn').addEventListener('click',function(){
+  var v=randomBase64(64),s=randomBase64(16);
+  localStorage.setItem('code_verifier',v);localStorage.setItem('oauth_state',s);
+  sha256Base64(v).then(function(c){window.location.href='https://www.dropbox.com/oauth2/authorize?client_id='+encodeURIComponent(APP_KEY)+'&response_type=code&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_challenge='+encodeURIComponent(c)+'&code_challenge_method=S256&state='+encodeURIComponent(s)+'&token_access_type=offline';});
+});
+
+function exchangeCode(code,verifier){
+  fetch('https://api.dropbox.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'code='+encodeURIComponent(code)+'&grant_type=authorization_code&client_id='+encodeURIComponent(APP_KEY)+'&client_secret='+encodeURIComponent(APP_SECRET)+'&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_verifier='+encodeURIComponent(verifier)})
+  .then(function(r){return r.json();}).then(function(d){if(!d.access_token){showLogin();alert('Errore login.');return;}saveTokens(d);onConnected();}).catch(function(){showLogin();alert('Errore di rete.');});
+}
+function saveTokens(d){accessToken=d.access_token;if(d.refresh_token)refreshToken=d.refresh_token;tokenExpiry=Date.now()+((d.expires_in||14400)*1000)-60000;localStorage.setItem('dbx_access',accessToken);localStorage.setItem('dbx_refresh',refreshToken);localStorage.setItem('dbx_expiry',String(tokenExpiry));}
+function ensureValidToken(){
+  if(accessToken&&Date.now()<tokenExpiry)return Promise.resolve(true);
+  if(!refreshToken)return Promise.resolve(false);
+  return fetch('https://api.dropbox.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(refreshToken)+'&client_id='+encodeURIComponent(APP_KEY)+'&client_secret='+encodeURIComponent(APP_SECRET)})
+  .then(function(r){return r.json();}).then(function(d){if(!d.access_token)return false;saveTokens(d);return true;}).catch(function(){return false;});
+}
+
+function dbxPost(url,body){return ensureValidToken().then(function(){var h={'Authorization':'Bearer '+accessToken};if(body)h['Content-Type']='application/json';return fetch(url,{method:'POST',headers:h,body:body?JSON.stringify(body):undefined});});}
+function dbxDownload(path){return ensureValidToken().then(function(){return fetch(CONTENT+'/files/download',{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Dropbox-API-Arg':JSON.stringify({path:path})}});});}
+
+function onConnected(){
+  dbxPost(API+'/users/get_current_account',null)
+  .then(function(r){return r.json();})
+  .then(function(u){
+    document.getElementById('dbxDot').className='dot ok';
+    document.getElementById('drawerUser').textContent=(u.name&&u.name.display_name)||'';
+    whenSqlReady(function(){loadDatabase();});
+  }).catch(function(){showLogin();});
+}
+
+function loadDatabase(){
+  showLoading('Caricamento database...');
+  dbxDownload(DB_PATH)
+  .then(function(r){if(!r.ok)throw new Error('File non trovato: '+DB_PATH);return r.arrayBuffer();})
+  .then(function(buf){loadData(new SQL.Database(new Uint8Array(buf)));})
+  .catch(function(e){showApp();alert('Errore: '+e.message);});
+}
+
+function loadData(db){
+  showLoading('Lettura collezioni...');
+  allAlbums=[];
+  var tracksMap={};
+  try{
+    var tr=db.exec('SELECT ZENTRY,ZPOSITION,ZNAME,ZARTIST,ZDURATION FROM ZTRACK ORDER BY ZENTRY,ZPOSITION');
+    if(tr.length)tr[0].values.forEach(function(r){if(!tracksMap[r[0]])tracksMap[r[0]]=[];tracksMap[r[0]].push({name:String(r[2]||''),artist:String(r[3]||''),dur:String(r[4]||'')});});
+  }catch(e){}
+  try{
+    var res=db.exec(
+      'SELECT e.Z_PK,e.ZTITLE,e.ZARTIST,e.ZGENRE,e.ZLABEL,e.ZFORMAT,e.ZDURATION,e.ZURL,e.ZUID,ec.Z_1COLLECTIONS,e.ZCOLLECTIONID '+
+      'FROM ZENTRY e LEFT JOIN Z_2COLLECTIONS ec ON ec.Z_2ENTRIES=e.Z_PK '+
+      'WHERE ec.Z_1COLLECTIONS IN (7,8,9,10,11) '+
+      'ORDER BY CASE ec.Z_1COLLECTIONS WHEN 9 THEN 1 WHEN 11 THEN 2 WHEN 7 THEN 3 WHEN 10 THEN 4 WHEN 8 THEN 5 END,CAST(e.ZCOLLECTIONID AS INTEGER)'
+    );
+    if(res.length)res[0].values.forEach(function(row){
+      var cat=COLL_MAP[row[9]]||'';if(!cat)return;
+      allAlbums.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),genre:String(row[3]||''),label:String(row[4]||''),format:String(row[5]||''),duration:String(row[6]||''),url:String(row[7]||''),zuid:row[8],category:cat,identificativo:String(row[10]||''),trackList:tracksMap[row[0]]||[]});
+    });
+  }catch(e){console.error(e);}
+  showApp();
+  document.getElementById('statsBar').classList.add('show');
+  renderGrid();
+  loadCovers();
+}
+
+function loadCovers(){
+  if(coversLoading)return;
+  coversLoading=true;
+  var prog=document.getElementById('coversProgress');
+  prog.innerHTML='<span class="mini-spin"></span> Caricamento copertine...';
+  var seen={},zuids=[];
+  allAlbums.forEach(function(a){if(a.zuid&&!seen[a.zuid]&&!covers[String(a.zuid)]){seen[a.zuid]=true;zuids.push(a.zuid);}});
+  if(!zuids.length){prog.textContent='';coversLoading=false;return;}
+  var done=0,completed=0,total=zuids.length;
+  prog.textContent='Copertine: 0 / '+total;
+  function loadOne(zuid){
+    var key=String(zuid);
+    function tryExt(e){return dbxDownload(COVERS_DIR+'/'+zuid+'.'+e).then(function(r){return r.ok?r.blob():null;});}
+    return tryExt('jpg').then(function(b){return b||tryExt('png');}).then(function(b){return b||tryExt('jpeg');})
+    .then(function(blob){
+      if(blob){covers[key]=URL.createObjectURL(blob);done++;document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){var img=document.createElement('img');img.className='album-cover';img.src=covers[key];img.alt='';el.parentNode.replaceChild(img,el);});}
+      completed++;prog.textContent='Copertine: '+done+' / '+total;
+      if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}
+    }).catch(function(){completed++;if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}});
+  }
+  function runBatch(s){if(s>=total)return;Promise.all(zuids.slice(s,s+6).map(loadOne)).then(function(){runBatch(s+6);});}
+  runBatch(0);
+}
+
+function filtered(){
+  var list=allAlbums.filter(function(a){
+    var mc=currentFilter==='all'||a.category===currentFilter;
+    var q=currentSearch;
+    if(!mc)return false;
+    if(!q)return true;
+    var qIsNum=/^\d+$/.test(q);
+    var matchId=qIsNum?(a.identificativo===q):a.identificativo.indexOf(q)!==-1;
+    return a.title.toLowerCase().indexOf(q)!==-1||a.artist.toLowerCase().indexOf(q)!==-1||matchId;
+  });
+  list.sort(function(a,b){var ai=parseInt(a.identificativo)||0,bi=parseInt(b.identificativo)||0;return sortAsc?ai-bi:bi-ai;});
+  return list;
+}
+
+function renderGrid(){
+  var list=filtered();
+  document.getElementById('countLbl').textContent=list.length;
+  document.getElementById('catLbl').textContent=currentFilter==='all'?'':currentFilter;
+  var grid=document.getElementById('albumGrid');
+  grid.innerHTML='';
+  document.getElementById('emptyState').classList.toggle('show',list.length===0&&allAlbums.length>0);
+  list.forEach(function(a,i){
+    var card=document.createElement('div');card.className='album-card';card.style.animationDelay=(i*0.015)+'s';
+    var key=a.zuid?String(a.zuid):'';
+    var url=key?(covers[key]||null):null;
+    var cc=CAT_CLASS[a.category]||'';
+    card.innerHTML=
+      (url?'<img class="album-cover" src="'+url+'" alt="'+a.title+'" loading="lazy">':
+           '<div class="album-ph" data-cover="'+key+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
+      '<div class="album-info">'+
+        (a.category?'<div class="album-cat '+cc+'">'+a.category+'</div>':'')+
+        '<div class="album-title">'+a.title+'</div>'+
+        (a.artist?'<div class="album-artist">'+a.artist+'</div>':'')+
+        (a.identificativo?'<div class="album-serial">'+a.identificativo+'</div>':'')+
+      '</div>';
+    card.addEventListener('click',function(){openModal(a);});
+    grid.appendChild(card);
+  });
+}
+
+function filterByArtist(artist){
+  closeModal();
+  document.getElementById('searchInput').value=artist;currentSearch=artist.toLowerCase();
+  document.getElementById('searchClear').classList.add('show');
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
+  currentFilter='all';renderGrid();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openModal(a){
+  var key=a.zuid?String(a.zuid):'';
+  var url=key?(covers[key]||null):null;
+  var cc=CAT_CLASS[a.category]||'';
+  var rows='';
+  if(a.identificativo) rows+='<div class="modal-row"><span class="modal-lbl">Identificativo</span><span class="modal-val">'+a.identificativo+'</span></div>';
+  if(a.label)          rows+='<div class="modal-row"><span class="modal-lbl">Etichetta</span><span class="modal-val">'+a.label+'</span></div>';
+  if(a.format)         rows+='<div class="modal-row"><span class="modal-lbl">Formato</span><span class="modal-val">'+a.format+'</span></div>';
+  if(a.duration)       rows+='<div class="modal-row"><span class="modal-lbl">Durata</span><span class="modal-val">'+a.duration+'</span></div>';
+  if(a.url)            rows+='<div class="modal-row"><span class="modal-lbl">Link</span><span class="modal-val"><a href="'+a.url+'" target="_blank" style="color:var(--gold)">Discogs \u2197</a></span></div>';
+  var tracksHtml='';
+  if(a.trackList&&a.trackList.length){
+    var items=a.trackList.map(function(t,i){
+      return '<div class="track-row"><span class="track-num">'+String(i+1).padStart(2,'0')+'</span><div class="track-info"><div class="track-name">'+t.name+'</div>'+(t.artist&&t.artist!==a.artist?'<div class="track-artist">'+t.artist+'</div>':'')+' </div>'+(t.dur?'<span class="track-dur">'+t.dur+'</span>':'')+'</div>';
+    }).join('');
+    tracksHtml='<div class="modal-divider"></div><div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div><div style="max-height:200px;overflow-y:auto;">'+items+'</div>';
+  }
+  document.getElementById('modalContent').innerHTML=
+    (url?'<img class="modal-cover" src="'+url+'" alt="">':'<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
+    '<div class="modal-body">'+
+      (a.category?'<div class="modal-cat '+cc+'">'+a.category+'</div>':'')+
+      '<div class="modal-title">'+a.title+'</div>'+
+      (a.artist?'<div class="modal-artist" id="mdlArtist">'+a.artist+'</div>':'')+
+      (a.genre?'<div class="modal-genre">'+a.genre+'</div>':'')+
+      (rows?'<div class="modal-divider"></div>'+rows:'')+
+      tracksHtml+
+      '<button class="modal-close" id="modalCloseBtn">CHIUDI</button>'+
+    '</div>';
+  var ab=document.getElementById('mdlArtist');
+  if(ab)ab.addEventListener('click',function(){filterByArtist(a.artist);});
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modalCloseBtn').addEventListener('click',closeModal);
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}</script>
+</body>
+</html>
