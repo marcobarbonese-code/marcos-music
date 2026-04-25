@@ -115,10 +115,12 @@ main{padding:16px;}
 #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
 #modal.open{display:flex;}
 .modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);position:relative;}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
-.modal-cover{width:100%;max-height:420px;object-fit:contain;background:var(--surface2);display:block;}
-.modal-ph{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);}
-.modal-body{padding:20px;}
+.modal-handle{display:none;}
+.modal-cover{width:100%;max-height:300px;object-fit:cover;background:var(--surface2);display:block;border-radius:20px 20px 0 0;}
+.modal-cover-wrap{position:relative;}
+.modal-cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--surface) 100%);border-radius:20px 20px 0 0;pointer-events:none;}
+.modal-ph{width:100%;height:200px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--border);border-radius:20px 20px 0 0;}
+.modal-body{padding:16px 20px 28px;}
 .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;}
 .modal-title{font-family:'Playfair Display',serif;font-size:22px;line-height:1.2;margin-bottom:6px;}
 .modal-artist{font-size:14px;color:var(--text-muted);margin-bottom:8px;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;transition:color 0.2s;}
@@ -128,10 +130,10 @@ main{padding:16px;}
 .modal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:12px;}
 .modal-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;}
 .modal-val{font-size:13px;color:var(--text);text-align:right;}
-.modal-close{position:sticky;top:14px;float:right;margin-right:14px;margin-top:14px;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.55);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;z-index:10;flex-shrink:0;}
-.modal-close:hover{border-color:var(--gold);color:var(--gold);background:rgba(0,0,0,0.75);}
-body.light .modal-close{border-color:rgba(0,0,0,0.2);background:rgba(255,255,255,0.65);color:#333;}
-body.light .modal-close:hover{border-color:var(--gold);color:var(--gold);}
+.modal-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,0.55);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;z-index:10;}
+.modal-close:hover{background:rgba(0,0,0,0.75);color:var(--gold);}
+body.light .modal-close{background:rgba(255,255,255,0.65);color:#333;}
+body.light .modal-close:hover{color:var(--gold);}
 .track-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
 .track-num{color:var(--text-muted);font-size:10px;flex-shrink:0;width:22px;}
 .track-info{flex:1;min-width:0;}
@@ -204,8 +206,7 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
 </div>
 
 <div id="modal">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
+  <div class="modal-sheet" style="position:relative;">
     <div id="modalContent"></div>
   </div>
 </div>
@@ -454,8 +455,18 @@ function openModal(a){
     tracksHtml='<div class="modal-divider"></div><div style="font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tracce ('+a.trackList.length+')</div>'+items;
   }
   document.getElementById('modalContent').innerHTML=
-    '<button class="modal-close" id="modalCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'+
-    (url?'<img class="modal-cover" src="'+url+'" alt="">':'<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>')+
+    (url?
+      '<div class="modal-cover-wrap">'+
+        '<img class="modal-cover" src="'+url+'" alt="">'+
+        '<div class="modal-cover-overlay"></div>'+
+        '<button class="modal-close" id="modalCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'+
+      '</div>'
+    :
+      '<div style="position:relative;">'+
+        '<div class="modal-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:56px;height:56px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>'+
+        '<button class="modal-close" id="modalCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'+
+      '</div>'
+    )+
     '<div class="modal-body">'+
       (a.category?'<div class="modal-cat '+cc+'">'+a.category+'</div>':'')+
       '<div class="modal-title">'+a.title+'</div>'+
