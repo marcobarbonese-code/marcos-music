@@ -355,7 +355,7 @@ function loadData(db){
   var tracksMap={};
   try{
     var tr=db.exec('SELECT ZENTRY,ZPOSITION,ZNAME,ZARTIST,ZDURATION FROM ZTRACK ORDER BY ZENTRY,ZPOSITION');
-    if(tr.length)tr[0].values.forEach(function(r){if(!tracksMap[r[0]])tracksMap[r[0]]=[];tracksMap[r[0]].push({name:fixEncoding(String(r[2]||'')),artist:fixEncoding(String(r[3]||'')),dur:String(r[4]||'')});});
+    if(tr.length)tr[0].values.forEach(function(r){if(!tracksMap[r[0]])tracksMap[r[0]]=[];tracksMap[r[0]].push({name:String(r[2]||''),artist:String(r[3]||''),dur:String(r[4]||'')});});
   }catch(e){}
   try{
     var res=db.exec(
@@ -366,7 +366,7 @@ function loadData(db){
     );
     if(res.length)res[0].values.forEach(function(row){
       var cat=COLL_MAP[row[9]]||'';if(!cat)return;
-      allAlbums.push({pk:row[0],title:fixEncoding(String(row[1]||'')),artist:fixEncoding(String(row[2]||'')),genre:fixEncoding(String(row[3]||'')),label:fixEncoding(String(row[4]||'')),format:String(row[5]||''),duration:String(row[6]||''),url:String(row[7]||''),zuid:row[8],category:cat,identificativo:String(row[10]||''),trackList:tracksMap[row[0]]||[]});
+      allAlbums.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),genre:String(row[3]||''),label:String(row[4]||''),format:String(row[5]||''),duration:String(row[6]||''),url:String(row[7]||''),zuid:row[8],category:cat,identificativo:String(row[10]||''),trackList:tracksMap[row[0]]||[]});
     });
   }catch(e){console.error(e);}
   showApp();
