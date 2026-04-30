@@ -227,6 +227,7 @@ var SQL=null, sqlJsReady=false, sqlJsCallbacks=[];
 var accessToken='', refreshToken='', tokenExpiry=0;
 var allAlbums=[], covers={}, currentFilter='all', currentSearch='';
 var coversLoading=false, sortAsc=true;
+var artistFilter=null;
 
 initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/'+f;}})
   .then(function(s){SQL=s;sqlJsReady=true;sqlJsCallbacks.forEach(function(cb){cb();});sqlJsCallbacks=[];});
@@ -248,11 +249,13 @@ window.addEventListener('DOMContentLoaded', function(){
   document.getElementById('themeBtn').addEventListener('click',function(){applyTheme(document.body.classList.contains('light')?'dark':'light');});
 
   document.getElementById('searchInput').addEventListener('input',function(e){
+    artistFilter=null;
     currentSearch=e.target.value.toLowerCase();
     document.getElementById('searchClear').classList.toggle('show',e.target.value.length>0);
     renderGrid();
   });
   document.getElementById('searchClear').addEventListener('click',function(){
+    artistFilter=null;
     document.getElementById('searchInput').value='';currentSearch='';this.classList.remove('show');renderGrid();
   });
 
@@ -399,11 +402,19 @@ function loadCovers(){
   runBatch(0);
 }
 
+function artistMatchesFilter(artistStr, filterName){
+  var tokens=artistStr.split(/\s*[,&\/]\s*|\s+e\s+/).map(function(s){return s.trim().toLowerCase();});
+  return tokens.indexOf(filterName.toLowerCase())!==-1;
+}
+
 function filtered(){
   var list=allAlbums.filter(function(a){
     var mc=currentFilter==='all'||a.category===currentFilter;
-    var q=currentSearch;
     if(!mc)return false;
+    if(artistFilter){
+      return artistMatchesFilter(a.artist, artistFilter);
+    }
+    var q=currentSearch;
     if(!q)return true;
     var qIsNum=/^\d+$/.test(q);
     var matchId=qIsNum?(a.identificativo===q):a.identificativo.indexOf(q)!==-1;
@@ -456,7 +467,10 @@ function filterByArtist(artistStr){
 }
 
 function applyArtistFilter(artist){
-  document.getElementById('searchInput').value=artist;currentSearch=artist.toLowerCase();
+  artistFilter=artist;
+  // Show the artist name in the search box as visual feedback (read-only feel)
+  document.getElementById('searchInput').value=artist;
+  currentSearch='';
   document.getElementById('searchClear').classList.add('show');
   document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
