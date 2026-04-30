@@ -338,13 +338,24 @@ function loadDatabase(){
   .catch(function(e){showApp();alert('Errore: '+e.message);});
 }
 
+// Fix strings double-encoded as Latin-1 instead of UTF-8 (e.g. "De AndrÃ©" -> "De André")
+function fixEncoding(str){
+  if(!str)return str;
+  try{
+    if(!/[\xC0-\xFF]/.test(str))return str;
+    var bytes=new Uint8Array(str.length);
+    for(var i=0;i<str.length;i++)bytes[i]=str.charCodeAt(i)&0xFF;
+    return new TextDecoder('utf-8',{fatal:false}).decode(bytes);
+  }catch(e){return str;}
+}
+
 function loadData(db){
   showLoading('Lettura collezioni...');
   allAlbums=[];
   var tracksMap={};
   try{
     var tr=db.exec('SELECT ZENTRY,ZPOSITION,ZNAME,ZARTIST,ZDURATION FROM ZTRACK ORDER BY ZENTRY,ZPOSITION');
-    if(tr.length)tr[0].values.forEach(function(r){if(!tracksMap[r[0]])tracksMap[r[0]]=[];tracksMap[r[0]].push({name:String(r[2]||''),artist:String(r[3]||''),dur:String(r[4]||'')});});
+    if(tr.length)tr[0].values.forEach(function(r){if(!tracksMap[r[0]])tracksMap[r[0]]=[];tracksMap[r[0]].push({name:fixEncoding(String(r[2]||'')),artist:fixEncoding(String(r[3]||'')),dur:String(r[4]||'')});});
   }catch(e){}
   try{
     var res=db.exec(
@@ -355,7 +366,7 @@ function loadData(db){
     );
     if(res.length)res[0].values.forEach(function(row){
       var cat=COLL_MAP[row[9]]||'';if(!cat)return;
-      allAlbums.push({pk:row[0],title:String(row[1]||''),artist:String(row[2]||''),genre:String(row[3]||''),label:String(row[4]||''),format:String(row[5]||''),duration:String(row[6]||''),url:String(row[7]||''),zuid:row[8],category:cat,identificativo:String(row[10]||''),trackList:tracksMap[row[0]]||[]});
+      allAlbums.push({pk:row[0],title:fixEncoding(String(row[1]||'')),artist:fixEncoding(String(row[2]||'')),genre:fixEncoding(String(row[3]||'')),label:fixEncoding(String(row[4]||'')),format:String(row[5]||''),duration:String(row[6]||''),url:String(row[7]||''),zuid:row[8],category:cat,identificativo:String(row[10]||''),trackList:tracksMap[row[0]]||[]});
     });
   }catch(e){console.error(e);}
   showApp();
@@ -428,13 +439,64 @@ function renderGrid(){
   });
 }
 
-function filterByArtist(artist){
+function splitArtists(str){
+  // Split on: comma, ' e ' (with spaces), '&' (with optional spaces), '/' (with optional spaces)
+  return str.split(/\s*[,&\/]\s*|\s+e\s+/).map(function(s){return s.trim();}).filter(Boolean);
+}
+
+function filterByArtist(artistStr){
   closeModal();
+  var parts=splitArtists(artistStr);
+  // If multiple artists, pick the first one to search (show a chooser if more than one)
+  if(parts.length>1){
+    showArtistChooser(parts);
+    return;
+  }
+  applyArtistFilter(parts[0]);
+}
+
+function applyArtistFilter(artist){
   document.getElementById('searchInput').value=artist;currentSearch=artist.toLowerCase();
   document.getElementById('searchClear').classList.add('show');
   document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelector('.filter-btn[data-cat="all"]').classList.add('active');
   currentFilter='all';renderGrid();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showArtistChooser(artists){
+  // Build a small overlay to let the user pick which artist to search
+  var existing=document.getElementById('artistChooser');
+  if(existing)existing.remove();
+  var overlay=document.createElement('div');
+  overlay.id='artistChooser';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:600;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:20px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 20px;width:100%;max-width:340px;';
+  var title=document.createElement('div');
+  title.style.cssText='font-family:"Playfair Display",serif;font-size:16px;color:var(--gold);margin-bottom:6px;';
+  title.textContent='Cerca per artista';
+  var sub=document.createElement('div');
+  sub.style.cssText='font-size:11px;color:var(--text-muted);margin-bottom:18px;';
+  sub.textContent='Sono presenti più autori. Seleziona quello che vuoi cercare:';
+  box.appendChild(title);
+  box.appendChild(sub);
+  artists.forEach(function(a){
+    var btn=document.createElement('button');
+    btn.style.cssText='display:block;width:100%;text-align:left;padding:11px 14px;margin-bottom:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:"DM Mono",monospace;font-size:13px;cursor:pointer;transition:all 0.2s;';
+    btn.textContent=a;
+    btn.addEventListener('mouseenter',function(){btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';});
+    btn.addEventListener('mouseleave',function(){btn.style.borderColor='var(--border)';btn.style.color='var(--text)';});
+    btn.addEventListener('click',function(){overlay.remove();applyArtistFilter(a);});
+    box.appendChild(btn);
+  });
+  var cancel=document.createElement('button');
+  cancel.style.cssText='display:block;width:100%;padding:10px;margin-top:4px;background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-family:"DM Mono",monospace;font-size:11px;cursor:pointer;';
+  cancel.textContent='Annulla';
+  cancel.addEventListener('click',function(){overlay.remove();});
+  box.appendChild(cancel);
+  overlay.appendChild(box);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+  document.body.appendChild(overlay);
 }
 
 function openModal(a){
