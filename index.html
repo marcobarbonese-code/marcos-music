@@ -341,7 +341,7 @@ function loadDatabase(){
   .catch(function(e){showApp();alert('Errore: '+e.message);});
 }
 
-// Fix strings double-encoded as Latin-1 instead of UTF-8 (e.g. "De AndrÃ©" -> "De André")
+// Fix strings double-encoded as Latin-1 instead of UTF-8 (e.g. "De André" -> "De André")
 function fixEncoding(str){
   if(!str)return str;
   try{
