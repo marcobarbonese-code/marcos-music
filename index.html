@@ -226,7 +226,7 @@ const COLL_MAP   = {7:'Straniera',8:'Classica',9:'Colonne Sonore',10:'Jazz',11:'
 var SQL=null, sqlJsReady=false, sqlJsCallbacks=[];
 var accessToken='', refreshToken='', tokenExpiry=0;
 var allAlbums=[], covers={}, currentFilter='all', currentSearch='';
-var coversLoading=false, sortAsc=true;
+var sortAsc=true;
 var artistFilter=null;
 
 initSqlJs({locateFile:function(f){return 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/'+f;}})
@@ -262,7 +262,7 @@ window.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.filter-btn').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.filter-btn').forEach(function(x){x.classList.remove('active');});
-      b.classList.add('active');currentFilter=b.dataset.cat;renderGrid();
+      b.classList.add('active');currentFilter=b.dataset.cat;renderGrid();if(allAlbums.length)loadCovers();
     });
   });
 
@@ -334,11 +334,13 @@ function onConnected(){
 }
 
 function loadDatabase(){
-  showLoading('Caricamento database...');
-  dbxDownload(DB_PATH)
-  .then(function(r){if(!r.ok)throw new Error('File non trovato: '+DB_PATH);return r.arrayBuffer();})
-  .then(function(buf){loadData(new SQL.Database(new Uint8Array(buf)));})
-  .catch(function(e){showApp();alert('Errore: '+e.message);});
+  showLoading("Caricamento database...");
+  checkDbVersion().then(function(){
+    dbxDownload(DB_PATH)
+    .then(function(r){if(!r.ok)throw new Error("File non trovato: "+DB_PATH);return r.arrayBuffer();})
+    .then(function(buf){loadData(new SQL.Database(new Uint8Array(buf)));})
+    .catch(function(e){showApp();alert("Errore: "+e.message);});
+  });
 }
 
 function fixEncoding(str){
@@ -377,27 +379,130 @@ function loadData(db){
   loadCovers();
 }
 
+/* ── Cache copertine su IndexedDB ── */
+var coverDB=null;
+function openCoverDB(){
+  if(coverDB)return Promise.resolve(coverDB);
+  return new Promise(function(res,rej){
+    var req=indexedDB.open('MarcosCovers',1);
+    req.onupgradeneeded=function(e){e.target.result.createObjectStore('covers');};
+    req.onsuccess=function(e){coverDB=e.target.result;res(coverDB);};
+    req.onerror=function(){rej();};
+  });
+}
+function getCached(key){
+  return openCoverDB().then(function(db){
+    return new Promise(function(res){
+      var tx=db.transaction('covers','readonly');
+      var req=tx.objectStore('covers').get(key);
+      req.onsuccess=function(){res(req.result||null);};
+      req.onerror=function(){res(null);};
+    });
+  }).catch(function(){return null;});
+}
+function putCached(key,blob){
+  return openCoverDB().then(function(db){
+    return new Promise(function(res){
+      var tx=db.transaction('covers','readwrite');
+      tx.objectStore('covers').put(blob,key);
+      tx.oncomplete=res;tx.onerror=res;
+    });
+  }).catch(function(){});
+}
+function clearCoverCache(){
+  return openCoverDB().then(function(db){
+    return new Promise(function(res){
+      var tx=db.transaction('covers','readwrite');
+      tx.objectStore('covers').clear();
+      tx.oncomplete=res;tx.onerror=res;
+    });
+  }).catch(function(){});
+}
+
+/* Controlla se il db su Dropbox è cambiato rispetto all'ultima volta */
+function checkDbVersion(){
+  return dbxPost(API+'/files/get_metadata',{path:DB_PATH})
+  .then(function(r){return r.json();})
+  .then(function(meta){
+    var rev=meta.rev||'';
+    var stored=localStorage.getItem('db_rev')||'';
+    if(rev&&rev!==stored){
+      localStorage.setItem('db_rev',rev);
+      return clearCoverCache().then(function(){return true;});/* cache invalidata */
+    }
+    return false;
+  }).catch(function(){return false;});
+}
+
+/* ── Caricamento copertine con priorità al filtro attivo ── */
+var coverLoadGeneration=0;
 function loadCovers(){
-  if(coversLoading)return;
-  coversLoading=true;
+  var gen=++coverLoadGeneration;
   var prog=document.getElementById('coversProgress');
   prog.innerHTML='<span class="mini-spin"></span> Caricamento copertine...';
-  var seen={},zuids=[];
-  allAlbums.forEach(function(a){if(a.zuid&&!seen[a.zuid]&&!covers[String(a.zuid)]){seen[a.zuid]=true;zuids.push(a.zuid);}});
-  if(!zuids.length){prog.textContent='';coversLoading=false;return;}
+
+  /* Costruisce la lista di zuids con priorità agli album visibili */
+  function buildQueue(){
+    var visible={},queue=[],rest=[];
+    filtered().forEach(function(a){if(a.zuid&&!covers[String(a.zuid)])visible[String(a.zuid)]=true;});
+    allAlbums.forEach(function(a){
+      if(!a.zuid||covers[String(a.zuid)])return;
+      var k=String(a.zuid);
+      if(visible[k])queue.push(a.zuid);else rest.push(a.zuid);
+    });
+    /* dedup */
+    var seen={},out=[];
+    queue.concat(rest).forEach(function(z){if(!seen[z]){seen[z]=true;out.push(z);}});
+    return out;
+  }
+
+  var zuids=buildQueue();
+  if(!zuids.length){prog.textContent='';return;}
+
   var done=0,completed=0,total=zuids.length;
   prog.textContent='Copertine: 0 / '+total;
-  function loadOne(zuid){
-    var key=String(zuid);
-    function tryExt(e){return dbxDownload(COVERS_DIR+'/'+zuid+'.'+e).then(function(r){return r.ok?r.blob():null;});}
-    return tryExt('jpg').then(function(b){return b||tryExt('png');}).then(function(b){return b||tryExt('jpeg');})
-    .then(function(blob){
-      if(blob){covers[key]=URL.createObjectURL(blob);done++;document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){var img=document.createElement('img');img.className='album-cover';img.src=covers[key];img.alt='';el.parentNode.replaceChild(img,el);});}
-      completed++;prog.textContent='Copertine: '+done+' / '+total;
-      if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}
-    }).catch(function(){completed++;if(completed===total){coversLoading=false;setTimeout(function(){prog.textContent='';},2000);}});
+
+  function applyUrl(key,url){
+    covers[key]=url;
+    document.querySelectorAll('[data-cover="'+key+'"]').forEach(function(el){
+      var img=document.createElement('img');img.className='album-cover';img.src=url;img.alt='';
+      el.parentNode.replaceChild(img,el);
+    });
   }
-  function runBatch(s){if(s>=total)return;Promise.all(zuids.slice(s,s+6).map(loadOne)).then(function(){runBatch(s+6);});}
+
+  function loadOne(zuid){
+    if(gen!==coverLoadGeneration)return Promise.resolve();/* generazione superata, abbandona */
+    var key=String(zuid);
+    return getCached(key).then(function(blob){
+      if(blob){
+        applyUrl(key,URL.createObjectURL(blob));
+        done++;completed++;
+        prog.textContent='Copertine: '+done+' / '+total;
+        if(completed===total)setTimeout(function(){prog.textContent='';},2000);
+        return;
+      }
+      function tryExt(e){return dbxDownload(COVERS_DIR+'/'+zuid+'.'+e).then(function(r){return r.ok?r.blob():null;});}
+      return tryExt('jpg').then(function(b){return b||tryExt('png');}).then(function(b){return b||tryExt('jpeg');})
+      .then(function(blob){
+        if(blob){
+          putCached(key,blob);
+          applyUrl(key,URL.createObjectURL(blob));
+          done++;
+        }
+        completed++;
+        prog.textContent='Copertine: '+done+' / '+total;
+        if(completed===total){setTimeout(function(){prog.textContent='';},2000);}
+      }).catch(function(){
+        completed++;
+        if(completed===total){setTimeout(function(){prog.textContent='';},2000);}
+      });
+    });
+  }
+
+  function runBatch(s){
+    if(s>=total||gen!==coverLoadGeneration)return;
+    Promise.all(zuids.slice(s,s+6).map(loadOne)).then(function(){runBatch(s+6);});
+  }
   runBatch(0);
 }
 
