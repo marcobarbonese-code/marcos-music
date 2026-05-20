@@ -507,7 +507,7 @@ function loadCovers(){
 }
 
 function artistMatchesFilter(artistStr, filterName){
-  var tokens=artistStr.split(/\s*[,&\/]\s*|\s+e\s+/).map(function(s){return s.trim().toLowerCase();});
+  var tokens=artistStr.split(/\s*[,&\/]\s*|\s+e\s+|\s+-\s+/).map(function(s){return s.trim().toLowerCase();});
   return tokens.indexOf(filterName.toLowerCase())!==-1;
 }
 
@@ -555,8 +555,8 @@ function renderGrid(){
 }
 
 function splitArtists(str){
-  // Split on: comma, ' e ' (with spaces), '&' (with optional spaces), '/' (with optional spaces)
-  return str.split(/\s*[,&\/]\s*|\s+e\s+/).map(function(s){return s.trim();}).filter(Boolean);
+  // Split on: comma, ' e ', '&', '/', ' - ' (with spaces)
+  return str.split(/\s*[,&\/]\s*|\s+e\s+|\s+-\s+/).map(function(s){return s.trim();}).filter(Boolean);
 }
 
 function filterByArtist(artistStr){
