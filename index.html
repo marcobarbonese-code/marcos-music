@@ -712,7 +712,7 @@ function buildRanking(){
       map[name].cats[a.category]=(map[name].cats[a.category]||0)+1;
     });
   });
-  var excluded=['autori vari','artisti vari'];
+  var excluded=['autori vari','artisti vari','quartet'];
   var list=Object.values(map).filter(function(x){return x.total>=3&&excluded.indexOf(x.name.trim().toLowerCase())===-1;});
   list.sort(function(a,b){return b.total-a.total||a.name.localeCompare(b.name);});
   return {list:list,catClass:catClass,catOrder:catOrder};
