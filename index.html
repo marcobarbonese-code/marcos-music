@@ -804,7 +804,7 @@ function buildArtistsList(){
 
 function renderArtistsAlpha(list, availableLetters){
   var allLetters=['#','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-  var html='<button class="alpha-btn'+((_selectedLetter==='all')?' active':'')+'" data-letter="all">Tutti</button>';
+  var html='<button class="alpha-btn'+((_selectedLetter==='all')?' active':'')+'" data-letter="all" style="width:56px">Tutti</button>';
   allLetters.forEach(function(l){
     var has=availableLetters[l];
     html+='<button class="alpha-btn'+((_selectedLetter===l)?' active':'')+'" data-letter="'+l+'"'+(has?'':' disabled')+'>'+l+'</button>';
