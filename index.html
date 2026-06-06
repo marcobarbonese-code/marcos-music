@@ -178,6 +178,19 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
 .artists-sub{font-size:10px;color:var(--text-muted);letter-spacing:0.05em;}
 .artists-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;border:none;background:var(--surface2);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
 .artists-close:hover{background:var(--border);color:var(--text);}
+.artists-search-wrap{position:relative;margin-top:12px;}
+.artists-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);width:13px;height:13px;pointer-events:none;}
+#artistsSearch{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:8px 30px 8px 30px;border-radius:6px;outline:none;transition:border-color 0.2s;}
+#artistsSearch:focus{border-color:var(--gold);}
+#artistsSearch::placeholder{color:var(--text-muted);}
+.artists-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px;display:none;line-height:0;}
+.artists-search-clear:hover{color:var(--text);}
+.artists-search-clear.show{display:block;}
+.artists-alpha{display:flex;flex-wrap:wrap;gap:4px;padding:10px 20px 12px;border-bottom:1px solid var(--border);}
+.alpha-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.alpha-btn:hover{border-color:var(--gold);color:var(--gold);}
+.alpha-btn.active{background:var(--gold);border-color:var(--gold);color:#000;}
+.alpha-btn:disabled{opacity:0.2;cursor:default;pointer-events:none;}
 .artists-letter{padding:6px 20px 2px;font-size:9px;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);}
 .artists-row{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s;}
 .artists-row:hover{background:var(--surface2);}
@@ -257,7 +270,13 @@ body.light .record{background:conic-gradient(from 0deg,#2a2418 0deg,#3a3020 30de
       <div class="artists-title">🎵 Artisti</div>
       <div class="artists-sub" id="artistsSub">Tutti gli artisti in ordine alfabetico</div>
       <button class="artists-close" id="artistsClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <div class="artists-search-wrap">
+        <svg class="artists-search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="artistsSearch" placeholder="Cerca artista..." autocomplete="off" spellcheck="false">
+        <button class="artists-search-clear" id="artistsSearchClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
     </div>
+    <div class="artists-alpha" id="artistsAlpha"></div>
     <div id="artistsList"></div>
   </div>
 </div>
@@ -569,7 +588,7 @@ function loadCovers(){
 }
 
 function artistMatchesFilter(artistStr, filterName){
-  var tokens=artistStr.split(/\s*[,&\/]\s*|\s+e\s+|\s+-\s+/).map(function(s){return s.trim().toLowerCase();});
+  var tokens=splitArtistsSmart(artistStr).map(function(s){return s.toLowerCase();});
   return tokens.indexOf(filterName.toLowerCase())!==-1;
 }
 
@@ -617,8 +636,7 @@ function renderGrid(){
 }
 
 function splitArtists(str){
-  // Split on: comma, ' e ', '&', '/', ' - ' (with spaces)
-  return str.split(/\s*[,&\/]\s*|\s+e\s+|\s+-\s+/).map(function(s){return s.trim();}).filter(Boolean);
+  return splitArtistsSmart(str);
 }
 
 function filterByArtist(artistStr){
@@ -727,16 +745,51 @@ function closeModal(){document.getElementById('modal').classList.remove('open');
 
 /* ── Elenco Artisti A-Z ── */
 function sortKey(name){
-  // Rimuove articoli iniziali per l'ordinamento alfabetico
   var articles=/^(the|il|la|lo|gli|le|i|l'|un|una|uno|a|an)\s+/i;
   return name.replace(articles,'').toLowerCase();
 }
 
+function artistInitial(name){
+  var key=sortKey(name);
+  var ch=key.charAt(0).toUpperCase();
+  return /[0-9]/.test(ch)?'#':ch;
+}
+
+// Divide gli artisti in modo intelligente: non spezza su "/" se le parti adiacenti
+// sembrano una sigla (≤4 caratteri tutte maiuscole, es. AC/DC, DJ/RU)
+function splitArtistsSmart(str){
+  // Prima divide su separatori certi: virgola, &, " e ", " - "
+  var parts=[];
+  str.split(/\s*,\s*|\s*&\s*|\s+e\s+|\s+-\s+/).forEach(function(chunk){
+    chunk=chunk.trim();
+    if(!chunk)return;
+    // Poi prova a dividere su "/" solo se NON sembra una sigla tipo AC/DC
+    var slashParts=chunk.split(/\s*\/\s*/);
+    if(slashParts.length>1){
+      // Considera sigla: ogni parte è ≤4 char e tutta maiuscola (o cifre)
+      var allSigla=slashParts.every(function(p){return p.length<=4&&/^[A-Z0-9]+$/.test(p);});
+      if(allSigla){
+        parts.push(chunk); // Mantieni intero, es. "AC/DC"
+      } else {
+        slashParts.forEach(function(p){if(p.trim())parts.push(p.trim());});
+      }
+    } else {
+      parts.push(chunk);
+    }
+  });
+  return parts.filter(Boolean);
+}
+
+var _artistsCache=null;
+var _selectedLetter='all';
+var _artistsSearch='';
+
 function buildArtistsList(){
+  if(_artistsCache)return _artistsCache;
   var excluded=['autori vari','artisti vari','quartet'];
   var map={};
   allAlbums.forEach(function(a){
-    var parts=a.artist.split(/\s*[,&\/]\s*|\s+e\s+|\s+-\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    var parts=splitArtistsSmart(a.artist);
     parts.forEach(function(name){
       if(!name||excluded.indexOf(name.trim().toLowerCase())!==-1)return;
       if(!map[name])map[name]={name:name,count:0};
@@ -745,37 +798,94 @@ function buildArtistsList(){
   });
   var list=Object.values(map);
   list.sort(function(a,b){return sortKey(a.name).localeCompare(sortKey(b.name),'it');});
+  _artistsCache=list;
   return list;
 }
 
-function openArtistsList(){
-  var list=buildArtistsList();
-  document.getElementById('artistsSub').textContent=list.length+' artisti in ordine alfabetico';
+function renderArtistsAlpha(list, availableLetters){
+  var allLetters=['#','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+  var html='<button class="alpha-btn'+((_selectedLetter==='all')?' active':'')+'" data-letter="all">Tutti</button>';
+  allLetters.forEach(function(l){
+    var has=availableLetters[l];
+    html+='<button class="alpha-btn'+((_selectedLetter===l)?' active':'')+'" data-letter="'+l+'"'+(has?'':' disabled')+'>'+l+'</button>';
+  });
+  var bar=document.getElementById('artistsAlpha');
+  bar.innerHTML=html;
+  bar.querySelectorAll('.alpha-btn:not(:disabled)').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      _selectedLetter=btn.getAttribute('data-letter');
+      // Reset ricerca quando si sceglie una lettera
+      _artistsSearch='';
+      document.getElementById('artistsSearch').value='';
+      document.getElementById('artistsSearchClear').classList.remove('show');
+      renderArtistsList(list);
+      bar.querySelectorAll('.alpha-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+    });
+  });
+}
+
+function renderArtistsList(list){
+  var q=_artistsSearch.toLowerCase();
+  var bySearch=q.length>0;
+  var filtered=list.filter(function(item){
+    if(bySearch) return item.name.toLowerCase().indexOf(q)!==-1;
+    if(_selectedLetter==='all') return true;
+    return artistInitial(item.name)===_selectedLetter;
+  });
+  var label=bySearch
+    ? filtered.length+' risultat'+(filtered.length===1?'o':'i')
+    : filtered.length+' artisti'+(_selectedLetter!=='all'?' — '+_selectedLetter:'');
+  document.getElementById('artistsSub').textContent=label;
   var html='';
   var currentLetter='';
-  list.forEach(function(item){
-    var letter=sortKey(item.name).charAt(0).toUpperCase();
-    if(/[0-9]/.test(letter))letter='#';
-    if(letter!==currentLetter){
+  filtered.forEach(function(item){
+    var letter=artistInitial(item.name);
+    if(!bySearch&&_selectedLetter==='all'&&letter!==currentLetter){
       currentLetter=letter;
       html+='<div class="artists-letter">'+letter+'</div>';
     }
+    // Evidenzia la parte cercata nel nome
+    var displayName=item.name;
+    if(bySearch&&q){
+      var idx=item.name.toLowerCase().indexOf(q);
+      if(idx>=0){
+        displayName=item.name.substring(0,idx)+
+          '<mark style="background:var(--gold);color:#000;border-radius:2px;padding:0 1px">'+
+          item.name.substring(idx,idx+q.length)+'</mark>'+
+          item.name.substring(idx+q.length);
+      }
+    }
     html+='<div class="artists-row" data-artist="'+item.name.replace(/"/g,'&quot;')+'">'+
-      '<span class="artists-name">'+item.name+'</span>'+
+      '<span class="artists-name">'+displayName+'</span>'+
       '<span class="artists-count">'+item.count+'</span>'+
     '</div>';
   });
   if(!html)html='<div style="padding:24px 20px;font-size:12px;color:var(--text-muted);">Nessun artista trovato.</div>';
-  document.getElementById('artistsList').innerHTML=html;
-  document.querySelectorAll('#artistsList .artists-row').forEach(function(row){
+  var listEl=document.getElementById('artistsList');
+  listEl.innerHTML=html;
+  listEl.querySelectorAll('.artists-row').forEach(function(row){
     row.addEventListener('click',function(){
-      var artist=row.getAttribute('data-artist');
       closeArtistsList();
-      applyArtistFilter(artist);
+      applyArtistFilter(row.getAttribute('data-artist'));
     });
   });
+}
+
+function openArtistsList(){
+  _artistsCache=null;
+  _selectedLetter='all';
+  _artistsSearch='';
+  document.getElementById('artistsSearch').value='';
+  document.getElementById('artistsSearchClear').classList.remove('show');
+  var list=buildArtistsList();
+  var available={};
+  list.forEach(function(item){available[artistInitial(item.name)]=true;});
+  renderArtistsAlpha(list, available);
+  renderArtistsList(list);
   document.getElementById('artistsModal').classList.add('open');
   document.body.style.overflow='hidden';
+  setTimeout(function(){document.getElementById('artistsSearch').focus();},300);
 }
 function closeArtistsList(){document.getElementById('artistsModal').classList.remove('open');document.body.style.overflow='';}
 
@@ -783,6 +893,24 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('artistsBtn').addEventListener('click',openArtistsList);
   document.getElementById('artistsClose').addEventListener('click',closeArtistsList);
   document.getElementById('artistsModal').addEventListener('click',function(e){if(e.target===document.getElementById('artistsModal'))closeArtistsList();});
+  document.getElementById('artistsSearch').addEventListener('input',function(e){
+    _artistsSearch=e.target.value;
+    document.getElementById('artistsSearchClear').classList.toggle('show',e.target.value.length>0);
+    // Quando si cerca, deseleziona lettera
+    if(e.target.value.length>0){
+      _selectedLetter='all';
+      document.querySelectorAll('#artistsAlpha .alpha-btn').forEach(function(b){b.classList.remove('active');});
+      document.querySelector('#artistsAlpha .alpha-btn[data-letter="all"]').classList.add('active');
+    }
+    renderArtistsList(buildArtistsList());
+  });
+  document.getElementById('artistsSearchClear').addEventListener('click',function(){
+    _artistsSearch='';
+    document.getElementById('artistsSearch').value='';
+    this.classList.remove('show');
+    renderArtistsList(buildArtistsList());
+    document.getElementById('artistsSearch').focus();
+  });
 });
 
 function buildRanking(){
@@ -790,7 +918,7 @@ function buildRanking(){
   var catOrder=['Colonne Sonore','Italiana','Straniera','Jazz','Classica'];
   var map={};
   allAlbums.forEach(function(a){
-    var parts=a.artist.split(/\s*[,&\/]\s*|\s+e\s+|\s+-\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    var parts=splitArtistsSmart(a.artist);
     parts.forEach(function(name){
       if(!name)return;
       if(!map[name])map[name]={name:name,total:0,cats:{}};
